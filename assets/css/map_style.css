@@ -1,0 +1,57 @@
+/* Map Specific Styles (Complementing Bootstrap) */
+
+body,
+html {
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+/* Map Container */
+#chartdiv {
+    height: 85vh;
+    /* Responsive height */
+    width: 100%;
+    background-color: #f0f2f5;
+    /* Light grey/white background */
+}
+
+/* Back Button */
+#back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: none;
+    /* Hidden by default */
+    backdrop-filter: blur(5px);
+}
+
+/* Partner Item Styling */
+.partner-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    filter: grayscale(100%);
+    padding: 10px;
+}
+
+.partner-item:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: translateY(-2px);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    #chartdiv {
+        height: 70vh;
+        /* Smaller map on mobile */
+    }
+
+    .trusted-partners h2 {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,312 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "product_name": "Famous Puri Khaja",
+      "product_brand": "Jay Subhdra",
+      "category": 0,
+      "stock": 1,
+      "sku": "KHAJA-001",
+      "price": "$5.00",
+      "quantity": 500,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Puri+Khaja+1",
+        "https://placehold.co/600x600?text=Puri+Khaja+2"
+      ],
+      "product_type": "Sweets",
+      "specifications": [
+        {
+          "name": "Weight",
+          "value": "1kg"
+        },
+        {
+          "name": "Shelf Life",
+          "value": "15 Days"
+        },
+        {
+          "name": "Is Sacred",
+          "value": "Yes"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "product_name": "Khandua Silk Saree",
+      "product_brand": "Jay Subhdra",
+      "category": 1,
+      "stock": 1,
+      "sku": "SAREE-001",
+      "price": "$120.00",
+      "quantity": 50,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Silk+Saree+1",
+        "https://placehold.co/600x600?text=Silk+Saree+2"
+      ],
+      "product_type": "Saree",
+      "specifications": [
+        {
+          "name": "Fabric",
+          "value": "Pure Silk"
+        },
+        {
+          "name": "Length",
+          "value": "6.5 Meters"
+        },
+        {
+          "name": "Width",
+          "value": "1.2 Meters"
+        },
+        {
+          "name": "Theme",
+          "value": "Jagannath Dham"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "product_name": "Authentic Pattachitra Art",
+      "product_brand": "Jay Subhdra",
+      "category": 3,
+      "stock": 1,
+      "sku": "ART-001",
+      "price": "$45.00",
+      "quantity": 25,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Pattachitra+1",
+        "https://placehold.co/600x600?text=Pattachitra+2"
+      ],
+      "product_type": "Art",
+      "specifications": [
+        {
+          "name": "Material",
+          "value": "Handmade Paper"
+        },
+        {
+          "name": "Dimensions",
+          "value": "12x18 Inches"
+        },
+        {
+          "name": "Artisan",
+          "value": "Raghurajpur Heritage"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "product_name": "Sankha (Conch Shell)",
+      "product_brand": "Jay Subhdra",
+      "category": 4,
+      "stock": 1,
+      "sku": "SHELL-001",
+      "price": "$15.00",
+      "quantity": 100,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Sankha+1",
+        "https://placehold.co/600x600?text=Sankha+2"
+      ],
+      "product_type": "Shell Craft",
+      "specifications": [
+        {
+          "name": "Material",
+          "value": "Natural Conch"
+        },
+        {
+          "name": "Sound Quality",
+          "value": "Deep/Resonant"
+        },
+        {
+          "name": "Size",
+          "value": "Medium"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "product_name": "Jagannath Moorti (Neem Wood)",
+      "product_brand": "Jay Subhdra",
+      "category": 2,
+      "stock": 1,
+      "sku": "MOORTI-001",
+      "price": "$250.00",
+      "quantity": 10,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Moorti+1",
+        "https://placehold.co/600x600?text=Moorti+2"
+      ],
+      "product_type": "Handicraft",
+      "specifications": [
+        {
+          "name": "Material",
+          "value": "Neem Wood"
+        },
+        {
+          "name": "Dimensions",
+          "value": "12 Inches Height"
+        },
+        {
+          "name": "Artisan",
+          "value": "Traditional Carvers"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "product_name": "Sacred Nirmalya",
+      "product_brand": "Jay Subhdra",
+      "category": 5,
+      "stock": 1,
+      "sku": "HOLY-001",
+      "price": "$2.00",
+      "quantity": 1000,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Nirmalya+1"
+      ],
+      "product_type": "Holy Offering",
+      "specifications": [
+        {
+          "name": "Type",
+          "value": "Dry Mahaprasad Rice"
+        },
+        {
+          "name": "Origin",
+          "value": "Puri Jagannath Temple"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "product_name": "Lord Jagannath Oil Painting",
+      "product_brand": "Jay Subhdra",
+      "category": 3,
+      "stock": 1,
+      "sku": "PAINT-001",
+      "price": "$300.00",
+      "quantity": 5,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Oil+Painting+1",
+        "https://placehold.co/600x600?text=Oil+Painting+2"
+      ],
+      "product_type": "Art",
+      "specifications": [
+        {
+          "name": "Medium",
+          "value": "Oil on Canvas"
+        },
+        {
+          "name": "Style",
+          "value": "Traditional Devotional"
+        },
+        {
+          "name": "Artist",
+          "value": "S. Mohanty"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "product_name": "Bomkai Cotton Saree",
+      "product_brand": "Jay Subhdra",
+      "category": 1,
+      "stock": 1,
+      "sku": "SAREE-002",
+      "price": "$40.00",
+      "quantity": 80,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Cotton+Saree+1",
+        "https://placehold.co/600x600?text=Cotton+Saree+2"
+      ],
+      "product_type": "Saree",
+      "specifications": [
+        {
+          "name": "Fabric",
+          "value": "Sambalpuri Cotton"
+        },
+        {
+          "name": "Length",
+          "value": "6.2 Meters"
+        },
+        {
+          "name": "Weave",
+          "value": "Ikat Pattern"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "product_name": "Stone Carved Elephant",
+      "product_brand": "Jay Subhdra",
+      "category": 2,
+      "stock": 1,
+      "sku": "STONE-001",
+      "price": "$35.00",
+      "quantity": 40,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Stone+Art+1",
+        "https://placehold.co/600x600?text=Stone+Art+2"
+      ],
+      "product_type": "Handicraft",
+      "specifications": [
+        {
+          "name": "Material",
+          "value": "Black Granite Stone"
+        },
+        {
+          "name": "Dimensions",
+          "value": "6x4 Inches"
+        },
+        {
+          "name": "Work",
+          "value": "Intricate Jali Cut"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "product_name": "Brass Chakra (Wheel)",
+      "product_brand": "Jay Subhdra",
+      "category": 2,
+      "stock": 1,
+      "sku": "BRASS-001",
+      "price": "$55.00",
+      "quantity": 15,
+      "status": 1,
+      "is_cod": true,
+      "images": [
+        "https://placehold.co/600x600?text=Brass+Art+1"
+      ],
+      "product_type": "Handicraft",
+      "specifications": [
+        {
+          "name": "Material",
+          "value": "Pure Brass"
+        },
+        {
+          "name": "Weight",
+          "value": "2.5 Kg"
+        },
+        {
+          "name": "Significance",
+          "value": "Nilachakra Puri"
+        }
+      ]
+    }
+  ]
+}

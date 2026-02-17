@@ -1,0 +1,677 @@
+<!-- ========== HEADER Section Start ========== -->
+<header>
+  <!-- header-top start -->
+  <div class="bg-primary header-top">
+    <div class="container">
+      <div class="flex items-center xl:justify-between justify-center">
+        <div class="xl:flex items-center gap-x-6 hidden">
+          <p class="flex items-center gap-x-2 text-white text-sm leading-[22px]">
+            <span><i class="hgi hgi-stroke hgi-customer-support text-xl text-white"></i>
+            </span>
+            Need Support ?
+            <span>Call Us</span>
+            <a href="#" class="bg-warning py-px px-2 text-xs leading-4.5 rounded-[60px] text-gray-800">
+              <%= siteConfig.header.support_phone %>
+            </a>
+          </p>
+          <div>
+            <ul class="flex items-center gap-x-[19px]">
+              <li
+                class="relative group after:absolute after:h-7.5 after:w-px after:bg-primary-light after:right-0 after:top-1/2 after:-translate-y-1/2">
+                <a href="#"
+                  class="text-sm leading-[22px] text-white inline-flex items-center gap-x-2 pr-[19px] py-3.5"><span
+                    class="inline-flex items-center justify-center size-7 bg-primary-darker rounded-full"><i
+                      class="hgi hgi-stroke hgi-language-circle text-xl text-white"></i>
+                  </span>
+                  English
+                  <span class="inline-flex items-center justify-center"><i
+                      class="hgi hgi-stroke hgi-arrow-down-01 text-xl text-white"></i>
+                  </span>
+                </a>
+
+                <ul
+                  class="absolute left-0 top-full py-2 z-50 w-[250px] max-w-[250px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
+                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 inline-flex items-center justify-center rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_33581_103320)">
+                            <path
+                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M7.65186 7.99999H15.9997C15.9997 7.27793 15.9034 6.57843 15.7241 5.91302H7.65186V7.99999Z"
+                              fill="#D80027" />
+                            <path
+                              d="M7.65186 3.82568H14.8255C14.3358 3.02655 13.7096 2.32021 12.9795 1.73871H7.65186V3.82568Z"
+                              fill="#D80027" />
+                            <path
+                              d="M7.99989 16C9.88268 16 11.6132 15.3492 12.9798 14.2609H3.02002C4.38658 15.3492 6.11711 16 7.99989 16Z"
+                              fill="#D80027" />
+                            <path
+                              d="M1.17398 12.1733H14.8256C15.2188 11.5317 15.5237 10.8305 15.7242 10.0863H0.275391C0.475922 10.8305 0.780828 11.5317 1.17398 12.1733Z"
+                              fill="#D80027" />
+                            <path
+                              d="M3.70575 1.24931H4.43478L3.75666 1.74197L4.01569 2.53912L3.33759 2.04647L2.6595 2.53912L2.88325 1.85047C2.28619 2.34781 1.76287 2.9305 1.33162 3.57975H1.56522L1.13356 3.89334C1.06631 4.00553 1.00181 4.1195 0.94 4.23516L1.14612 4.86956L0.761563 4.59016C0.665969 4.79269 0.578531 4.99978 0.499938 5.21119L0.727031 5.91019H1.56522L0.887094 6.40284L1.14612 7.2L0.468031 6.70734L0.0618437 7.00247C0.0211875 7.32928 0 7.66216 0 8H8C8 3.58175 8 3.06087 8 0C6.41963 0 4.94641 0.458438 3.70575 1.24931ZM4.01569 7.2L3.33759 6.70734L2.6595 7.2L2.91853 6.40284L2.24041 5.91019H3.07859L3.33759 5.11303L3.59659 5.91019H4.43478L3.75666 6.40284L4.01569 7.2ZM3.75666 4.07241L4.01569 4.86956L3.33759 4.37691L2.6595 4.86956L2.91853 4.07241L2.24041 3.57975H3.07859L3.33759 2.78259L3.59659 3.57975H4.43478L3.75666 4.07241ZM6.88525 7.2L6.20716 6.70734L5.52906 7.2L5.78809 6.40284L5.10997 5.91019H5.94816L6.20716 5.11303L6.46616 5.91019H7.30434L6.62622 6.40284L6.88525 7.2ZM6.62622 4.07241L6.88525 4.86956L6.20716 4.37691L5.52906 4.86956L5.78809 4.07241L5.10997 3.57975H5.94816L6.20716 2.78259L6.46616 3.57975H7.30434L6.62622 4.07241ZM6.62622 1.74197L6.88525 2.53912L6.20716 2.04647L5.52906 2.53912L5.78809 1.74197L5.10997 1.24931H5.94816L6.20716 0.452156L6.46616 1.24931H7.30434L6.62622 1.74197Z"
+                              fill="#0052B4" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_33581_103320">
+                              <rect width="16" height="16" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg> </span>English
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
+                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 inline-flex items-center justify-center rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_33581_103328)">
+                            <path
+                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M1.65355 3.12866C1.02514 3.94626 0.551297 4.8886 0.275391 5.91232H4.4372L1.65355 3.12866Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M15.7243 5.91247C15.4483 4.88878 14.9745 3.94644 14.3461 3.12885L11.5625 5.91247H15.7243Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M0.275391 10.0869C0.551328 11.1105 1.02517 12.0529 1.65355 12.8704L4.43711 10.0869H0.275391Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M12.8701 1.65321C12.0525 1.02481 11.1101 0.550962 10.0864 0.275024V4.43681L12.8701 1.65321Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M3.12891 14.3451C3.9465 14.9736 4.88885 15.4474 5.91253 15.7233V11.5616L3.12891 14.3451Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M5.9125 0.275024C4.88881 0.550962 3.94647 1.02481 3.12891 1.65318L5.9125 4.43677V0.275024Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M10.0864 15.7233C11.1101 15.4474 12.0525 14.9736 12.87 14.3452L10.0864 11.5616V15.7233Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M11.5625 10.0869L14.3461 12.8705C14.9745 12.0529 15.4483 11.1105 15.7243 10.0869H11.5625Z"
+                              fill="#0052B4" />
+                            <path
+                              d="M15.9323 6.95653H9.04353H9.0435V0.0677188C8.70191 0.02325 8.35366 0 8 0C7.64628 0 7.29809 0.02325 6.95653 0.0677188V6.95647V6.9565H0.0677188C0.02325 7.29809 0 7.64634 0 8C0 8.35372 0.02325 8.70191 0.0677188 9.04347H6.95647H6.9565V15.9323C7.29809 15.9768 7.64628 16 8 16C8.35366 16 8.70191 15.9768 9.04347 15.9323V9.04353V9.0435H15.9323C15.9768 8.70191 16 8.35372 16 8C16 7.64634 15.9768 7.29809 15.9323 6.95653Z"
+                              fill="#D80027" />
+                            <path
+                              d="M10.0869 10.0875L13.6568 13.6574C13.821 13.4932 13.9776 13.3217 14.127 13.1438L11.0707 10.0875H10.0869V10.0875Z"
+                              fill="#D80027" />
+                            <path
+                              d="M5.91317 10.0875H5.91311L2.34326 13.6573C2.50739 13.8215 2.67898 13.9781 2.85686 14.1276L5.91317 11.0712V10.0875Z"
+                              fill="#D80027" />
+                            <path
+                              d="M5.91268 5.91274V5.91268L2.34281 2.34277C2.17862 2.5069 2.022 2.67849 1.87256 2.85637L4.9289 5.91271H5.91268V5.91274Z"
+                              fill="#D80027" />
+                            <path
+                              d="M10.0869 5.91345L13.6568 2.34351C13.4927 2.17932 13.3211 2.0227 13.1432 1.87329L10.0869 4.92964V5.91345Z"
+                              fill="#D80027" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_33581_103328">
+                              <rect width="16" height="16" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg> </span>Germany
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
+                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 transition-colors duration-300 inline-flex items-center justify-center rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_33581_103345)">
+                            <path
+                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
+                              fill="#F0F0F0" />
+                            <path d="M0 8.00003C0 3.58175 3.58175 0 8 0C12.4183 0 16 3.58175 16 8.00003"
+                              fill="#D80027" />
+                            <path
+                              d="M4.86918 4.17395C4.86918 3.00838 5.68834 2.0347 6.78221 1.79579C6.61409 1.7591 6.43968 1.7392 6.26046 1.7392C4.91575 1.7392 3.82568 2.82926 3.82568 4.17398C3.82568 5.5187 4.91575 6.60876 6.26046 6.60876C6.43962 6.60876 6.61406 6.58885 6.78221 6.55213C5.68834 6.31323 4.86918 5.33954 4.86918 4.17395Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M7.99951 1.91327L8.17219 2.44468H8.73098L8.27888 2.77315L8.45157 3.30455L7.99951 2.97615L7.54744 3.30455L7.72013 2.77315L7.26807 2.44468H7.82682L7.99951 1.91327Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M6.6441 2.95642L6.81675 3.48786H7.37553L6.92347 3.8163L7.09616 4.3477L6.6441 4.0193L6.19197 4.3477L6.36469 3.8163L5.9126 3.48786H6.47138L6.6441 2.95642Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M9.35497 2.95642L9.52769 3.48786H10.0864L9.63435 3.8163L9.80707 4.3477L9.35497 4.0193L8.90291 4.3477L9.0756 3.8163L8.62354 3.48786H9.18229L9.35497 2.95642Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M8.83349 4.52222L9.00617 5.05365H9.56492L9.11286 5.38209L9.28555 5.9135L8.83349 5.58509L8.38143 5.9135L8.55411 5.38209L8.10205 5.05365H8.66077L8.83349 4.52222Z"
+                              fill="#F0F0F0" />
+                            <path
+                              d="M7.16604 4.52222L7.33869 5.05365H7.89751L7.44541 5.38209L7.61813 5.9135L7.16604 5.58509L6.71394 5.9135L6.88663 5.38209L6.43457 5.05365H6.99335L7.16604 4.52222Z"
+                              fill="#F0F0F0" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_33581_103345">
+                              <rect width="16" height="16" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg> </span>Singapore
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="relative group">
+                <a href="#" class="text-sm leading-[22px] text-white flex items-center gap-x-2 py-3.5"><span
+                    class="inline-flex items-center justify-center size-7 bg-primary-darker rounded-full"><i
+                      class="hgi hgi-stroke hgi-dollar-circle text-xl text-white"></i>
+                  </span>
+                  USD
+                  <span class="inline-flex items-center justify-center"><i
+                      class="hgi hgi-stroke hgi-arrow-down-01 text-xl text-white"></i>
+                  </span>
+                </a>
+                <ul
+                  class="absolute left-0 top-full py-2 z-50 w-[250px] max-w-[250px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                      AUD
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                      EUR
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="#"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                      USD
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <% if (siteConfig.header.promo_status !==false) { %>
+          <div class="text-center py-3.5">
+            <p class="flex items-center gap-x-[7px] text-white text-sm leading-[22px] font-dm-sans">
+              <span class="inline-flex items-center"><i
+                  class="hgi hgi-stroke hgi-discount-01 text-white text-xl"></i></span>
+              <%= siteConfig.header.promo_text || 'Fashion Category' %>
+                <span class="bg-warning py-px px-2 text-xs leading-4.5 rounded-[60px] text-gray-800">
+                  <%= siteConfig.header.promo_tag || '25% OFF' %>
+                </span>
+                <%= siteConfig.header.promo_suffix || 'Today' %>
+            </p>
+          </div>
+          <% } %>
+
+            <div class="hidden xl:flex">
+              <ul class="flex items-center text-white">
+                <% (siteConfig.header.top_bar_links || []).forEach((link, index)=> { %>
+                  <li>
+                    <a class='text-sm leading-[22px] text-white py-3.5 <%= index < siteConfig.header.top_bar_links.length - 1 ? "pr-[19px] mr-[19px] relative after:absolute after:h-7.5 after:w-px after:bg-primary-light after:right-0 after:top-1/2 after:-translate-y-1/2" : "" %>'
+                      href='<%= link.url %>'>
+                      <%= link.label %>
+                    </a>
+                  </li>
+                  <% }) %>
+              </ul>
+            </div>
+      </div>
+    </div>
+  </div>
+  <!-- header-top End -->
+
+  <!-- header-middle Start -->
+  <div class="py-4 border border-gray-300 xl:border-0 hidden xl:block header-middle">
+    <div class="container">
+      <!-- For Desktop Screen Start -->
+      <div class="xl:flex items-center hidden">
+        <div>
+          <a href='/'>
+            <img src="<%= siteConfig.header.logo %>" alt="Logo" style="max-height: 50px;" />
+          </a>
+        </div>
+        <div class="flex items-center w-full justify-end gap-x-[54px]">
+          <div class="relative search-input-container w-full 2xl:max-w-[800px] xl:max-w-[600px]">
+            <div class="input-group px-6 pt-3 pb-3 rounded-[100px]">
+              <div class="input-group-addon" data-align="inline-end">
+                <i class="hgi hgi-stroke hgi-search-01 text-gray-500 text-xl"></i>
+              </div>
+              <input type="text"
+                class="peer form-control header-search-input placeholder-transparent focus:placeholder-transparent"
+                placeholder="Search for the Items" id="desktop-search" />
+              <label for="desktop-search"
+                class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                Search for the Items
+              </label>
+            </div>
+
+            <div data-state="close"
+              class="search-result-container p-4 absolute w-full top-[calc(100%+10px)] left-0 border border-gray-300 shadow-light-z-12 bg-white rounded-3xl z-9 transform data-[state=close]:translate-y-4 data-[state=close]:opacity-0 data-[state=close]:invisible transition-all duration-300 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-y-0 data-[state=open]:opacity-100 data-[state=open]:visible">
+              <div class="flex justify-between items-center mb-4">
+                <p class="font-semibold text-light-primary-text">
+                  Recent Search
+                </p>
+                <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
+                  Reset History
+                </button>
+              </div>
+              <div class="flex items-center gap-x-2 recent-search-list mb-4">
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Vitamin D Supplement
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Pain Relief Spray
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Baby Thermometer
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="recommended-search-list-wrapper">
+                <p class="text-base font-semibold text-light-primary-text mb-4">
+                  Recommended
+                </p>
+                <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Immunity booster</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Hand Sanitizer 500ml</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/combat.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Heart health supplements</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Protein powder for women</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-x-6 shrink-0">
+            <ul class="flex items-center gap-x-6">
+              <li class="flex items-center gap-x-4 cursor-pointer relative group">
+                <p class="flex items-center">
+                  <span class="inline-flex items-center justify-center bg-warning w-12 h-12 rounded-full">
+                    <i class="hgi hgi-stroke hgi-lock-sync-01 text-2xl text-light-primary-text"></i>
+                  </span>
+                </p>
+                <p class="flex flex-col text-light-secondary-text text-sm leading-[22px]">
+                  Account
+                  <span class="text-base leading-6 text-light-primary-text">
+                    <%= user ? 'hi, ' + user.name.split(' ')[0] : ' log in' %>
+                  </span>
+                </p>
+                <span><i class="hgi hgi-stroke hgi-arrow-down-01 text-2xl text-light-primary-text"></i></span>
+
+                <ul
+                  class="absolute right-0 top-full py-2 z-10 w-[250px] max-w-[250px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                  <% if (!user) { %>
+                    <li class="px-4 group/item">
+                      <a href="/login"
+                        class="login-page-btn flex items-center py-2 gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                        <span
+                          class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[rgba(0,171,85,0.08)] inline-flex items-center justify-center rounded-full">
+                          <i
+                            class="hgi hgi-stroke hgi-lock-sync-01 text-base text-light-primary-text group-hover/item:text-primary"></i>
+                        </span>
+                        Login
+                      </a>
+                    </li>
+                    <li class="px-4 group/item">
+                      <a href="/register"
+                        class="register-page-btn flex items-center py-2 gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                        <span
+                          class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[rgba(0,171,85,0.08)] inline-flex items-center justify-center rounded-full">
+                          <i
+                            class="hgi hgi-stroke hgi-id text-base text-light-primary-text group-hover/item:text-primary"></i>
+                        </span>
+                        Register
+                      </a>
+                    </li>
+                    <% } else { %>
+                      <li class="px-4 group/item">
+                        <a href="/user-account"
+                          class="flex items-center py-2 gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                          <span
+                            class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[rgba(0,171,85,0.08)] inline-flex items-center justify-center rounded-full">
+                            <i
+                              class="hgi hgi-stroke hgi-user text-base text-light-primary-text group-hover/item:text-primary"></i>
+                          </span>
+                          My Account
+                        </a>
+                      </li>
+                      <li class="px-4 group/item">
+                        <a href="javascript:void(0)"
+                          class="logout-btn flex items-center py-2 gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                          <span
+                            class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[rgba(0,171,85,0.08)] inline-flex items-center justify-center rounded-full">
+                            <i
+                              class="hgi hgi-stroke hgi-logout-01 text-base text-light-primary-text group-hover/item:text-primary"></i>
+                          </span>
+                          Logout
+                        </a>
+                      </li>
+                      <% } %>
+                </ul>
+              </li>
+              <li class="flex items-center pr-6 mr-6 border-r border-gray-300">
+                <a href="/wishlist" class="flex items-center gap-x-4 cursor-pointer">
+                  <span class="inline-flex items-center justify-center bg-warning size-12 rounded-full">
+                    <i class="hgi hgi-stroke hgi-favourite text-2xl text-light-primary-text"></i>
+                  </span>
+                  <span class="flex flex-col items-start text-sm leading-[22px] text-light-secondary-text">
+                    Wishlist
+                    <span class="text-base leading-6 text-light-primary-text">My Saved</span>
+                  </span>
+                </a>
+              </li>
+              <li class="flex items-center">
+                <button class="flex items-center gap-x-4 cursor-pointer cart-sidebar-btn">
+                  <span class="inline-flex items-center justify-center bg-warning w-12 h-12 rounded-full"><i
+                      class="hgi hgi-stroke hgi-shopping-cart-02 text-2xl text-light-primary-text"></i>
+                  </span>
+                  <span class="flex flex-col items-start text-sm leading-[22px] text-light-secondary-text">
+                    Cart
+                    <span class="text-base leading-6 text-light-primary-text"><span id="cart-count">0</span>-
+                      Items</span>
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- FOr Desktop Screen End -->
+    </div>
+  </div>
+  <!-- header-middle End -->
+
+  <!-- Mobile Menu Start -->
+  <div class="border border-gray-300 xl:border-0 sticky-header">
+    <div class="pb-4 pt-3 block xl:hidden">
+      <div class="container">
+        <div class="flex justify-between items-center">
+          <div>
+            <button class="btn btn-default outline shadow-none size-12 rounded-[50px]" id="sidebar-menu-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12L10 12" stroke="#212529" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M20 5L4 5" stroke="#212529" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+                <path d="M20 19L4 19" stroke="#212529" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <a href='/'>
+              <img src="/assets/images/logo.png" alt="Logo" class="w-[120px] md:w-[150px]" />
+            </a>
+          </div>
+          <div class="xl:hidden flex items-center gap-x-4">
+            <a href="/wishlist"
+              class="btn bg-warning-light size-12 rounded-[50px] inline-flex items-center justify-center">
+              <i class="hgi hgi-stroke hgi-favourite text-light-primary-text text-2xl leading-6"></i>
+            </a>
+            <button class="btn bg-warning-light size-12 rounded-[50px] cart-sidebar-btn">
+              <i class="hgi hgi-stroke hgi-shopping-cart-01 text-light-primary-text text-2xl leading-6"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pb-4 block xl:hidden">
+      <div class="container">
+        <div>
+          <div class="relative search-input-container">
+            <div class="input-group w-full px-4 py-3 rounded-[100px]">
+              <div class="input-group-addon inline-flex justify-center items-center" data-align="inline-end">
+                <span class="inline-flex justify-center items-center">
+                  <i class="hgi hgi-stroke hgi-search-01 text-2xl leading-6 text-gray-500"></i>
+                </span>
+              </div>
+              <input type="text" id="mobile-search"
+                class="peer form-control header-search-input placeholder-transparent focus:placeholder-transparent"
+                placeholder="Search for the Items" />
+              <label for="mobile-search"
+                class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                Search for the Items
+              </label>
+            </div>
+            <div data-state="close"
+              class="search-result-container p-4 absolute w-full top-[calc(100%+10px)] left-0 border border-gray-300 shadow-light-z-12 bg-white rounded-3xl z-9 transform data-[state=close]:translate-y-4 data-[state=close]:opacity-0 data-[state=close]:invisible transition-all duration-300 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-y-0 data-[state=open]:opacity-100 data-[state=open]:visible">
+              <div class="flex justify-between items-center mb-4">
+                <p class="font-semibold text-light-primary-text">
+                  Recent Search
+                </p>
+                <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
+                  Reset History
+                </button>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 recent-search-list mb-4">
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Vitamin D Supplement
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Pain Relief Spray
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+                <button
+                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+                  Baby Thermometer
+                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="recommended-search-list-wrapper">
+                <p class="text-base font-semibold text-light-primary-text mb-4">
+                  Recommended
+                </p>
+                <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Immunity booster</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Hand Sanitizer 500ml</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/combat.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Heart health supplements</a>
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                      <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
+                    </div>
+                    <p
+                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                      <a href="index-4.html#">Protein powder for women</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile Menu End -->
+
+  <!-- header-bottom End -->
+  <div class="border border-gray-300 hidden xl:flex header-bottom sticky-header border-r-0 border-l-0">
+    <div class="container">
+      <div class="hidden relative items-center justify-between xl:flex">
+        <div class="relative">
+          <button class="btn btn-primary btn-large rounded-lg" id="dropdownButton" data-state="close">
+            <span class="inline-flex items-center">
+              <i class="hgi hgi-stroke hgi-grid-view text-base text-white"></i>
+            </span>
+            Explore All Categories
+            <span class="inline-flex items-center" id="dropdownIcon"><i
+                class="hgi hgi-stroke hgi-arrow-down-01 text-xl text-white"></i>
+            </span>
+          </button>
+          <div>
+            <ul id="dropdownMenu"
+              class="bg-white hide shadow-dark-z-24 rounded-b-2xl px-4 py-4 z-40 transform origin-top transition-all duration-300 ease-in-out absolute left-0 top-full w-full divide-y divide-[rgba(145,158,171,0.24)]">
+              <% if (locals.headerCategories && headerCategories.length> 0) { %>
+                <% headerCategories.forEach(category=> { %>
+                  <li class="py-[9px] group relative">
+                    <a href="/shop?category=<%= category.slug %>"
+                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover:text-primary">
+                      <span
+                        class="w-8 h-8 bg-primary-lighter inline-flex items-center justify-center rounded-full overflow-hidden">
+                        <% if (category.image) { %>
+                          <img src="/uploads/<%= category.image %>" alt="<%= category.name %>"
+                            class="w-full h-full object-cover">
+                          <% } else { %>
+                            <i class="hgi hgi-stroke hgi-folder-01 text-base text-primary"></i>
+                            <% } %>
+                      </span>
+                      <%= category.name %>
+                        <% if (category.subCategories && category.subCategories.length> 0) { %>
+                          <span class="absolute right-0 top-1/2 -translate-y-1/2">
+                            <i class="hgi hgi-stroke hgi-arrow-right-01 text-lg text-light-primary-text"></i>
+                          </span>
+                          <% } %>
+                    </a>
+
+                    <% if (category.subCategories && category.subCategories.length> 0) { %>
+                      <ul
+                        class="absolute left-full top-0 z-60 w-[250px] max-w-[250px] bg-white rounded-2xl divide-y divide-gray-300 shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                        <% category.subCategories.forEach(subParams=> { %>
+                          <li class="py-[9px] px-4 group/item">
+                            <a href="/shop?category=<%= subParams.slug %>"
+                              class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary">
+                              <%= subParams.name %>
+                            </a>
+                          </li>
+                          <% }) %>
+                      </ul>
+                      <% } %>
+                  </li>
+                  <% }) %>
+                    <% } else { %>
+                      <li class="py-2 text-center text-sm text-gray-500">No categories found</li>
+                      <% } %>
+            </ul>
+          </div>
+        </div>
+        <nav class="main-menu">
+          <ul>
+            <% (siteConfig.header.navbar_links || []).forEach(link=> { %>
+              <li class="<%= link.sub_links && link.sub_links.length > 0 ? 'group relative' : '' %>">
+                <a href="<%= link.url %>" class="flex items-center gap-x-1">
+                  <%= link.label %>
+                    <% if (link.sub_links && link.sub_links.length> 0) { %>
+                      <i
+                        class="hgi hgi-stroke hgi-arrow-down-01 text-sm transition-transform duration-300 group-hover:rotate-180"></i>
+                      <% } %>
+                </a>
+                <% if (link.sub_links && link.sub_links.length> 0) { %>
+                  <ul
+                    class="absolute left-0 top-full pt-4 z-50 w-[200px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
+                    <% link.sub_links.forEach(sub=> { %>
+                      <li class="border-b last:border-b-0 border-gray-100">
+                        <a href="<%= sub.url %>"
+                          class="block px-4 py-2.5 text-sm text-light-primary-text hover:bg-primary-lighter hover:text-primary transition-colors">
+                          <%= sub.label %>
+                        </a>
+                      </li>
+                      <% }) %>
+                  </ul>
+                  <% } %>
+              </li>
+              <% }) %>
+          </ul>
+        </nav>
+        <div>
+          <p class="xl:flex lg:items-center gap-x-4 hidden">
+            <span
+              class="size-12 inline-flex items-center justify-center rounded-full transition-colors duration-300 bg-[rgba(145,158,171,0.08)]">
+              <i class="hgi hgi-stroke hgi-customer-support text-2xl text-light-primary-text"></i>
+            </span>
+            <span class="flex flex-col text-sm leading-[22px]">
+              24/7 Support
+              <span class="text-base leading-6 text-light-primary-text">
+                <%= siteConfig.header.navbar_support_phone || '888-777-999' %>
+              </span>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- header-bottom End -->
+</header>
+<!-- ========== HEADER Section End ========== -->

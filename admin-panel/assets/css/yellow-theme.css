@@ -1,0 +1,65 @@
+/* Yellow Theme Overrides */
+:root {
+  --bs-primary: #FFC107;
+  --bs-primary-rgb: 255, 193, 7;
+}
+
+.text-primary {
+  color: #FFC107 !important;
+}
+
+.bg-primary {
+  background-color: #FFC107 !important;
+}
+
+.btn-primary {
+  background-color: #FFC107 !important;
+  border-color: #FFC107 !important;
+  color: #000 !important; /* Dark text for better contrast on yellow */
+}
+
+.btn-primary:hover {
+  background-color: #FFA000 !important;
+  border-color: #FFA000 !important;
+}
+
+.bg-label-primary {
+  background-color: rgba(255, 193, 7, 0.16) !important;
+  color: #FFC107 !important;
+}
+
+.bg-menu-theme .menu-item.active > .menu-link:not(.menu-toggle) {
+  background-color: rgba(255, 193, 7, 0.16) !important;
+  color: #FFC107 !important;
+}
+
+.bg-menu-theme .menu-item.active > .menu-link:not(.menu-toggle):before {
+  background-color: #FFC107 !important;
+}
+
+.bg-menu-theme .menu-text {
+  color: #FFC107 !important;
+}
+
+.app-brand .layout-menu-toggle i {
+  color: #FFC107 !important;
+}
+
+/* Tab & Navigation Overrides */
+.nav-pills .nav-link.active,
+.nav-pills .nav-link.active:hover,
+.nav-pills .nav-link.active:focus {
+  background-color: #FFC107 !important;
+  color: #000 !important;
+}
+
+/* Form Overrides */
+.form-check-input:checked {
+  background-color: #FFC107 !important;
+  border-color: #FFC107 !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #FFC107 !important;
+}

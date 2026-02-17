@@ -1,0 +1,44 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "ticket_id": "TKT-1001",
+            "subject": "System crash during login",
+            "customer": "Rahul Mehra",
+            "priority": "High",
+            "status": "Open",
+            "created_at": "10 Feb 2024",
+            "assignee": "Support Team"
+        },
+        {
+            "id": 2,
+            "ticket_id": "TKT-1002",
+            "subject": "Payment failed for Order #123",
+            "customer": "Sita Devi",
+            "priority": "Medium",
+            "status": "In Progress",
+            "created_at": "11 Feb 2024",
+            "assignee": "Billing Specialist"
+        },
+        {
+            "id": 3,
+            "ticket_id": "TKT-1003",
+            "subject": "Wrong item delivered",
+            "customer": "Amit Singh",
+            "priority": "Low",
+            "status": "Closed",
+            "created_at": "12 Feb 2024",
+            "assignee": "Warehouse Support"
+        },
+        {
+            "id": 4,
+            "ticket_id": "TKT-1004",
+            "subject": "Discount code not working",
+            "customer": "Priya Kapoor",
+            "priority": "Medium",
+            "status": "Open",
+            "created_at": "12 Feb 2024",
+            "assignee": "Support Team"
+        }
+    ]
+}

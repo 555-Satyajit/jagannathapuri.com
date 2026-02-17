@@ -1,0 +1,459 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id            Int        @id @default(autoincrement())
+  name          String     @unique
+  created_at    DateTime   @default(now())
+  description   String?
+  image         String?
+  parentId      Int?
+  slug          String     @unique
+  status        String     @default("Scheduled")
+  updated_at    DateTime   @updatedAt
+  parent        Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  subCategories Category[] @relation("SubCategories")
+  homeTabs      HomeTab[]
+  products      Product[]
+}
+
+model Product {
+  id              Int            @id @default(autoincrement())
+  product_name    String
+  product_brand   String
+  sku             String         @unique
+  price           String
+  quantity        Int            @default(0)
+  category_id     Int
+  status          Int            @default(1)
+  is_cod          Boolean        @default(true)
+  images          String[]
+  product_type    String
+  specifications  Json           @default("[]")
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+  description     String?
+  slug            String         @unique
+  is_featured     Boolean        @default(false)
+  show_in_explore Boolean        @default(false)
+  price_amount    Float          @default(0)
+  on_sale         Boolean        @default(false)
+  regular_price   Float?
+  sale_price      Float?
+  costPrice       Float          @default(0)
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+  category        Category       @relation(fields: [category_id], references: [id])
+  reviews         Review[]
+  wishlistedBy    WishlistItem[]
+  lowStockThreshold Int @default(10)
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  isArchived Boolean @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Attribute {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model LibraryCategory {
+  id           Int              @id @default(autoincrement())
+  name         String           @unique
+  slug         String           @unique
+  description  String?
+  image        String?
+  status       String           @default("Active")
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+  show_on_home Boolean          @default(false)
+  contents     LibraryContent[]
+}
+
+model LibraryTag {
+  id         Int              @id @default(autoincrement())
+  name       String           @unique
+  slug       String           @unique
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  contents   LibraryContent[] @relation("LibraryContentTags")
+}
+
+model LibraryContent {
+  id         Int             @id @default(autoincrement())
+  title      String
+  slug       String          @unique
+  subtitle   String?
+  summary    String?
+  content    String
+  image      String?
+  author     String          @default("Jay Subhdra Team")
+  categoryId Int
+  status     String          @default("Active")
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
+  category   LibraryCategory @relation(fields: [categoryId], references: [id])
+  tags       LibraryTag[]    @relation("LibraryContentTags")
+}
+
+model Coupon {
+  id              Int           @id @default(autoincrement())
+  code            String        @unique
+  discount_type   String
+  discount_amount Float
+  min_spend       Float?
+  usage_limit     Int?
+  used_count      Int           @default(0)
+  expiry_date     DateTime?
+  status          String        @default("Active")
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  per_user_limit  Int?
+  usages          CouponUsage[]
+}
+
+model CouponUsage {
+  id          Int      @id @default(autoincrement())
+  coupon_id   Int
+  customer_id Int
+  usage_count Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  coupon      Coupon   @relation(fields: [coupon_id], references: [id])
+  customer    Customer @relation(fields: [customer_id], references: [id])
+
+  @@unique([coupon_id, customer_id])
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  staff       Staff[]
+  permissions Permission[] @relation("PermissionToRole")
+}
+
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  roles Role[] @relation("PermissionToRole")
+}
+
+model Staff {
+  id              Int             @id @default(autoincrement())
+  full_name       String
+  email           String          @unique
+  username        String          @unique
+  password        String
+  contact         String?
+  avatar          String?
+  status          String          @default("Active")
+  joining_date    String?
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  roleId          Int?
+  role            Role?           @relation(fields: [roleId], references: [id])
+  assignedTickets Ticket[]
+  ticketMessages  TicketMessage[]
+}
+
+model Customer {
+  id             Int             @id @default(autoincrement())
+  fullName       String
+  email          String          @unique
+  phone          String?
+  avatar         String?
+  status         String          @default("Active")
+  totalSpent     Float           @default(0)
+  orderCount     Int             @default(0)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  password       String?
+  supabase_id    String?         @unique
+  addresses      Address[]
+  cart           Cart?
+  couponUsages   CouponUsage[]
+  orders         Order[]
+  reviews        Review[]
+  tickets        Ticket[]
+  ticketMessages TicketMessage[]
+  transactions   Transaction[]
+  wishlistItems  WishlistItem[]
+}
+
+model Cart {
+  id         Int        @id @default(autoincrement())
+  customerId Int        @unique
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  items      CartItem[]
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int      @default(5)
+  comment    String?
+  customerId Int
+  productId  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  images     String[] @default([])
+  customer   Customer @relation(fields: [customerId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([customerId])
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  productId  Int
+  created_at DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@unique([customerId, productId])
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  customer_id  Int
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  zipCode      String
+  country      String
+  isDefault    Boolean  @default(false)
+  type         String   @default("Shipping")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  phone        String?
+  customer     Customer @relation(fields: [customer_id], references: [id])
+}
+
+model Order {
+  id                Int           @id @default(autoincrement())
+  customer_id       Int
+  created_at        DateTime      @default(now())
+  date              DateTime      @default(now())
+  methodNumber      String?
+  orderNumber       String        @unique
+  paymentMethod     String?
+  paymentStatus     Int           @default(2)
+  status            Int           @default(1)
+  updated_at        DateTime      @updatedAt
+  billingAddressId  Int?
+  shippingAddressId Int?
+  shippingFee       Float         @default(0)
+  subtotal          Float         @default(0)
+  tax               Float         @default(0)
+  totalAmount       Float         @default(0)
+  customer          Customer      @relation(fields: [customer_id], references: [id])
+  items             OrderItem[]
+  transactions      Transaction[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  transactionId String   @unique
+  customer_id   Int
+  order_id      Int?
+  amount        Float
+  date          DateTime @default(now())
+  paymentMethod String
+  paymentLast4  String?
+  status        String   @default("Pending")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  customer      Customer @relation(fields: [customer_id], references: [id])
+  order         Order?   @relation(fields: [order_id], references: [id])
+}
+
+model Ticket {
+  id          Int             @id @default(autoincrement())
+  ticketId    String          @unique
+  subject     String
+  description String?
+  status      String          @default("Open")
+  priority    String          @default("Medium")
+  customer_id Int
+  assignee_id Int?
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  assignee    Staff?          @relation(fields: [assignee_id], references: [id])
+  customer    Customer        @relation(fields: [customer_id], references: [id])
+  messages    TicketMessage[]
+}
+
+model TicketMessage {
+  id                Int          @id @default(autoincrement())
+  ticket_id         Int
+  authorStaff_id    Int?
+  authorCustomer_id Int?
+  content           String
+  created_at        DateTime     @default(now())
+  attachments       Attachment[]
+  authorCustomer    Customer?    @relation(fields: [authorCustomer_id], references: [id])
+  authorStaff       Staff?       @relation(fields: [authorStaff_id], references: [id])
+  ticket            Ticket       @relation(fields: [ticket_id], references: [id])
+}
+
+model Attachment {
+  id         Int           @id @default(autoincrement())
+  message_id Int
+  file_name  String
+  file_path  String
+  file_type  String
+  created_at DateTime      @default(now())
+  message    TicketMessage @relation(fields: [message_id], references: [id])
+}
+
+model Service {
+  id           Int      @id @default(autoincrement())
+  title        String
+  slug         String   @unique
+  subtitle     String?
+  description  String?
+  icon         String?
+  image        String?
+  phone        String?
+  rating       Float    @default(5.0)
+  reviewsCount Int      @default(0)
+  link         String?  @default("/service")
+  status       String   @default("Active")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model DailyRitual {
+  id         Int      @id @default(autoincrement())
+  name       String
+  time       String
+  icon       String   @default("fas fa-sun")
+  status     String   @default("Active")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model DarshanTiming {
+  id         Int      @id @default(autoincrement())
+  name       String
+  timeRange  String   @default("07:00 AM - 01:00 PM")
+  type       String   @default("General")
+  status     String   @default("Active")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model TempleFact {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  icon        String   @default("fas fa-info-circle")
+  colorClass  String   @default("primary")
+  status      String   @default("Active")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Panchang {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @unique
+  data       Json
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Festival {
+  id          Int      @id @default(autoincrement())
+  name        String
+  date        DateTime
+  description String?
+  type        String?
+  status      String   @default("Active")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model SiteConfig {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique
+  value      Json
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model HeroSection {
+  id          Int      @id @default(autoincrement())
+  header      String?
+  title       String?
+  description String?
+  buttonText  String?
+  buttonLink  String?
+  image       String?
+  order       Int      @default(0)
+  status      String   @default("Active")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model PromoBanner {
+  id         Int      @id @default(autoincrement())
+  icon       String?
+  title      String?
+  subtitle   String?
+  order      Int      @default(0)
+  status     String   @default("Active")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model HomeTab {
+  id         Int      @id @default(autoincrement())
+  title      String
+  categoryId Int
+  order      Int      @default(0)
+  status     String   @default("Active")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id])
+}

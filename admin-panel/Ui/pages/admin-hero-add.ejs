@@ -1,0 +1,108 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Store Configuration / </span> Manage Hero Section
+    </h4>
+
+    <form id="heroForm" action="/admin/store/home/hero/save" method="POST" enctype="multipart/form-data">
+        <% if (hero) { %>
+            <input type="hidden" name="id" value="<%= hero.id %>">
+            <input type="hidden" name="existing_image" value="<%= hero.image %>">
+            <% } %>
+
+                <div class="row">
+                    <!-- Media and Config Section -->
+                    <div class="col-12 col-xl-10 mb-4">
+                        <div class="card">
+                            <h5 class="card-header">Media & Settings</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label for="heroImage" class="form-label" style="font-weight: 600;">Slide
+                                            Image</label>
+                                        <input type="file" class="form-control" name="image" id="heroImage">
+                                        <% if (hero && hero.image) { %>
+                                            <div class="mt-2 text-center border rounded p-2">
+                                                <img src="<%= (hero.image.startsWith('image-') ? '/uploads/' : '/assets/images/hero/') + hero.image %>"
+                                                    alt="Current Image" class="img-fluid rounded"
+                                                    style="max-height: 200px;">
+                                                <div class="mt-1 small text-muted">Current Slide Image</div>
+                                            </div>
+                                            <% } %>
+                                                <small class="text-muted">Recommended size: 1920x800px</small>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-4">
+                                            <label for="header" class="form-label" style="font-weight: 600;">Header /
+                                                Sub-title</label>
+                                            <input type="text" class="form-control" id="header" name="header"
+                                                value="<%= hero ? hero.header : '' %>"
+                                                placeholder="e.g. Adorn Your Walls with History">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="buttonText" class="form-label" style="font-weight: 600;">Button
+                                                Text</label>
+                                            <input type="text" class="form-control" id="buttonText" name="buttonText"
+                                                value="<%= hero ? hero.buttonText : '' %>" placeholder="Shop Now">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="buttonLink" class="form-label" style="font-weight: 600;">Button
+                                                Link</label>
+                                            <input type="text" class="form-control" id="buttonLink" name="buttonLink"
+                                                value="<%= hero ? hero.buttonLink : '' %>" placeholder="/shop">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Title Section (Quill) -->
+                    <div class="col-12 col-xl-10 mb-4">
+                        <div class="card">
+                            <h5 class="card-header">Main Title</h5>
+                            <div class="card-body pb-5"> <!-- Added pb-5 -->
+                                <div class="mb-0">
+                                    <label for="title" class="form-label" style="font-weight: 600;">Main Title</label>
+                                    <textarea class="form-control" id="title" name="title" rows="3"
+                                        placeholder="e.g. Experience Divine Grace"><%= hero ? hero.title : '' %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Section (Isolated) -->
+                    <div class="col-12 col-xl-10 mb-4">
+                        <div class="card border border-primary shadow-none">
+                            <h5 class="card-header bg-label-primary">Slide Description</h5>
+                            <div class="card-body pt-3">
+                                <div class="mb-0">
+                                    <label for="description" class="form-label" style="font-weight: 600;">Description
+                                        Summary</label>
+                                    <textarea class="form-control" id="description" name="description" rows="5"
+                                        placeholder="Write a brief description..."><%= hero ? hero.description : '' %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12 col-xl-10">
+                        <div class="card">
+                            <div class="card-body">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                                    <i class="bx bx-save me-1"></i> Save Hero Slide
+                                </button>
+                                <a href="/admin/store/home/hero/list" class="btn btn-label-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // No rich text editors needed for Hero section anymore
+    });
+</script>

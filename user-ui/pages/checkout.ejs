@@ -1,0 +1,885 @@
+<!-- ========== Breadcrumb Section Start ========== -->
+<div class="container py-12">
+  <div class="breadcrumb">
+    <ul>
+      <li>
+        <a href='/'>
+          <span class="inline-flex items-center justify-center">
+            <i class="hgi hgi-stroke hgi-home-01 text-2xl leading-6"></i></span>Home</a>
+      </li>
+      <li class="text-light-disabled-text">&#8226;</li>
+      <li><span class="text-sm leading-[22px]">Checkout</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== Breadcrumb Section End ========== -->
+<!-- ========== PAYMENT Section Start ========== -->
+<div class="pb-[70px]">
+  <div class="container">
+    <form id="checkout-form" action="/checkout" method="POST">
+      <div class="grid grid-cols-12 gap-x-6 gap-y-6">
+        <!-- Account and payment part -->
+        <div class="xl:col-span-8 col-span-12">
+          <div class="flex flex-col gap-y-6">
+            <!-- Account -->
+            <% if (!user) { %>
+              <div class="border border-gray-300 rounded-2xl">
+                <div class="py-4 px-6 bg-gray-200 rounded-t-2xl">
+                  <h5>Already have an account ?</h5>
+                </div>
+                <!-- create account-form -->
+                <div class="md:px-6 px-3 py-6">
+                  <div class="flex items-center md:flex-row flex-col gap-x-4 gap-y-4">
+                    <div class="relative w-full">
+                      <input type="text" id="user_name"
+                        class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                        placeholder="User Name" />
+
+                      <label for="user_name"
+                        class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                        User Name
+                      </label>
+                    </div>
+                    <div class="relative w-full">
+                      <input type="password" id="password"
+                        class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                        placeholder="Password" />
+
+                      <label for="password"
+                        class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                        Password
+                      </label>
+                    </div>
+                  </div>
+                  <div class="flex items-center md:justify-between justify-start mt-6 flex-col md:flex-row gap-y-4">
+                    <p class="inline-flex items-center gap-x-2.5 font-semibold text-base leading-[26px]">
+                      Don't have an account?<a href="#" class="text-primary">Create Account</a>
+                    </p>
+                    <button class="btn btn-primary btn-large md:px-10 w-full md:w-auto py-[11px] rounded-[100px]">
+                      Login
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <% } %>
+                <!-- Shipping Address -->
+                <div class="border border-gray-300 rounded-2xl">
+                  <div class="py-4 px-6 bg-gray-200 rounded-t-2xl flex justify-between items-center">
+                    <h5>Shipping Address</h5>
+                    <% if (user && user.addresses && user.addresses.length> 0) { %>
+                      <div class="relative w-1/2">
+                        <!-- Forced native style -->
+                        <select id="saved-address-select"
+                          class="form-control rounded-lg w-full px-3 py-2 border border-blue-500 bg-white"
+                          style="display: block !important; opacity: 1 !important; visibility: visible !important; position: relative !important; z-index: 9999 !important; height: auto !important;">
+                          <option value="">Select a saved address...</option>
+                          <% user.addresses.forEach((addr, index)=> { %>
+                            <option value="<%= index %>" data-address1="<%= addr.addressLine1 %>"
+                              data-city="<%= addr.city %>" data-state="<%= addr.state %>" data-zip="<%= addr.zipCode %>"
+                              data-country="<%= addr.country %>">
+                              <%= addr.type && addr.type !=='Shipping' ? addr.type : (addr.addressLine1 + ', ' +
+                                addr.city) %>
+                            </option>
+                            <% }) %>
+                              <option value="new">+ Add New Address</option>
+                        </select>
+                      </div>
+                      <!-- Safe JSON injection -->
+                      <% } %>
+                  </div>
+                  <div class="md:px-6 px-3 py-6">
+                    <!-- Data attributes for user info -->
+                    <div id="user-info-data"
+                      data-firstname="<%= user ? (user.fullName ? user.fullName.split(' ')[0] : '') : '' %>"
+                      data-lastname="<%= user ? (user.fullName ? (user.fullName.split(' ').length > 1 ? user.fullName.split(' ').slice(1).join(' ') : '') : '') : '' %>"
+                      data-email="<%= user ? user.email : '' %>" data-phone="<%= user ? user.phone : '' %>"></div>
+
+                    <div class="flex flex-col gap-y-6">
+                      <div class="grid xl:grid-cols-2 md:grid-cols-2 grid-cols-1 md:gap-x-4 gap-x-0 gap-y-6">
+                        <div class="xl:col-span-1 md:col-span-1 col-span-1">
+                          <div class="relative w-full">
+                            <input type="text" id="first_name" name="firstName"
+                              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                              placeholder="First Name" required />
+
+                            <label for="first_name"
+                              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                              First Name
+                            </label>
+                          </div>
+                        </div>
+                        <div class="xl:col-span-1 md:col-span-1 col-span-1">
+                          <div class="relative w-full">
+                            <input type="text" id="last_name" name="lastName"
+                              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                              placeholder="Last Name" required />
+
+                            <label for="last_name"
+                              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                              Last Name
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grid xl:grid-cols-2 md:grid-cols-2 grid-cols-1 md:gap-x-4 gap-x-0 gap-y-6">
+                        <div class="xl:col-span-1 md:col-span-1 col-span-1">
+                          <div class="relative w-full">
+                            <input type="tel" id="phone_number" name="phone"
+                              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                              placeholder="Phone Number" required />
+
+                            <label for="phone_number"
+                              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                              Phone Number
+                            </label>
+                          </div>
+                        </div>
+                        <div class="xl:col-span-1 md:col-span-1 col-span-1">
+                          <div class="relative w-full">
+                            <input type="email" id="email_address" name="email"
+                              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                              placeholder="Email Address (Optional)" required />
+
+                            <label for="email_address"
+                              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                              Email Address
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grid xl:grid-cols-12 lg:grid-cols-2 grid-cols-1 md:gap-x-4 gap-x-0 gap-y-6 w-full">
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-6 w-full col-span-6">
+                          <div class="md:col-span-6 col-span-12">
+                            <div class="relative w-full h-full">
+                              <select id="country_region" name="country" class="address-select label">
+                                <option value="1">United States</option>
+                                <option value="2">Canada</option>
+                                <option value="3">United Kingdom</option>
+                                <option value="4">Australia</option>
+                                <option value="5">New Zealand</option>
+                                <option value="6">South Africa</option>
+                                <option value="7">India</option>
+                                <option value="8">Pakistan</option>
+                                <option value="9">Bangladesh</option>
+                                <option value="10">Sri Lanka</option>
+                              </select>
+                              <label for="country_region" class="nice-select-label">Country / Region</label>
+                            </div>
+                          </div>
+                          <div class="md:col-span-6 col-span-12">
+                            <div class="relative w-full">
+                              <input type="text" id="city" name="city"
+                                class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                                placeholder="City" required />
+
+                              <label for="city"
+                                class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                City
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-6 w-full col-span-6">
+                          <div class="md:col-span-6 col-span-12">
+                            <div class="relative w-full">
+                              <input type="text" id="state" name="state"
+                                class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                                placeholder="State" required />
+
+                              <label for="state"
+                                class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                State
+                              </label>
+                            </div>
+                          </div>
+                          <div class="md:col-span-6 col-span-12">
+                            <div class="relative w-full">
+                              <input type="tel" id="zip_code" name="zipCode"
+                                class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                                placeholder="Zip Code" required />
+
+                              <label for="zip_code"
+                                class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                Zip Code
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="relative w-full">
+                        <textarea id="address_comment" name="addressLine1"
+                          class="peer form-control input-group medium rounded-[20px] ps-4 pe-6 resize-none placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                          rows="4" placeholder="Apartments, suit, unit, etc ( Optional)" required></textarea>
+
+                        <label for="address_comment"
+                          class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-6 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                          Apartments, suit, unit, etc ( Optional)
+                        </label>
+                      </div>
+                      <div class="pb-6 border-b border-b-gray-300">
+                        <p class="font-semibold text-light-disabled-text mb-2">
+                          Delivery Time
+                        </p>
+                        <!-- CheckBoxs -->
+                        <div class="flex flex-col lg:flex-row gap-y-4 gap-x-4">
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom checkbox -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="checkbox"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+
+                                <!-- checkbox tick icon -->
+                                <span
+                                  class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                  <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                </span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              08:00 AM - 11:00 AM
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom checkbox -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="checkbox"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+
+                                <!-- checkbox tick icon -->
+                                <span
+                                  class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                  <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                </span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              11:00 AM - 02:00 PM
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom checkbox -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="checkbox"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+
+                                <!-- checkbox tick icon -->
+                                <span
+                                  class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                  <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                </span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              02:00 PM - 04:00 PM
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom checkbox -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="checkbox"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+
+                                <!-- checkbox tick icon -->
+                                <span
+                                  class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                  <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                </span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              04:00 PM - 06:00 PM
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- shipment type -->
+
+                      <div class="pb-6 border-b border-b-gray-300">
+                        <p class="font-semibold text-light-disabled-text mb-2">
+                          Shipment Type
+                        </p>
+                        <!-- Radio -->
+                        <div class="flex flex-col md:flex-row gap-y-4 gap-x-4">
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input checked type="radio" name="shipping-method"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              Flat Rate Shipment
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="shipping-method"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              Free Shipment
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- Address type -->
+
+                      <div class="pb-6 border-b border-b-gray-300">
+                        <p class="font-semibold text-light-disabled-text mb-2">
+                          Address Type
+                        </p>
+                        <!-- Radio -->
+                        <div class="flex flex-col lg:flex-row gap-y-4 gap-x-4">
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input checked type="radio" name="address-type"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              Home Address
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="address-type"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              Office Address
+                            </span>
+                          </label>
+                          <label class="flex items-center cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="address-type"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text text-sm leading-[22px] font-normal">
+                              Others
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                      <!-- Button -->
+                    </div>
+                  </div>
+                </div>
+                <script>
+                  document.addEventListener('DOMContentLoaded', function () {
+                    const addressSelect = document.getElementById('saved-address-select');
+
+                    const formFields = {
+                      firstName: document.getElementById('first_name'),
+                      lastName: document.getElementById('last_name'),
+                      email: document.getElementById('email_address'),
+                      phone: document.getElementById('phone_number'),
+                      addressLine1: document.getElementById('address_comment'),
+                      city: document.getElementById('city'),
+                      state: document.getElementById('state'),
+                      zipCode: document.getElementById('zip_code'),
+                      country: document.getElementById('country_region')
+                    };
+
+                    // Function to populate fields from selected option
+                    const populateFromOption = (option) => {
+                      if (!option) return;
+
+                      const val = option.value;
+                      console.log('Selection changed:', val);
+
+                      if (val === 'new') {
+                        if (formFields.addressLine1) formFields.addressLine1.value = '';
+                        if (formFields.city) formFields.city.value = '';
+                        if (formFields.state) formFields.state.value = '';
+                        if (formFields.zipCode) formFields.zipCode.value = '';
+                      } else if (option.dataset.address1) {
+                        // It's a saved address, use data attributes
+                        console.log('Populating from data attributes:', option.dataset);
+                        if (formFields.addressLine1) formFields.addressLine1.value = option.dataset.address1 || '';
+                        if (formFields.city) formFields.city.value = option.dataset.city || '';
+                        if (formFields.state) formFields.state.value = option.dataset.state || '';
+                        if (formFields.zipCode) formFields.zipCode.value = option.dataset.zip || '';
+                      }
+                    };
+
+                    if (addressSelect) {
+                      // Cleanup plugins again just in case
+                      const cleanPlugins = () => {
+                        const niceSelects = document.querySelectorAll('.nice-select');
+                        niceSelects.forEach(el => {
+                          if (el.previousElementSibling === addressSelect || el.nextElementSibling === addressSelect) {
+                            el.style.display = 'none';
+                          }
+                        });
+                        if (typeof $ !== 'undefined' && $(addressSelect).niceSelect) {
+                          $(addressSelect).niceSelect('destroy');
+                        }
+                      };
+                      cleanPlugins();
+                      setTimeout(cleanPlugins, 500);
+
+                      // Listen for changes
+                      addressSelect.addEventListener('change', function () {
+                        const selectedOption = this.options[this.selectedIndex];
+                        populateFromOption(selectedOption);
+                      });
+
+                      // Auto-select first address if available and nothing selected
+                      if (addressSelect.options.length > 2) { // 0 is "Select...", last is "New", so > 2 means we have an address
+                        // Select the first real address (index 1)
+                        addressSelect.selectedIndex = 1;
+                        populateFromOption(addressSelect.options[1]);
+                      }
+                    }
+
+                    // Pre-fill user basic info
+                    const userInfo = document.getElementById('user-info-data');
+                    if (userInfo) {
+                      if (formFields.firstName && !formFields.firstName.value) formFields.firstName.value = userInfo.dataset.firstname || '';
+                      if (formFields.lastName && !formFields.lastName.value) formFields.lastName.value = userInfo.dataset.lastname || '';
+                      if (formFields.email && !formFields.email.value) formFields.email.value = userInfo.dataset.email || '';
+                      if (formFields.phone && !formFields.phone.value) formFields.phone.value = userInfo.dataset.phone || '';
+                    }
+                  });
+                </script>
+                <!-- Payment -->
+                <div class="border border-gray-300 rounded-2xl">
+                  <div class="py-4 px-6 bg-gray-200 rounded-t-2xl">
+                    <h5 class="text-light-primary-text">Payment</h5>
+                  </div>
+                  <!-- create account-form -->
+                  <div class="md:px-6 px-3 py-6">
+                    <div class="payment-methods flex flex-col gap-y-6">
+                      <div class="border border-gray-300 w-full payment-method px-3 py-4">
+                        <div>
+                          <label class="flex items-center gap-x-2 cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input checked type="radio" name="paymentMethod" value="Bank Transfer"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text">Bank Transfer</span>
+                          </label>
+                        </div>
+                        <div class="payment-content pt-4 pl-2">
+                          Make your payment directly into our bank account. Please
+                          use your Order ID as the payment reference. Your order
+                          will not be shipped until the funds have cleared in our
+                          account.
+                        </div>
+                      </div>
+                      <div class="border border-gray-300 w-full payment-method px-3 py-4">
+                        <div>
+                          <label class="flex items-center gap-x-2 cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="paymentMethod" value="Cash on Delivery"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text">
+                              Cash on Delivery
+                            </span>
+                          </label>
+                        </div>
+                        <div class="payment-content pt-4 pl-2">
+                          Pay with cash upon delivery.
+                        </div>
+                      </div>
+                      <div class="border border-gray-300 w-full payment-method px-3 py-4">
+                        <div>
+                          <label class="flex items-center gap-x-2 cursor-pointer">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="paymentMethod" value="Check Payment"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text">Check Payment</span>
+                          </label>
+                        </div>
+                        <div class="payment-content pt-4 pl-2">
+                          Please send a check to Store Name, Store Street, Store
+                          Town, Store State / County, Store Postcode.
+                        </div>
+                      </div>
+                      <div class="border border-gray-300 w-full payment-method px-3 py-4">
+                        <div class="flex items-center">
+                          <label class="flex items-center gap-x-2 cursor-pointer w-full">
+                            <!-- custom radio -->
+                            <span
+                              class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                              <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                <input type="radio" name="paymentMethod" value="Credit Card"
+                                  class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-primary border-gray-300 rounded-full bg-white transition-all" />
+
+                                <!-- radio inner dot -->
+                                <span
+                                  class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary opacity-0 scale-0 peer-checked:opacity-100 peer-checked:scale-100 transition-all"></span>
+                              </span>
+                            </span>
+
+                            <!-- label text -->
+                            <span class="text-light-primary-text">Credit Card</span>
+                          </label>
+                          <img src="/assets/images/visa-logo.png" alt="visa-logo" />
+                        </div>
+                        <div class="payment-content pt-4 pl-2">
+                          <div class="flex flex-col gap-y-6">
+                            <div>
+                              <div class="relative w-full">
+                                <input id="card_number" type="number"
+                                  class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Card Number" />
+                                <label for="card_number"
+                                  class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:bg-white peer-focus:bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                  Card Number
+                                </label>
+                              </div>
+                            </div>
+                            <div class="flex items-center flex-col md:flex-row gap-y-4 md:gap-x-4">
+                              <div class="relative w-full">
+                                <input id="expire_date" type="text"
+                                  class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                                  placeholder="Expiration Date (MM/YY)" />
+                                <label for="expire_date"
+                                  class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:bg-white peer-focus:bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                  Expiration Date (MM/YY)
+                                </label>
+                              </div>
+                              <div class="relative w-full">
+                                <input id="security_code" type="number"
+                                  class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Security Code" />
+                                <label for="security_code"
+                                  class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:bg-white peer-focus:bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                  Security Code
+                                </label>
+                              </div>
+                            </div>
+                            <div>
+                              <div class="relative w-full">
+                                <input id="card_on_name" type="text"
+                                  class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+                                  placeholder="Card on Name" />
+                                <label for="card_on_name"
+                                  class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:bg-white peer-focus:bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+                                  Card on Name
+                                </label>
+                              </div>
+                            </div>
+                            <div>
+                              <label class="inline-flex items-center cursor-pointer">
+                                <!-- custom checkbox -->
+                                <span
+                                  class="has-[input:checked]:hover:bg-[#00AB55]/8 flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                                  <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                    <input type="checkbox"
+                                      class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+
+                                    <!-- checkbox tick icon -->
+                                    <span
+                                      class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                      <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                    </span>
+                                  </span>
+                                </span>
+
+                                <!-- label text -->
+                                <span>Save Credit Details</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <!-- Cart items part -->
+        <div class="xl:col-span-4 col-span-12">
+          <div class="border border-gray-300 rounded-2xl md:px-6 md:py-6 px-3 py-4 flex flex-col gap-y-6 sticky top-5">
+            <!-- cart-items -->
+            <h5 class="text-light-primary-text">Cart Items</h5>
+            <div class="border border-gray-300 rounded-xl overflow-x-auto">
+              <table class="w-full cart-items-table">
+                <tbody class="space-y-6">
+                  <% if (cart && cart.length> 0) { %>
+                    <% cart.forEach(item=> { %>
+                      <tr>
+                        <td class="py-4 px-4 product-thumbnail">
+                          <div class="w-[60px] h-[60px] rounded-xl bg-[#F4F3F5] overflow-hidden">
+                            <img src="<%= item.image %>" alt="<%= item.name %>"
+                              class="w-full h-full object-cover rounded-xl" />
+                          </div>
+                        </td>
+                        <td class="py-4 md:pr-4 pr-2 align-bottom w-full">
+                          <div class="flex flex-col gap-y-2">
+                            <a class='text-light-primary-text font-semibold truncate hover:text-primary transition-colors duration-300 product-title'
+                              href='/product-details/<%= item.slug %>'>
+                              <%= item.name %>
+                            </a>
+                            <div class="flex items-center justify-between">
+                              <p
+                                class="text-sm leading-[22px] font-normal text-light-secondary-text cart-item-quantity">
+                                <%= item.quantity %> x ₹<%= item.price.toFixed(2) %>
+                              </p>
+                              <div class="flex items-center gap-x-1.5">
+                                <span class="text-primary font-semibold product-offer-price">₹<%= (item.price *
+                                    item.quantity).toFixed(2) %></span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <% }) %>
+                        <% } else { %>
+                          <tr>
+                            <td colspan="2" class="py-10 text-center text-light-disabled-text">Your cart is empty.</td>
+                          </tr>
+                          <% } %>
+                </tbody>
+                </tbody>
+              </table>
+            </div>
+            <!-- order-summary -->
+            <div class="bg-gray-100 md:px-6 px-4 py-6 rounded-2xl">
+              <div class="flex flex-col gap-y-6">
+                <h5>Order Summary</h5>
+                <!-- Coupon Section -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4">
+                  <h6 class="text-sm font-semibold mb-3">Do you have a coupon?</h6>
+                  <div class="flex gap-2">
+                    <input type="text" id="coupon-code"
+                      class="form-control flex-1 rounded-lg border-gray-300 text-sm px-3 py-2"
+                      placeholder="Enter coupon code"
+                      value="<%= locals.session && locals.session.coupon ? locals.session.coupon.code : '' %>"
+                      <%=locals.session && locals.session.coupon ? 'disabled' : '' %>
+                    >
+                    <button type="button" id="apply-coupon-btn" class="btn btn-sm btn-primary rounded-lg px-4">
+                      <%= locals.session && locals.session.coupon ? 'Remove' : 'Apply' %>
+                    </button>
+                  </div>
+                  <p id="coupon-message" class="text-xs mt-2 hidden"></p>
+                </div>
+
+                <!-- total -->
+                <div>
+                  <div class="flex flex-col gap-y-4 pb-4 border-b border-gray-300" id="order-summary-details">
+                    <p class="flex items-center justify-between">
+                      Sub-Total<span class="text-gray-900">₹<%= totals.subtotal.toFixed(2) %></span>
+                    </p>
+                    <p class="flex items-center justify-between">
+                      Shipping<span class="text-gray-900">₹<%= totals.shipping.toFixed(2) %></span>
+                    </p>
+                    <p class="flex items-center justify-between">
+                      Tax (Included)<span class="text-gray-900">₹<%= totals.tax.toFixed(2) %></span>
+                    </p>
+
+                    <% if (totals.discount> 0) { %>
+                      <p class="flex items-center justify-between text-green-600 font-medium coupon-row">
+                        Discount<span class="text-green-600">-₹<%= totals.discount.toFixed(2) %></span>
+                      </p>
+                      <% } %>
+                  </div>
+                  <h6 class="flex items-center justify-between text-light-primary-text pt-4">
+                    Total<span class="text-gray-900 total-amount">₹<%= totals.total.toFixed(2) %></span>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button type="submit" class='btn btn-primary py-3 rounded-[80px] w-full'>
+                Proceed to checkout
+              </button>
+            </div>
+
+            <script>
+              // Coupon Logic
+              const couponBtn = document.getElementById('apply-coupon-btn');
+              const couponInput = document.getElementById('coupon-code');
+              const couponMsg = document.getElementById('coupon-message');
+
+              if (couponBtn) {
+                couponBtn.addEventListener('click', async function () {
+                  const isRemove = this.innerText === 'Remove';
+                  const code = couponInput.value.trim();
+
+                  if (!isRemove && !code) {
+                    showMsg('Please enter a coupon code', 'text-red-500');
+                    return;
+                  }
+
+                  const endpoint = isRemove ? '/api/remove-coupon' : '/api/apply-coupon';
+
+                  try {
+                    couponBtn.disabled = true;
+                    couponBtn.innerHTML = '<i class="bx bx-loader-alt animate-spin"></i>';
+
+                    const res = await fetch(endpoint, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ code })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                      showMsg(data.message, 'text-green-500');
+                      if (isRemove) {
+                        location.reload();
+                      } else {
+                        location.reload();
+                      }
+                    } else {
+                      showMsg(data.message, 'text-red-500');
+                      couponBtn.disabled = false;
+                      couponBtn.innerText = isRemove ? 'Remove' : 'Apply';
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    showMsg('Something went wrong', 'text-red-500');
+                    couponBtn.disabled = false;
+                    couponBtn.innerText = isRemove ? 'Remove' : 'Apply';
+                  }
+                });
+              }
+
+              function showMsg(msg, colorClass) {
+                couponMsg.innerText = msg;
+                couponMsg.className = 'text-xs mt-2 block ' + colorClass;
+              }
+
+            </script>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ========== PAYMENT Section End ========== -->
+
+<!-- ========== Subscribe Section Start ========== -->
+<section
+  class="px-4 md:px-0 max-w-[932px] mx-auto text-center lg:pb-6 pb-[70px] lg:rounded-[164px] -mb-[100px] relative z-10 bg-white xl:before:absolute xl:before:bottom-0 xl:before:left-[-23px] xl:before:h-[100px] xl:before:w-[145px] xl:before:bg-[url('/assets/images/footer-left-shape.png')] xl:before:bg-no-repeat xl:before:z-11 xl:after:absolute xl:after:bottom-0 xl:after:right-[-23px] xl:after:h-[100px] xl:after:w-[145px] xl:after:bg-[url('/assets/images/footer-right-shape.png')] xl:after:bg-no-repeat xl:after:z-11">
+  <h3 class="mb-4 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+    Subscribe to our newsletter
+  </h3>
+  <p class="mb-6 text-dark-secondary-text wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+    Stay updated! Subscribe to our mailing list for news, updates, and
+    exclusive offers.
+  </p>
+  <div
+    class="input-group medium w-full md:max-w-[420px] mx-auto pl-4 py-1.5 pr-2.5 rounded-[100px] wow animate__animated animate__fadeInUp"
+    data-wow-delay=".2s">
+    <div class="input-group-addon inline-flex items-center" data-align="inline-start">
+      <i class="hgi hgi-stroke hgi-mail-02 text-2xl"></i>
+    </div>
+    <input type="text" class="peer form-control placeholder-transparent focus:placeholder-transparent"
+      placeholder="Enter your email" name="email" id="email" />
+    <label
+      class="absolute left-12 peer-focus:left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:left-[14px] bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1"
+      for="email">Enter your email</label>
+    <div class="input-group-addon" data-align="inline-end">
+      <button class="btn btn-primary btn-medium rounded-3xl">
+        Subscribe
+      </button>
+    </div>
+  </div>
+</section>
+<!-- ========== Subscribe Section End ========== -->
+
+<!-- ========== Footer Section Start ========== -->
+<footer

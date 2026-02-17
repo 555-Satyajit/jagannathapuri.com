@@ -1,0 +1,182 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold py-3 mb-0"><span class="text-muted fw-light">Panchang /</span>
+            <%= panchang ? 'Edit' : 'Add' %> Entry
+        </h4>
+        <a href="/admin/panchang" class="btn btn-label-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Back to List
+        </a>
+    </div>
+
+    <form id="panchangForm" action="/admin/panchang/save" method="POST">
+        <input type="hidden" name="id" value="<%= panchang ? panchang.id : '' %>">
+        <input type="hidden" name="sections_json" id="sections_json">
+
+        <div class="row">
+            <!-- Date Picker -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <label class="form-label" for="panchangDate">Select Date</label>
+                        <input type="text" id="panchangDate" name="date" class="form-control flatpickr"
+                            value="<%= panchang ? new Date(panchang.date).toISOString().split('T')[0] : '' %>"
+                            required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Sections Manager -->
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Panchang Sections</h5>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addSection()">
+                            <i class="bx bx-plus me-1"></i> Add Section
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="sections-container" class="accordion" id="panchangAccordion">
+                            <!-- Sections will be injected here -->
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary w-100 py-2">Save Panchang Entry</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Section Template -->
+<template id="section-template">
+    <div class="accordion-item mb-3 border rounded shadow-sm section-block">
+        <h2 class="accordion-header d-flex align-items-center p-2 bg-light">
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent fw-bold section-title-input"
+                placeholder="Section Title (e.g. Timings)">
+            <button type="button" class="btn btn-sm btn-icon text-danger ms-2" onclick="removeSection(this)">
+                <i class="bx bx-trash"></i>
+            </button>
+            <button class="accordion-button collapsed ms-auto border-0 bg-transparent p-0 w-auto" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseSection">
+            </button>
+        </h2>
+        <div id="collapseSection" class="accordion-collapse collapse show">
+            <div class="accordion-body p-3">
+                <div class="fields-container">
+                    <!-- Fields will be injected here -->
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addField(this)">
+                    <i class="bx bx-plus me-1"></i> Add Field
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Field Template -->
+<template id="field-template">
+    <div class="row g-2 mb-2 field-row">
+        <div class="col-5">
+            <input type="text" class="form-control form-control-sm field-label" placeholder="Label (e.g. Sunrise)">
+        </div>
+        <div class="col-6">
+            <input type="text" class="form-control form-control-sm field-value" placeholder="Value (e.g. 06:38 AM)">
+        </div>
+        <div class="col-1 text-end">
+            <button type="button" class="btn btn-sm btn-icon text-danger" onclick="removeField(this)">
+                <i class="bx bx-xs bx-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
+<script id="panchang-data" type="application/json">
+        <%- panchang && panchang.data ? JSON.stringify(panchang.data) : 'null' %>
+    </script>
+
+<script>
+    let sectionCounter = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const flatpickrDate = document.querySelector('.flatpickr');
+        if (flatpickrDate) {
+            flatpickrDate.flatpickr({ dateFormat: 'Y-m-d' });
+        }
+
+        // Initialize with existing data or defaults
+        const dataElement = document.getElementById('panchang-data');
+        const existingData = dataElement ? JSON.parse(dataElement.textContent) : null;
+        if (existingData && existingData.sections) {
+            existingData.sections.forEach(s => {
+                const sectionEl = addSection(s.title);
+                if (s.fields) {
+                    s.fields.forEach(f => addField(sectionEl.querySelector('.btn-outline-primary'), f.label, f.value));
+                }
+            });
+        } else if (!existingData) {
+            // Default sections for a fresh entry
+            const defaultSections = [
+                { title: 'Sun & Moon', fields: [{ label: 'Sunrise', value: '' }, { label: 'Sunset', value: '' }, { label: 'Moonrise', value: '' }, { label: 'Moonset', value: '' }] },
+                { title: 'Panchang Details', fields: [{ label: 'Tithi', value: '' }, { label: 'Nakshatra', value: '' }, { label: 'Yoga', value: '' }, { label: 'Karana', value: '' }] },
+                { title: 'Calendar', fields: [{ label: 'Vikram Samvat', value: '' }, { label: 'Shaka Samvat', value: '' }, { label: 'Month Amanta', value: '' }, { label: 'Month Purnimanta', value: '' }] }
+            ];
+            defaultSections.forEach(s => {
+                const sectionEl = addSection(s.title);
+                s.fields.forEach(f => addField(sectionEl.querySelector('.btn-outline-primary'), f.label, f.value));
+            });
+        }
+
+        document.getElementById('panchangForm').addEventListener('submit', function (e) {
+            const sections = [];
+            document.querySelectorAll('.section-block').forEach(sectionBlock => {
+                const title = sectionBlock.querySelector('.section-title-input').value;
+                const fields = [];
+                sectionBlock.querySelectorAll('.field-row').forEach(fieldRow => {
+                    const label = fieldRow.querySelector('.field-label').value;
+                    const value = fieldRow.querySelector('.field-value').value;
+                    if (label) fields.push({ label, value });
+                });
+                if (title) sections.push({ title, fields });
+            });
+            document.getElementById('sections_json').value = JSON.stringify({ sections });
+        });
+    });
+
+    function addSection(title = '') {
+        sectionCounter++;
+        const container = document.getElementById('sections-container');
+        const template = document.getElementById('section-template');
+        const clone = template.content.cloneNode(true);
+
+        const sectionBlock = clone.querySelector('.section-block');
+        const collapseDiv = clone.querySelector('.accordion-collapse');
+        const collapseBtn = clone.querySelector('.accordion-button');
+        const titleInput = clone.querySelector('.section-title-input');
+
+        collapseDiv.id = 'section-' + sectionCounter;
+        collapseBtn.setAttribute('data-bs-target', '#section-' + sectionCounter);
+        titleInput.value = title;
+
+        container.appendChild(clone);
+        return container.lastElementChild;
+    }
+
+    function removeSection(btn) {
+        btn.closest('.section-block').remove();
+    }
+
+    function addField(btn, label = '', value = '') {
+        const fieldsContainer = btn.closest('.accordion-body').querySelector('.fields-container');
+        const template = document.getElementById('field-template');
+        const clone = template.content.cloneNode(true);
+
+        clone.querySelector('.field-label').value = label;
+        clone.querySelector('.field-value').value = value;
+
+        fieldsContainer.appendChild(clone);
+    }
+
+    function removeField(btn) {
+        btn.closest('.field-row').remove();
+    }
+</script>

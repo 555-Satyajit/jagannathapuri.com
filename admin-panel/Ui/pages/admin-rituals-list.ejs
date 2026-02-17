@@ -1,0 +1,440 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Manage /</span> Daily Rituals
+    </h4>
+
+    <!-- Daily Rituals Timeline -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daily Rituals Timeline</h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRitual"
+                onclick="resetRitualForm()">
+                <i class="bx bx-plus me-1"></i> Add New Ritual
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Name</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <% if (rituals && rituals.length> 0) { %>
+                            <% rituals.forEach(ritual=> { %>
+                                <tr>
+                                    <td><i class="<%= ritual.icon %> fs-4 text-primary"></i></td>
+                                    <td><strong>
+                                            <%= ritual.name %>
+                                        </strong></td>
+                                    <td><span class="badge bg-label-info text-dark">
+                                            <%= ritual.time %>
+                                        </span></td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-<%= ritual.status === 'Active' ? 'success' : 'warning' %>">
+                                            <%= ritual.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon edit-ritual"
+                                                data-ritual='<%= JSON.stringify(ritual) %>' data-bs-toggle="modal"
+                                                data-bs-target="#modalRitual">
+                                                <i class="bx bx-edit text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-icon delete-ritual"
+                                                data-id="<%= ritual.id %>">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center">No rituals found.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Darshan Timings -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Darshan Timings</h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDarshan"
+                onclick="resetDarshanForm()">
+                <i class="bx bx-plus me-1"></i> Add Darshan Timing
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Time Range</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <% if (darshans && darshans.length> 0) { %>
+                            <% darshans.forEach(darshan=> { %>
+                                <tr>
+                                    <td><strong>
+                                            <%= darshan.name %>
+                                        </strong></td>
+                                    <td><span class="badge bg-label-primary text-dark">
+                                            <%= darshan.timeRange %>
+                                        </span></td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-<%= darshan.type === 'Pahuda' ? 'danger' : 'info' %>">
+                                            <%= darshan.type %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-<%= darshan.status === 'Active' ? 'success' : 'warning' %>">
+                                            <%= darshan.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon edit-darshan"
+                                                data-darshan='<%= JSON.stringify(darshan) %>' data-bs-toggle="modal"
+                                                data-bs-target="#modalDarshan">
+                                                <i class="bx bx-edit text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-icon delete-darshan"
+                                                data-id="<%= darshan.id %>">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center">No darshan timings found.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Temple Facts -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Did You Know? (Temple Facts)</h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalFact"
+                onclick="resetFactForm()">
+                <i class="bx bx-plus me-1"></i> Add Temple Fact
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Color</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <% if (facts && facts.length> 0) { %>
+                            <% facts.forEach(fact=> { %>
+                                <tr>
+                                    <td><i class="<%= fact.icon %> fs-4 text-<%= fact.colorClass %>"></i></td>
+                                    <td><strong>
+                                            <%= fact.title %>
+                                        </strong></td>
+                                    <td class="text-truncate" style="max-width: 200px;">
+                                        <%= fact.description %>
+                                    </td>
+                                    <td><span class="badge bg-label-<%= fact.colorClass %>">
+                                            <%= fact.colorClass %>
+                                        </span></td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-<%= fact.status === 'Active' ? 'success' : 'warning' %>">
+                                            <%= fact.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon edit-fact"
+                                                data-fact='<%= JSON.stringify(fact) %>' data-bs-toggle="modal"
+                                                data-bs-target="#modalFact">
+                                                <i class="bx bx-edit text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-icon delete-fact" data-id="<%= fact.id %>">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No temple facts found.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ritual Modal -->
+<div class="modal fade" id="modalRitual" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="/admin/daily-rituals/save" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRitualTitle">Add/Edit Ritual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="ritual_id">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="ritual_name" class="form-label">Ritual Name</label>
+                        <input type="text" id="ritual_name" name="name" class="form-control"
+                            placeholder="e.g., Dwara Phita" required>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="ritual_time" class="form-label">Time</label>
+                        <input type="text" id="ritual_time" name="time" class="form-control"
+                            placeholder="e.g., 05:00 AM" required>
+                    </div>
+                    <div class="col mb-0">
+                        <label for="ritual_icon" class="form-label">Icon (FontAwesome)</label>
+                        <input type="text" id="ritual_icon" name="icon" class="form-control" placeholder="fas fa-sun"
+                            value="fas fa-sun">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+                        <label for="ritual_status" class="form-label">Status</label>
+                        <select id="ritual_status" name="status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Ritual</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Darshan Modal -->
+<div class="modal fade" id="modalDarshan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="/admin/darshan-timings/save" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDarshanTitle">Add/Edit Darshan Timing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="darshan_id">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="darshan_name" class="form-label">Darshan Name</label>
+                        <input type="text" id="darshan_name" name="name" class="form-control"
+                            placeholder="e.g., General Darshan" required>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="darshan_timeRange" class="form-label">Time Range</label>
+                        <input type="text" id="darshan_timeRange" name="timeRange" class="form-control"
+                            placeholder="e.g., 07:00 AM - 01:00 PM" required>
+                    </div>
+                    <div class="col mb-0">
+                        <label for="darshan_type" class="form-label">Type</label>
+                        <select id="darshan_type" name="type" class="form-select">
+                            <option value="General">General</option>
+                            <option value="Pahuda">Pahuda</option>
+                            <option value="Special">Special</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+                        <label for="darshan_status" class="form-label">Status</label>
+                        <select id="darshan_status" name="status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Darshan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Fact Modal -->
+<div class="modal fade" id="modalFact" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="/admin/temple-facts/save" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFactTitle">Add/Edit Temple Fact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="fact_id">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="fact_title" class="form-label">Title</label>
+                        <input type="text" id="fact_title" name="title" class="form-control"
+                            placeholder="e.g., Mahaprasad Mystery" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="fact_description" class="form-label">Description</label>
+                        <textarea id="fact_description" name="description" class="form-control" rows="3"
+                            required></textarea>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="fact_icon" class="form-label">Icon (FontAwesome)</label>
+                        <input type="text" id="fact_icon" name="icon" class="form-control"
+                            placeholder="fas fa-info-circle" value="fas fa-info-circle">
+                    </div>
+                    <div class="col mb-0">
+                        <label for="fact_colorClass" class="form-label">Color Theme</label>
+                        <select id="fact_colorClass" name="colorClass" class="form-select">
+                            <option value="primary">Primary (Purple)</option>
+                            <option value="secondary">Secondary (Blue)</option>
+                            <option value="success">Success (Green)</option>
+                            <option value="warning">Warning (Orange)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Fact</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function resetRitualForm() {
+        document.getElementById('ritual_id').value = '';
+        document.getElementById('ritual_name').value = '';
+        document.getElementById('ritual_time').value = '';
+        document.getElementById('ritual_icon').value = 'fas fa-sun';
+        document.getElementById('ritual_status').value = 'Active';
+        document.getElementById('modalRitualTitle').innerText = 'Add New Ritual';
+    }
+
+    function resetDarshanForm() {
+        document.getElementById('darshan_id').value = '';
+        document.getElementById('darshan_name').value = '';
+        document.getElementById('darshan_timeRange').value = '';
+        document.getElementById('darshan_type').value = 'General';
+        document.getElementById('darshan_status').value = 'Active';
+        document.getElementById('modalDarshanTitle').innerText = 'Add Darshan Timing';
+    }
+
+    function resetFactForm() {
+        document.getElementById('fact_id').value = '';
+        document.getElementById('fact_title').value = '';
+        document.getElementById('fact_description').value = '';
+        document.getElementById('fact_icon').value = 'fas fa-info-circle';
+        document.getElementById('fact_colorClass').value = 'primary';
+        document.getElementById('modalFactTitle').innerText = 'Add Temple Fact';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Edit buttons click handlers
+        document.querySelectorAll('.edit-ritual').forEach(btn => {
+            btn.onclick = function () {
+                const ritual = JSON.parse(this.dataset.ritual);
+                document.getElementById('ritual_id').value = ritual.id;
+                document.getElementById('ritual_name').value = ritual.name;
+                document.getElementById('ritual_time').value = ritual.time;
+                document.getElementById('ritual_icon').value = ritual.icon;
+                document.getElementById('ritual_status').value = ritual.status;
+                document.getElementById('modalRitualTitle').innerText = 'Edit Ritual';
+            };
+        });
+
+        document.querySelectorAll('.edit-darshan').forEach(btn => {
+            btn.onclick = function () {
+                const darshan = JSON.parse(this.dataset.darshan);
+                document.getElementById('darshan_id').value = darshan.id;
+                document.getElementById('darshan_name').value = darshan.name;
+                document.getElementById('darshan_timeRange').value = darshan.timeRange;
+                document.getElementById('darshan_type').value = darshan.type;
+                document.getElementById('darshan_status').value = darshan.status;
+                document.getElementById('modalDarshanTitle').innerText = 'Edit Darshan Timing';
+            };
+        });
+
+        document.querySelectorAll('.edit-fact').forEach(btn => {
+            btn.onclick = function () {
+                const fact = JSON.parse(this.dataset.fact);
+                document.getElementById('fact_id').value = fact.id;
+                document.getElementById('fact_title').value = fact.title;
+                document.getElementById('fact_description').value = fact.description;
+                document.getElementById('fact_icon').value = fact.icon;
+                document.getElementById('fact_colorClass').value = fact.colorClass;
+                document.getElementById('modalFactTitle').innerText = 'Edit Temple Fact';
+            };
+        });
+
+        // Delete handlers
+        const setupDelete = (btnSelector, urlBase) => {
+            document.querySelectorAll(btnSelector).forEach(btn => {
+                btn.onclick = function () {
+                    if (confirm('Are you sure you want to delete this item?')) {
+                        const id = this.dataset.id;
+                        fetch(`${urlBase}/${id}`, { method: 'DELETE' })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) location.reload();
+                                else alert('Failed to delete item');
+                            });
+                    }
+                };
+            });
+        };
+
+        setupDelete('.delete-ritual', '/admin/daily-rituals/delete');
+        setupDelete('.delete-darshan', '/admin/darshan-timings/delete');
+        setupDelete('.delete-fact', '/admin/temple-facts/delete');
+    });
+</script>

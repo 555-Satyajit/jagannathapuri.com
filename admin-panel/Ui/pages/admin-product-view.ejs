@@ -1,0 +1,479 @@
+<h4 class="py-3 breadcrumb-wrapper mb-4">
+    <span class="text-muted fw-light">eCommerce /</span> Product Details
+</h4>
+
+<div class="row">
+    <!-- Product Details -->
+    <div class="col-xl-8 col-lg-7 col-md-7">
+        <!-- Product Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h5 class="mb-1">
+                            <%= product.product_name %>
+                        </h5>
+                        <p class="text-muted mb-0">SKU: <%= product.sku %>
+                        </p>
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="text-nowrap me-2">
+                                <% for(let i=0; i<5; i++) { %>
+                                    <i
+                                        class="bx <%= i < product.mockRating ? 'bxs-star text-warning' : 'bx-star text-muted' %>"></i>
+                                    <% } %>
+                            </div>
+                            <small class="text-muted">(<%= product.mockRating %>/5 Mock Rating)</small>
+                        </div>
+                    </div>
+                    <% if (product.status===1) { %>
+                        <span class="badge bg-label-success">Published</span>
+                        <% } else if (product.status===2) { %>
+                            <span class="badge bg-label-warning">Scheduled</span>
+                            <% } else { %>
+                                <span class="badge bg-label-danger">Inactive</span>
+                                <% } %>
+                </div>
+
+                <!-- Image Gallery -->
+                <div class="product-images mb-4">
+                    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <% if (product.images && product.images.length> 1) { %>
+                            <div class="carousel-indicators mb-0">
+                                <% product.images.forEach((_, index)=> { %>
+                                    <button type="button" data-bs-target="#productCarousel"
+                                        data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"
+                                        aria-current="<%= index === 0 ? 'true' : 'false' %>"
+                                        aria-label="Slide <%= index + 1 %>"></button>
+                                    <% }) %>
+                            </div>
+                            <% } %>
+                                <div class="carousel-inner border rounded">
+                                    <% if (product.images && Array.isArray(product.images)) { %>
+                                        <% product.images.forEach((img, index)=> { %>
+                                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                                <img src="<%= img.startsWith('http') ? img : '/uploads/' + img %>"
+                                                    class="d-block w-100 object-fit-contain bg-light"
+                                                    style="height: 400px;" alt="Product Image">
+                                            </div>
+                                            <% }) %>
+                                                <% } %>
+                                </div>
+                                <% if(product.images && product.images.length> 1) { %>
+                                    <button class="carousel-control-prev" type="button"
+                                        data-bs-target="#productCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button"
+                                        data-bs-target="#productCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                    <% } %>
+                    </div>
+                    <!-- Thumbnail Navigation -->
+                    <% if (product.images && product.images.length> 1) { %>
+                        <div class="d-flex flex-wrap gap-2 mt-2 justify-content-center">
+                            <% product.images.forEach((img, index)=> { %>
+                                <div class="thumbnail-nav" data-bs-target="#productCarousel"
+                                    data-bs-slide-to="<%= index %>" style="width: 60px; height: 60px; cursor: pointer;">
+                                    <img src="<%= img.startsWith('http') ? img : '/uploads/' + img %>"
+                                        class="w-100 h-100 rounded border object-fit-cover shadow-sm thumbnail-item <%= index === 0 ? 'border-primary' : '' %>">
+                                </div>
+                                <% }) %>
+                        </div>
+                        <% } %>
+                </div>
+
+                <!-- Description/Info -->
+                <div class="mb-4">
+                    <h6>Product Description</h6>
+                    <div class="text-body">
+                        <%- product.description || '<p class="text-muted">No description available.</p>' %>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Specifications -->
+                <h6>Specifications</h6>
+                <div class="row g-3">
+                    <% if (product.specifications && Array.isArray(product.specifications)) { %>
+                        <% product.specifications.forEach(spec=> { %>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <p class="mb-0 fw-semibold text-heading me-2">
+                                        <%= spec.name %>:
+                                    </p>
+                                    <p class="mb-0">
+                                        <%= spec.value %>
+                                    </p>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <% } %>
+                </div>
+
+                <!-- Variations (Frontend Sync) -->
+                <% let colors=[]; let sizes=[]; if (product.specifications && Array.isArray(product.specifications)) {
+                    const colorSpec=product.specifications.find(s=> s.name.toLowerCase() === 'color');
+                    const sizeSpec = product.specifications.find(s => s.name.toLowerCase() === 'size');
+                    if (colorSpec) colors = colorSpec.value.split(',').map(v => v.trim());
+                    if (sizeSpec) sizes = sizeSpec.value.split(',').map(v => v.trim());
+                    }
+                    %>
+
+                    <% if (colors.length> 0 || sizes.length > 0) { %>
+                        <hr class="my-4">
+                        <div class="row">
+                            <% if (colors.length> 0) { %>
+                                <div class="col-sm-6 mb-3">
+                                    <h6 class="mb-2">Color Variations</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <% colors.forEach(color=> { %>
+                                            <div class="rounded-circle border"
+                                                style="width: 25px; height: 25px; background-color: <%= color.toLowerCase() %>; border-color: #ddd !important;"
+                                                title="<%= color %>"></div>
+                                            <% }) %>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if (sizes.length> 0) { %>
+                                        <div class="col-sm-6 mb-3">
+                                            <h6 class="mb-2">Size Variations</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <% sizes.forEach(size=> { %>
+                                                    <span class="badge bg-label-secondary border">
+                                                        <%= size %>
+                                                    </span>
+                                                    <% }) %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header border-bottom">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="card-title mb-0">Customer Reviews</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-label-primary">
+                            <%= reviews.length %> Reviews
+                        </span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-start align-items-center row py-3 gap-3 gap-md-0">
+                    <div class="col-md-4">
+                        <select id="ReviewRating" class="form-select text-capitalize">
+                            <option value="">All Stars</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="ReviewRecent" class="form-select text-capitalize">
+                            <option value="">All Time</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-datatable table-responsive">
+                <table class="datatables-reviews table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th class="text-nowrap">Images</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% reviews.forEach(review=> { %>
+                            <tr>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center user-name">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <span class="avatar-initial rounded-circle bg-label-success">
+                                                    <%= review.customer.fullName.charAt(0) %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-semibold text-body">
+                                                <%= review.customer.fullName %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-search="<%= review.rating %>">
+                                    <div class="text-nowrap">
+                                        <% for(let i=0; i<5; i++) { %>
+                                            <i
+                                                class="bx <%= i < review.rating ? 'bxs-star text-warning' : 'bx-star text-muted' %>"></i>
+                                            <% } %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="review-comment">
+                                        <p
+                                            class="mb-0 text-muted <%= review.comment.length > 80 ? 'comment-truncate' : '' %>">
+                                            <%= review.comment %>
+                                        </p>
+                                        <% if(review.comment.length> 80) { %>
+                                            <a href="javascript:void(0);" class="read-more-btn small fw-semibold">Read
+                                                More</a>
+                                            <% } %>
+                                    </div>
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="d-flex align-items-center">
+                                        <% if(review.images && review.images.length> 0) { %>
+                                            <% review.images.forEach((img, idx)=> { %>
+                                                <% if(idx < 2) { let imgPath=img.startsWith('http') ? img :
+                                                    (img.startsWith('/uploads/') ? img : '/uploads/reviews/' + img); %>
+                                                    <a href="<%= imgPath %>" target="_blank" class="me-1">
+                                                        <img src="<%= imgPath %>" class="rounded" width="35" height="35"
+                                                            alt="Review Image">
+                                                    </a>
+                                                    <% } %>
+                                                        <% }) %>
+                                                            <% if(review.images.length> 2) { %>
+                                                                <span class="badge bg-label-secondary">+<%=
+                                                                        review.images.length - 2 %></span>
+                                                                <% } %>
+                                                                    <% } else { %>
+                                                                        <span class="text-muted small">-</span>
+                                                                        <% } %>
+                                    </div>
+                                </td>
+                                <td><span class="text-nowrap">
+                                        <%= review.date %>
+                                    </span></td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="col-xl-4 col-lg-5 col-md-5">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="mb-1">Price</h6>
+                    <h4 class="text-primary mb-0">
+                        <%= product.price %>
+                    </h4>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-1">Cost Price</h6>
+                    <h4 class="text-muted mb-0">
+                        <%= product.costPrice || '₹0' %>
+                    </h4>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-1">Stock Status</h6>
+                    <% if(product.quantity> 0) { %>
+                        <span class="badge bg-label-success">In Stock (<%= product.quantity %>)</span>
+                        <% } else { %>
+                            <span class="badge bg-label-danger">Out of Stock</span>
+                            <% } %>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-1">Category</h6>
+                    <span class="badge bg-label-secondary">
+                        <%= product.category ? product.category.name : 'Uncategorized' %>
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-1">Product Type</h6>
+                    <p class="mb-0 fw-semibold text-primary">
+                        <%= product.product_type %>
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-1">Brand</h6>
+                    <p class="mb-0 fw-semibold">
+                        <%= product.product_brand %>
+                    </p>
+                </div>
+                <hr class="my-3">
+                <div class="mb-3">
+                    <h6 class="mb-1">Product Settings</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i
+                                class="bx <%= product.is_cod ? 'bx-check-circle text-success' : 'bx-x-circle text-danger' %> me-1"></i>
+                            Cash on Delivery: <span class="fw-semibold">
+                                <%= product.is_cod ? 'Available' : 'Not Allowed' %>
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <i
+                                class="bx <%= product.is_featured ? 'bx-check-circle text-success' : 'bx-x-circle text-danger' %> me-1"></i>
+                            Featured Product: <span class="fw-semibold">
+                                <%= product.is_featured ? 'Yes' : 'No' %>
+                            </span>
+                        </li>
+                        <li class="mb-0">
+                            <i
+                                class="bx <%= product.show_in_explore ? 'bx-check-circle text-success' : 'bx-x-circle text-danger' %> me-1"></i>
+                            Show in Explore: <span class="fw-semibold">
+                                <%= product.show_in_explore ? 'Yes' : 'No' %>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <hr class="my-3">
+                <div class="mb-0">
+                    <small class="text-muted d-block mb-1">Created: <%= new Date(product.created_at).toLocaleString() %>
+                    </small>
+                    <small class="text-muted d-block">Last Updated: <%= new Date(product.updated_at).toLocaleString() %>
+                    </small>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="/admin/ecommerce/products/edit/<%= product.id %>"
+                        class="btn btn-primary d-flex align-items-center justify-content-center">
+                        <i class="bx bx-edit me-1"></i> Edit Product
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products (Frontend Sync) -->
+<% if (relatedProducts && relatedProducts.length> 0) { %>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Related Products (Frontend Sync)</h5>
+                    <small class="text-muted">Same Category: <%= product.category ? product.category.name
+                            : 'Uncategorized' %></small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <% relatedProducts.forEach(rel=> {
+                            let relImg = '/assets/images/logo.png';
+                            if (rel.images && rel.images.length > 0) {
+                            relImg = rel.images[0].startsWith('http') ? rel.images[0] : '/uploads/' + rel.images[0];
+                            }
+                            %>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="border rounded p-3 h-100 d-flex flex-column text-center">
+                                    <img src="<%= relImg %>" class="rounded mb-3 object-fit-contain bg-light"
+                                        style="height: 120px;" alt="<%= rel.product_name %>">
+                                    <h6 class="mb-1 text-truncate">
+                                        <%= rel.product_name %>
+                                    </h6>
+                                    <p class="text-primary fw-bold mb-2">₹<%= rel.price %>
+                                    </p>
+                                    <a href="/admin/ecommerce/products/view/<%= rel.id %>"
+                                        class="btn btn-sm btn-outline-primary mt-auto">View Details</a>
+                                </div>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+        <style>
+            .comment-truncate {
+                max-height: 40px;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .comment-expanded {
+                max-height: 500px !important;
+            }
+
+            .thumbnail-nav img.border-primary {
+                border-width: 2px !important;
+                opacity: 1;
+            }
+
+            .thumbnail-nav img:not(.border-primary) {
+                opacity: 0.6;
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if ($.fn.DataTable) {
+                    const table = $('.datatables-reviews').DataTable({
+                        dom: '<"card-header d-flex flex-wrap pb-2"<"me-5 ms-n2"f><"d-flex justify-content-start justify-content-md-end align-items-baseline"l>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        pageLength: 10,
+                        lengthMenu: [10, 25, 50, 100],
+                        order: [[4, 'desc']], // Sort by date
+                        responsive: true
+                    });
+
+                    // Custom Filter Logic for Rating
+                    $('#ReviewRating').on('change', function () {
+                        const val = $(this).val();
+                        table.column(1).search(val ? '^' + val + '$' : '', true, false).draw();
+                    });
+
+                    // Custom Filter Logic for Date Recency
+                    $.fn.dataTable.ext.search.push(
+                        function (settings, data, dataIndex) {
+                            const filterVal = $('#ReviewRecent').val();
+                            if (!filterVal) return true;
+
+                            const reviewDate = new Date(data[4]); // Index 4 is the Date column
+                            const today = new Date();
+                            const diffTime = Math.abs(today - reviewDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                            return diffDays <= parseInt(filterVal);
+                        }
+                    );
+
+                    $('#ReviewRecent').on('change', function () {
+                        table.draw();
+                    });
+                }
+
+                // Toggle Read More
+                $(document).on('click', '.read-more-btn', function () {
+                    const p = $(this).siblings('p');
+                    if (p.hasClass('comment-truncate')) {
+                        p.removeClass('comment-truncate').addClass('comment-expanded');
+                        $(this).text('Read Less');
+                    } else {
+                        p.removeClass('comment-expanded').addClass('comment-truncate');
+                        $(this).text('Read More');
+                    }
+                });
+                // Thumbnail sync
+                $('#productCarousel').on('slide.bs.carousel', function (e) {
+                    const index = e.to;
+                    $('.thumbnail-nav img').removeClass('border-primary').css('opacity', '0.6');
+                    $('.thumbnail-nav').eq(index).find('img').addClass('border-primary').css('opacity', '1');
+                });
+
+                $('.thumbnail-nav').on('click', function () {
+                    const target = $(this).data('bs-slide-to');
+                    $('#productCarousel').carousel(target);
+                });
+            });
+        </script>

@@ -1,0 +1,107 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Store Configuration / </span> Manage Promo Banners
+    </h4>
+
+    <form id="promoForm" action="/admin/store/home/promo/save" method="POST">
+        <% if (promo) { %>
+            <input type="hidden" name="id" value="<%= promo.id %>">
+            <% } %>
+
+                <div class="row">
+                    <!-- Icon and Title Section -->
+                    <div class="col-12 col-xl-10 mb-4">
+                        <div class="card">
+                            <h5 class="card-header">General Information</h5>
+                            <div class="card-body pb-5"> <!-- Added pb-5 to ensure enough space -->
+                                <div class="mb-4">
+                                    <label for="icon" class="form-label" style="font-weight: 600;">Icon (Boxicons
+                                        Class)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i
+                                                class="<%= promo ? promo.icon : 'bx bx-help-circle' %>"
+                                                id="iconPreview"></i></span>
+                                        <input type="text" class="form-control" id="icon" name="icon"
+                                            value="<%= promo ? promo.icon : '' %>" placeholder="e.g. bx bx-truck">
+                                    </div>
+                                    <small class="text-muted">Browse icons at <a href="https://boxicons.com/"
+                                            target="_blank">boxicons.com</a></small>
+                                </div>
+
+                                <div class="mb-5"> <!-- Increased mb for the title block -->
+                                    <label class="form-label" style="font-weight: 600;">Title</label>
+                                    <div id="title-editor-wrapper" style="min-height: 211px;">
+                                        <!-- Wrapper with min-height -->
+                                        <div id="title-editor-container" style="height: 120px;">
+                                            <%- promo ? promo.title : '' %>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="title" id="titleInput">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Section (Isolated) -->
+                    <div class="col-12 col-xl-10 mb-4">
+                        <div class="card border border-primary shadow-none">
+                            <h5 class="card-header bg-label-primary">Content Description</h5>
+                            <div class="card-body pt-3">
+                                <div class="mb-0">
+                                    <label for="subtitle" class="form-label" style="font-weight: 600;">Description
+                                        Summary</label>
+                                    <textarea class="form-control" id="subtitle" name="subtitle" rows="6"
+                                        placeholder="Write a detailed description here..."><%= promo ? promo.subtitle : '' %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12 col-xl-10">
+                        <div class="card">
+                            <div class="card-body">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                                    <i class="bx bx-save me-1"></i> Save Promo Banner
+                                </button>
+                                <a href="/admin/store/home/promo/list" class="btn btn-label-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Quill for Title
+        const quillTitle = new Quill('#title-editor-container', {
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }], // Added color options
+                    ['clean']
+                ]
+            },
+            placeholder: 'Write the promo title...',
+            theme: 'snow'
+        });
+
+        const iconInput = document.getElementById('icon');
+        const iconPreview = document.getElementById('iconPreview');
+
+        if (iconInput) {
+            iconInput.addEventListener('input', function () {
+                iconPreview.className = this.value || 'bx bx-help-circle';
+            });
+        }
+
+        // Handle Form Submission
+        const form = document.getElementById('promoForm');
+        form.onsubmit = function () {
+            const titleInput = document.querySelector('#titleInput');
+            titleInput.value = quillTitle.root.innerHTML;
+            return true;
+        };
+    });
+</script>

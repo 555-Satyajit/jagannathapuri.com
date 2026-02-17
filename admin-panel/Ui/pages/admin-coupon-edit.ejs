@@ -1,0 +1,60 @@
+<h4 class="py-3 breadcrumb-wrapper mb-4">
+    <span class="text-muted fw-light">eCommerce /</span> Edit Coupon
+</h4>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <h5 class="card-header">Edit Coupon</h5>
+            <div class="card-body">
+                <form action="/admin/ecommerce/coupons/edit/<%= coupon.id %>" method="POST">
+                    <div class="mb-3">
+                        <label for="couponCode" class="form-label">Coupon Code</label>
+                        <input type="text" class="form-control" id="couponCode" name="code" value="<%= coupon.code %>"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponType" class="form-label">Type</label>
+                        <select class="form-select" id="couponType" name="type" required>
+                            <option value="Percentage" <%=coupon.type==='Percentage' ? 'selected' : '' %>>Percentage
+                            </option>
+                            <option value="Fixed Amount" <%=coupon.type==='Fixed Amount' ? 'selected' : '' %>>Fixed
+                                Amount</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponAmount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="couponAmount" name="amount"
+                            value="<%= coupon.amount %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponExpiry" class="form-label">Expiry Date</label>
+                        <input type="date" class="form-control" id="couponExpiry" name="expiry"
+                            value="<%= coupon.expiry %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponUsageLimit" class="form-label">Maximum Usage Limit (Optional)</label>
+                        <input type="number" class="form-control" id="couponUsageLimit" name="usage_limit"
+                            value="<%= coupon.usage_limit %>" placeholder="e.g. 100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponPerUserLimit" class="form-label">Limit Per User (Optional)</label>
+                        <input type="number" class="form-control" id="couponPerUserLimit" name="per_user_limit"
+                            value="<%= coupon.per_user_limit %>" placeholder="e.g. 1">
+                        <small class="text-muted">Leave empty for unlimited uses per person.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponStatus" class="form-label">Status</label>
+                        <select class="form-select" id="couponStatus" name="status">
+                            <option value="Active" <%=coupon.status==='Active' ? 'selected' : '' %>>Active</option>
+                            <option value="Inactive" <%=coupon.status==='Inactive' ? 'selected' : '' %>>Inactive
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Coupon</button>
+                    <a href="/admin/ecommerce/coupons" class="btn btn-label-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+{
+  "features": [],
+  "services": [
+    {
+      "id": 1,
+      "title": "Tours & Travel",
+      "subtitle": "Guided Tours",
+      "icon": "hgi-car-01",
+      "link": "/service"
+    },
+    {
+      "id": 2,
+      "title": "Mandir Guidance",
+      "subtitle": "Rituals & Darshan",
+      "icon": "hgi-guide",
+      "link": "/service"
+    },
+    {
+      "id": 3,
+      "title": "Hotels & Stay",
+      "subtitle": "Comfortable Stays",
+      "icon": "hgi-hotel-01",
+      "link": "/service"
+    },
+    {
+      "id": 4,
+      "title": "Flag Hosting",
+      "subtitle": "Nilachakra Rituals",
+      "icon": "hgi-flag-01",
+      "link": "/service"
+    }
+  ],
+  "heroes": [
+    {
+      "image": "",
+      "header": "Adorn Your Walls with History",
+      "title": "Authentic Pattachitra Odisha's Ancient Art",
+      "description": "Intricate paintings on cloth and palm leaf, depicting mythological narratives and traditional motifs.",
+      "buttonText": "Shop Now",
+      "buttonLink": "/shop",
+      "id": 1770899322507
+    }
+  ]
+}

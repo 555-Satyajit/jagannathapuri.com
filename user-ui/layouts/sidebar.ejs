@@ -1,0 +1,662 @@
+﻿<!-- SIDEBAR START -->
+<div
+  class="fixed top-0 left-0 w-[350px] bg-white h-full z-91 px-4 py-6 flex flex-col justify-between gap-y-6 overflow-y-auto shadow-dark-z-24 transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:-translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible"
+  id="sidebar" data-state="close">
+  <div>
+    <div class="relative pb-6">
+      <img src="/assets/images/logo.png" alt="Logo" class="w-[100px]" />
+      <button
+        class="size-7 inline-flex items-center justify-center absolute top-0 right-0 rounded-full bg-[rgba(145,158,171,0.08)]"
+        id="side-bar-menu-close">
+        <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5"></i>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-y-6">
+      <div class="relative search-input-container">
+        <div class="input-group w-full px-4 py-2 rounded-[100px]">
+          <div class="input-group-addon" data-align="inline-end">
+            <i class="hgi hgi-stroke hgi-search-01 text-2xl text-gray-500"></i>
+          </div>
+          <input type="text" class="form-control header-search-input" placeholder="Search for the Items" />
+        </div>
+        <div data-state="close"
+          class="search-result-container p-4 absolute w-full top-[calc(100%+10px)] left-0 border border-gray-300 shadow-light-z-12 bg-white rounded-3xl z-9 transform data-[state=close]:translate-y-4 data-[state=close]:opacity-0 data-[state=close]:invisible transition-all duration-300 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-y-0 data-[state=open]:opacity-100 data-[state=open]:visible">
+          <div class="flex justify-between items-center mb-4">
+            <p class="font-semibold text-light-primary-text">
+              Recent Search
+            </p>
+            <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
+              Reset History
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 recent-search-list mb-4">
+            <button
+              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+              Vitamin D Supplement
+              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+              </span>
+            </button>
+            <button
+              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+              Pain Relief Spray
+              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+              </span>
+            </button>
+            <button
+              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
+              Baby Thermometer
+              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
+                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
+              </span>
+            </button>
+          </div>
+          <div class="recommended-search-list-wrapper">
+            <p class="text-base font-semibold text-light-primary-text mb-4">
+              Recommended
+            </p>
+            <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
+              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                  <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
+                </div>
+                <p
+                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                  <a href="index-4.html#">Immunity booster</a>
+                </p>
+              </div>
+              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                  <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
+                </div>
+                <p
+                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                  <a href="index-4.html#">Hand Sanitizer 500ml</a>
+                </p>
+              </div>
+              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                  <img src="/assets/images/combat.png" alt="recommended-search-1" />
+                </div>
+                <p
+                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                  <a href="index-4.html#">Heart health supplements</a>
+                </p>
+              </div>
+              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
+                  <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
+                </div>
+                <p
+                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
+                  <a href="index-4.html#">Protein powder for women</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="mobile-menu">
+        <ul>
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href='/about'>About Us</a>
+          </li>
+          <li>
+            <a href="/shop">Shop</a>
+          </li>
+          <li>
+            <a href="/service">Services</a>
+          </li>
+          <li>
+            <a href="blog-grid.html">Library</a>
+          </li>
+          <li>
+            <a href="#">Rituals</a>
+            <ul>
+              <li><a href="/daily-rituals">Daily Rituals</a></li>
+              <li><a href="/panchang">Panchang</a></li>
+            </ul>
+          </li>
+          <li><a href='/contact'>Contact</a></li>
+        </ul>
+      </nav>
+      <div class="border border-gray-500/24 p-5 rounded-2xl">
+        <div class="flex flex-col gap-y-3">
+          <% if (!user) { %>
+            <a href="/login" class="flex items-center gap-x-2 login-page-btn">
+              <span class="inline-flex items-center justify-center bg-warning size-8 rounded-full"><i
+                  class="hgi hgi-stroke hgi-lock-sync-01 text-base text-light-primary-text"></i>
+              </span>
+              Log in / Sign Up
+            </a>
+            <% } else { %>
+              <a href="/user-account" class="flex items-center gap-x-2">
+                <span class="inline-flex items-center justify-center bg-warning size-8 rounded-full"><i
+                    class="hgi hgi-stroke hgi-user text-base text-light-primary-text"></i>
+                </span>
+                My Profile
+              </a>
+              <a href="javascript:void(0)" class="flex items-center gap-x-2 logout-btn">
+                <span class="inline-flex items-center justify-center bg-warning size-8 rounded-full"><i
+                    class="hgi hgi-stroke hgi-logout-01 text-base text-light-primary-text"></i>
+                </span>
+                Logout
+              </a>
+              <% } %>
+                <a href="tel:<%= siteConfig.header.navbar_support_phone || '888-777-999' %>"
+                  class="flex items-center gap-x-2">
+                  <span class="inline-flex items-center justify-center bg-warning size-8 rounded-full">
+                    <i class="hgi hgi-stroke hgi-call text-base text-light-primary-text"></i>
+                  </span>
+                  <%= siteConfig.header.navbar_support_phone || '888-777-999' %>
+                </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="mb-3">Follow us</h4>
+        <ul class="flex items-center gap-x-4">
+          <li>
+            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2"><span
+                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full"><i
+                  class="hgi hgi-stroke hgi-facebook-01 text-base text-white"></i></span></a>
+          </li>
+          <li>
+            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2">
+              <span class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
+                <i class="hgi hgi-stroke hgi-linkedin-01 text-base text-white"></i> </span></a>
+          </li>
+          <li>
+            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2"><span
+                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
+                <i class="hgi hgi-stroke hgi-instagram text-base text-white"></i> </span></a>
+          </li>
+          <li>
+            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2 hover:translate-y-3"><span
+                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
+                <i class="hgi hgi-stroke hgi-twitter text-base text-white"></i> </span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SIDEBAR END -->
+
+<!-- Cart Sidebar Start -->
+<div data-state="close"
+  class="cart-sidebar flex fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[1101px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="similar-products max-w-[500px] w-full h-full border-r border-gray-300 xl:block hidden">
+    <div class="similar-products-header pt-6 px-6 pb-4 border-b border-gray-300 flex flex-col gap-y-1">
+      <h5>Similar Products</h5>
+      <p>You May Also Like</p>
+    </div>
+    <div class="similar-products-content p-6 flex flex-col gap-y-4 overflow-y-auto h-[calc(100%-100px)]">
+      <!-- Dynamic Similar Products will be injected here -->
+    </div>
+  </div>
+  <div class="cart-products xl:max-w-[600px] w-full h-full flex flex-col justify-between">
+    <div class="cart-products-header pt-6 px-6 pb-4 border-b border-gray-300 flex flex-col gap-y-1 relative">
+      <h5>Cart Products</h5>
+      <p>
+        <%= cart.length || 0 %> Item<%= (cart.length !==1) ? 's' : '' %> in Cart
+      </p>
+
+      <button data-close-sidebar=".cart-sidebar"
+        class="close-sidebar-btn absolute top-6 right-6 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+        <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+      </button>
+    </div>
+    <div class="cart-products-content p-6 flex flex-col gap-y-4 overflow-y-auto h-[calc(100%-250px)]">
+      <% if(cart && cart.length> 0) { %>
+        <% cart.forEach(item=> { %>
+          <div
+            class="cart-product-item flex flex-col sm:flex-row items-center sm:gap-x-4 gap-y-2 sm:gap-y-0 p-4 border border-gray-300 rounded-2xl">
+            <a class='cart-product-item-image sm:w-[102px] sm:h-[102px] rounded-xl bg-[#F4F3F5] overflow-hidden relative'
+              href='/product/<%= item.slug %>'>
+              <img src="<%= item.image %>" alt="<%= item.name %>" class="w-full h-full object-cover rounded-xl" />
+            </a>
+            <div class="cart-product-item-content flex flex-col gap-y-2 flex-1 w-full">
+              <div class="flex items-center justify-between gap-x-2">
+                <h6 class="text-base font-semibold">
+                  <a href='/product/<%= item.slug %>'>
+                    <%= item.name %>
+                  </a>
+                </h6>
+                <div class="cart-edit-remove flex items-center gap-x-3">
+                  <button class="remove-cart-item" data-product-id="<%= item.productId %>">
+                    <i class="hgi hgi-stroke hgi-delete-01 text-xl text-light-primary-text"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="price-section flex items-center gap-x-3">
+                  <span class="current-price text-base font-semibold text-light-primary-text">₹<%= item.price %></span>
+                </div>
+                <div
+                  class="border border-gray-300 inline-flex items-center justify-center rounded-[80px] max-w-[108px] py-2.5 px-4">
+                  <button class="cart-qty-minus-btn inline-flex items-center justify-center hover:text-primary"
+                    data-product-id="<%= item.productId %>">
+                    <i class="hgi hgi-stroke hgi-remove-circle text-2xl leading-6"></i>
+                  </button>
+                  <input type="text" readonly="" value="<%= item.quantity %>"
+                    class="border-0 w-full grow text-center focus:outline-none font-semibold" />
+                  <button class="cart-qty-plus-btn inline-flex items-center justify-center hover:text-primary"
+                    data-product-id="<%= item.productId %>">
+                    <i class="hgi hgi-stroke hgi-add-circle text-2xl leading-6"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+            <% } else { %>
+              <p class="text-center text-gray-500">Your cart is empty.</p>
+              <% } %>
+    </div>
+    <div class="cart-products-footer p-6 border-t border-gray-300 flex flex-col gap-y-4">
+      <div class="cart-subtotal flex items-center justify-between">
+        <h5>Subtotal</h5>
+        <h5>₹<%= cart.reduce((total, item)=> total + (item.price * item.quantity), 0).toFixed(2) %></h5>
+      </div>
+      <div class="cart-buttons flex items-center gap-x-4">
+        <a class='btn btn-default outline btn-large rounded-[80px] flex-1 shadow-none' href='/cart'>
+          View Cart
+        </a>
+        <a class='btn btn-primary btn-large rounded-[80px] flex-1' href='/checkout'>
+          Proceed to Checkout
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Cart Sidebar End -->
+
+<!-- Register Page Sidebar Start -->
+<div data-state="close"
+  class="register-page-sidebar fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[600px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="register-page-sidebar-header px-6 pt-6 pb-4 border-b border-gray-300 relative">
+    <h5>Create an Account</h5>
+    <button data-close-sidebar=".login-page-sidebar"
+      class="close-sidebar-btn absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+      <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+    </button>
+  </div>
+  <div class="register-page-sidebar-content p-10 flex flex-col gap-y-10 overflow-y-auto max-h-[calc(100%-70px)]">
+    <div class="image-wrapper mx-auto">
+      <img src="assets/images/authentication/register-illustration.png" alt="register" />
+    </div>
+    <p
+      class="text-light-disabled-text text-center relative before:absolute before:-z-1 before:top-1/2 before:-translate-y-1/2 before:w-full before:h-px before:bg-gray-300 before:left-0">
+      <span class="bg-white px-4 z-1">Or sign up with</span>
+    </p>
+    <div class="flex items-center gap-x-4">
+      <button class="btn btn-default outline btn-large rounded-[80px] flex-1 shadow-none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M6.18173 12.2128C6.18173 11.5642 6.28946 10.9423 6.48173 10.359L3.11627 7.78906C2.46037 9.12081 2.09082 10.6214 2.09082 12.2128C2.09082 13.8028 2.45991 15.3025 3.11491 16.6333L6.47855 14.0583C6.28809 13.4778 6.18173 12.8582 6.18173 12.2128Z"
+            fill="#FBBC05" />
+          <path
+            d="M12.0908 6.31167C13.4998 6.31167 14.7726 6.81096 15.7726 7.62798L18.6817 4.72302C16.9089 3.17975 14.6362 2.22656 12.0908 2.22656C8.13894 2.22656 4.74257 4.48653 3.11621 7.78866L6.48167 10.3586C7.25712 8.00472 9.46757 6.31167 12.0908 6.31167Z"
+            fill="#EB4335" />
+          <path
+            d="M12.0908 18.1134C9.46757 18.1134 7.25712 16.4203 6.48167 14.0664L3.11621 16.6359C4.74257 19.9385 8.13894 22.1985 12.0908 22.1985C14.5298 22.1985 16.8585 21.3324 18.6062 19.7098L15.4117 17.2401C14.5103 17.8079 13.3753 18.1134 12.0908 18.1134Z"
+            fill="#34A853" />
+          <path
+            d="M21.6363 12.214C21.6363 11.624 21.5454 10.9885 21.409 10.3984H12.0908V14.2566H17.4545C17.1863 15.572 16.4563 16.5833 15.4117 17.2414L18.6063 19.7111C20.4422 18.0072 21.6363 15.469 21.6363 12.214Z"
+            fill="#4285F4" />
+        </svg>
+
+        Google
+      </button>
+      <button class="btn btn-default outline btn-large rounded-[80px] flex-1 shadow-none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M17 3.4982C17 3.22206 16.7761 2.9982 16.5 2.9982H14C11.3793 2.86766 9.14528 4.87829 9 7.4982V10.1982H6.5C6.22386 10.1982 6 10.4221 6 10.6982V13.2982C6 13.5743 6.22386 13.7982 6.5 13.7982H9V20.4982C9 20.7743 9.22386 20.9982 9.5 20.9982H12.5C12.7761 20.9982 13 20.7743 13 20.4982V13.7982H15.62C15.8487 13.8015 16.0505 13.6491 16.11 13.4282L16.83 10.8282C16.8703 10.6785 16.8389 10.5185 16.7449 10.3952C16.6509 10.2718 16.5051 10.1991 16.35 10.1982H13V7.4982C13.0515 6.9853 13.4845 6.59562 14 6.5982H16.5C16.7761 6.5982 17 6.37434 17 6.0982V3.4982Z"
+            fill="#1877F2" />
+        </svg>
+
+        Facebook
+      </button>
+    </div>
+    <div class="register-form">
+      <form id="registerForm" class="flex flex-col gap-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+          <div class="relative w-full">
+            <input type="text" id="first-name" name="firstName"
+              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+              placeholder="First Name *" required />
+            <label for="first-name"
+              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+              First Name *
+            </label>
+          </div>
+          <div class="relative w-full">
+            <input type="text" id="last-name" name="lastName"
+              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+              placeholder="Last Name *" required />
+            <label for="last-name"
+              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+              Last Name *
+            </label>
+          </div>
+        </div>
+        <div class="relative w-full">
+          <input type="email" id="register-email" name="email"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Email *" required />
+          <label for="register-email"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Email *
+          </label>
+        </div>
+        <div class="relative w-full">
+          <input type="password" id="register-password" name="password"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Password *" required />
+          <label for="register-password"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Password *
+          </label>
+        </div>
+        <div class="relative w-full">
+          <input type="password" id="confirm-password" name="confirmPassword"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Confirm Password *" required />
+          <label for="confirm-password"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Confirm Password *
+          </label>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary btn-large rounded-[80px] w-full">
+            Create Account
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="account-having-section">
+      <p class="leading-[26px] font-semibold">
+        Already have an account ?
+        <a class="text-primary login-page-btn" href="index-4.html#">Sign In</a>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- Register Page Sidebar End -->
+
+<!-- Login Page Sidebar Start -->
+<div data-state="close"
+  class="login-page-sidebar fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[600px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="login-page-sidebar-header px-6 pt-6 pb-4 border-b border-gray-300 relative">
+    <h5>Log In</h5>
+    <button data-close-sidebar=".login-page-sidebar"
+      class="close-sidebar-btn absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+      <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+    </button>
+  </div>
+  <div class="login-page-sidebar-content p-10 flex flex-col gap-y-10 overflow-y-auto max-h-[calc(100%-70px)]">
+    <div class="image-wrapper mx-auto">
+      <img src="assets/images/authentication/login-illustration.png" alt="login" />
+    </div>
+    <p
+      class="text-light-disabled-text text-center relative before:absolute before:-z-1 before:top-1/2 before:-translate-y-1/2 before:w-full before:h-px before:bg-gray-300 before:left-0">
+      <span class="bg-white px-4 z-1">Or log in with</span>
+    </p>
+    <div class="flex items-center gap-x-4">
+      <button id="googleLoginBtn" class="btn btn-default outline btn-large rounded-[80px] flex-1 shadow-none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M6.18173 12.2128C6.18173 11.5642 6.28946 10.9423 6.48173 10.359L3.11627 7.78906C2.46037 9.12081 2.09082 10.6214 2.09082 12.2128C2.09082 13.8028 2.45991 15.3025 3.11491 16.6333L6.47855 14.0583C6.28809 13.4778 6.18173 12.8582 6.18173 12.2128Z"
+            fill="#FBBC05" />
+          <path
+            d="M12.0908 6.31167C13.4998 6.31167 14.7726 6.81096 15.7726 7.62798L18.6817 4.72302C16.9089 3.17975 14.6362 2.22656 12.0908 2.22656C8.13894 2.22656 4.74257 4.48653 3.11621 7.78866L6.48167 10.3586C7.25712 8.00472 9.46757 6.31167 12.0908 6.31167Z"
+            fill="#EB4335" />
+          <path
+            d="M12.0908 18.1134C9.46757 18.1134 7.25712 16.4203 6.48167 14.0664L3.11621 16.6359C4.74257 19.9385 8.13894 22.1985 12.0908 22.1985C14.5298 22.1985 16.8585 21.3324 18.6062 19.7098L15.4117 17.2401C14.5103 17.8079 13.3753 18.1134 12.0908 18.1134Z"
+            fill="#34A853" />
+          <path
+            d="M21.6363 12.214C21.6363 11.624 21.5454 10.9885 21.409 10.3984H12.0908V14.2566H17.4545C17.1863 15.572 16.4563 16.5833 15.4117 17.2414L18.6063 19.7111C20.4422 18.0072 21.6363 15.469 21.6363 12.214Z"
+            fill="#4285F4" />
+        </svg>
+
+        Google
+      </button>
+      <button class="btn btn-default outline btn-large rounded-[80px] flex-1 shadow-none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M17 3.4982C17 3.22206 16.7761 2.9982 16.5 2.9982H14C11.3793 2.86766 9.14528 4.87829 9 7.4982V10.1982H6.5C6.22386 10.1982 6 10.4221 6 10.6982V13.2982C6 13.5743 6.22386 13.7982 6.5 13.7982H9V20.4982C9 20.7743 9.22386 20.9982 9.5 20.9982H12.5C12.7761 20.9982 13 20.7743 13 20.4982V13.7982H15.62C15.8487 13.8015 16.0505 13.6491 16.11 13.4282L16.83 10.8282C16.8703 10.6785 16.8389 10.5185 16.7449 10.3952C16.6509 10.2718 16.5051 10.1991 16.35 10.1982H13V7.4982C13.0515 6.9853 13.4845 6.59562 14 6.5982H16.5C16.7761 6.5982 17 6.37434 17 6.0982V3.4982Z"
+            fill="#1877F2" />
+        </svg>
+
+        Facebook
+      </button>
+    </div>
+    <div class="login-form">
+      <form id="loginForm" class="flex flex-col gap-y-6">
+        <div class="relative w-full">
+          <input type="email" id="login-email" name="email"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Email *" required />
+          <label for="login-email"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Email *
+          </label>
+        </div>
+        <div class="relative w-full">
+          <input type="password" id="login-password" name="password"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Password *" required />
+          <label for="login-password"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Password *
+          </label>
+        </div>
+        <div class="text-center">
+          <a href="javascript:void(0)" id="switchToOtp" class="text-primary font-semibold">Sign in with OTP (Email)</a>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary btn-large rounded-[80px] w-full">
+            Sign In
+          </button>
+        </div>
+      </form>
+
+      <!-- OTP Form (Hidden by default) -->
+      <form id="otpForm" class="hidden flex flex-col gap-y-6">
+        <div id="otpEmailStep">
+          <div class="relative w-full mb-6">
+            <input type="email" id="otp-email" name="email"
+              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+              placeholder="Email *" required />
+            <label for="otp-email"
+              class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+              Email *
+            </label>
+          </div>
+          <button type="button" id="sendOtpBtn" class="btn btn-primary btn-large rounded-[80px] w-full">
+            Send OTP
+          </button>
+        </div>
+
+        <div id="otpVerifyStep" class="hidden">
+          <p class="text-sm text-center mb-4">Enter the code sent to your email.</p>
+          <div class="relative w-full mb-6">
+            <input type="text" id="otp-token" name="token"
+              class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none text-center tracking-[10px] text-xl"
+              placeholder="000000" maxlength="8" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-large rounded-[80px] w-full">
+            Verify & Sign In
+          </button>
+          <div class="text-center mt-4">
+            <a href="javascript:void(0)" id="resendOtp" class="text-sm text-primary">Resend Code</a>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a href="javascript:void(0)" id="switchToPassword" class="text-sm font-semibold">Back to Password Login</a>
+        </div>
+      </form>
+    </div>
+    <div class="account-having-section">
+      <p class="leading-[26px] font-semibold">
+        Don't have an account ?
+        <a class="text-primary register-page-btn" href="index-4.html#">Sign Up</a>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- Login Page Sidebar End -->
+
+<!-- Forgot Password Page Sidebar Start -->
+<div data-state="close"
+  class="forgot-password-page-sidebar fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[600px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="forgot-password-page-sidebar-header px-6 pt-6 pb-4 border-b border-gray-300 relative">
+    <h5>Forgot Password</h5>
+    <button data-close-sidebar=".forgot-password-page-sidebar"
+      class="close-sidebar-btn absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+      <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+    </button>
+  </div>
+  <div class="forgot-password-page-sidebar-content p-10 flex flex-col gap-y-10 overflow-y-auto max-h-[calc(100%-70px)]">
+    <div class="image-wrapper mx-auto">
+      <img src="assets/images/authentication/forgot-password-illustration.png" alt="forgot-password" />
+    </div>
+    <div class="forgot-password-form">
+      <form id="forgotPasswordForm" class="flex flex-col gap-y-6">
+        <div class="relative w-full">
+          <input type="email" id="forgot-password-email" name="email"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Email *" required />
+          <label for="forgot-password-email"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Email *
+          </label>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary btn-large rounded-[80px] w-full">
+            Reset Password
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="back-to-login-section">
+      <a class="text-primary login-page-btn font-semibold leading-[26px]" href="index-4.html#">Back to Login</a>
+    </div>
+  </div>
+</div>
+<!-- Forgot Password Page Sidebar End -->
+
+<!-- Reset Password Page Sidebar Start -->
+<div data-state="close"
+  class="reset-password-page-sidebar fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[600px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="reset-password-page-sidebar-header px-6 pt-6 pb-4 border-b border-gray-300 relative">
+    <h5>Reset Password</h5>
+    <button data-close-sidebar=".reset-password-page-sidebar"
+      class="close-sidebar-btn absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+      <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+    </button>
+  </div>
+  <div class="reset-password-page-sidebar-content p-10 flex flex-col gap-y-10 overflow-y-auto max-h-[calc(100%-70px)]">
+    <div class="image-wrapper mx-auto">
+      <img src="assets/images/authentication/reset-illustration.png" alt="reset-password" />
+    </div>
+    <div class="reset-password-form">
+      <form class="flex flex-col gap-y-6">
+        <div class="relative w-full">
+          <input type="password" id="reset-password"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Password *" />
+
+          <label for="reset-password"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Password *
+          </label>
+        </div>
+        <div class="relative w-full">
+          <input type="password" id="reset-confirm-password"
+            class="peer form-control input-group medium rounded-[80px] px-3.5 placeholder-transparent focus:placeholder-transparent focus:outline-none"
+            placeholder="Confirm Password *" />
+
+          <label for="reset-confirm-password"
+            class="absolute left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-focus:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1">
+            Confirm Password *
+          </label>
+        </div>
+        <div>
+          <button class="btn btn-primary btn-large rounded-[80px] w-full">
+            Change Password
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="back-to-login-section">
+      <a class="text-primary login-page-btn font-semibold leading-[26px]" href="index-4.html#">Back to Login</a>
+    </div>
+  </div>
+</div>
+<!-- Reset Password Page Sidebar End -->
+
+<!-- OTP Verification Page Sidebar Start -->
+<div data-state="close"
+  class="otp-verification-page-sidebar fixed xl:top-[30px] xl:right-[22px] right-0 top-0 xl:h-[calc(100vh-52px)] h-full z-99 max-w-[600px] w-full bg-white xl:rounded-2xl rounded-none transition-all duration-250 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:visible data-[state=close]:translate-x-[200px] data-[state=close]:opacity-0 data-[state=close]:invisible">
+  <div class="otp-verification-page-sidebar-header px-6 pt-6 pb-4 border-b border-gray-300 relative">
+    <h5>OTP Verification</h5>
+    <button data-close-sidebar=".otp-verification-page-sidebar"
+      class="close-sidebar-btn absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer inline-flex items-center justify-center size-9 rounded-full bg-[rgba(145,158,171,0.08)]">
+      <i class="hgi hgi-stroke hgi-multiplication-sign text-xl leading-5 text-light-primary-text"></i>
+    </button>
+  </div>
+  <div
+    class="otp-verification-page-sidebar-content p-10 flex flex-col gap-y-10 overflow-y-auto max-h-[calc(100%-70px)]">
+    <div class="image-wrapper mx-auto">
+      <img src="assets/images/authentication/otp-verification-illustration.png" alt="otp-verification" />
+    </div>
+    <div class="otp-verification-text">
+      <h6 class="mb-2">Enter the verification code</h6>
+      <p>Enter the 6-digit code sent to your email address</p>
+    </div>
+    <div class="otp-verification-form flex flex-col gap-y-6">
+      <div class="otp-verification-form-input flex gap-x-6">
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+        <input type="text"
+          class="form-control w-1/3 h-14 ring-1 ring-gray-300 rounded-[80px] focus:ring-light-primary-text text-center"
+          placeholder="-" readonly />
+      </div>
+      <div class="otp-verification-resend-code text-right">
+        <a href="index-4.html#" class="text-primary font-semibold leading-[26px]">Resend Code</a>
+      </div>
+      <div>
+        <button class="btn btn-primary btn-large rounded-[80px] w-full">
+          Verify
+        </button>
+      </div>
+    </div>
+
+    <div class="back-to-forgot-password-section">
+      <a class="text-primary forgot-password-page-btn font-semibold leading-[26px]" href="index-4.html#">Back to
+        Forgot Password</a>
+    </div>
+  </div>
+</div>
+<!-- OTP Verification Page Sidebar End -->

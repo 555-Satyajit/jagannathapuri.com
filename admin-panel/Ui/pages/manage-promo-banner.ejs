@@ -1,0 +1,70 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Store Configuration / Manage Home /</span> Promo Banner
+    </h4>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header">Feature Section (Promo Banners)</h5>
+                <div class="card-body">
+                    <form id="promoBannerForm" action="/admin/store/home/banner/save" method="POST">
+                        <div class="row">
+                            <% features.forEach((feature, index)=> { %>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Feature <%= index + 1 %>
+                                            </h6>
+                                            <div class="mb-3">
+                                                <label for="icon_<%= index %>" class="form-label">Icon (Boxicons
+                                                    Class)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="<%= feature.icon %>"
+                                                            id="preview_<%= index %>"></i></span>
+                                                    <input type="text" class="form-control icon-input"
+                                                        id="icon_<%= index %>" name="features[<%= index %>][icon]"
+                                                        value="<%= feature.icon %>" data-index="<%= index %>">
+                                                </div>
+                                                <small class="text-muted">Example: bx bx-truck, bx bx-headphone</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="title_<%= index %>" class="form-label">Title</label>
+                                                <input type="text" class="form-control" id="title_<%= index %>"
+                                                    name="features[<%= index %>][title]" value="<%= feature.title %>">
+                                            </div>
+                                            <div class="mb-0">
+                                                <label for="subtitle_<%= index %>" class="form-label">Sub-title</label>
+                                                <textarea class="form-control" id="subtitle_<%= index %>"
+                                                    name="features[<%= index %>][subtitle]"
+                                                    rows="2"><%= feature.subtitle %></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="btn btn-primary me-sm-3 me-1">Save Changes</button>
+                            <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Icon preview update
+        document.querySelectorAll('.icon-input').forEach(input => {
+            input.addEventListener('input', function () {
+                const index = this.dataset.index;
+                const preview = document.getElementById('preview_' + index);
+                preview.className = this.value;
+            });
+        });
+    });
+</script>

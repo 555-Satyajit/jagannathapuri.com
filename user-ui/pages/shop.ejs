@@ -1,0 +1,517 @@
+<!-- ========== Breadcrumb Section Start ========== -->
+<div class="container py-12">
+  <div class="breadcrumb">
+    <ul>
+      <li>
+        <a href='/'>
+          <span class="inline-flex items-center justify-center">
+            <i class="hgi hgi-stroke hgi-home-01 text-2xl leading-6"></i></span>Home</a>
+      </li>
+      <li class="text-light-disabled-text">&#8226;</li>
+      <li><span class="text-sm leading-[22px]">Categories</span></li>
+    </ul>
+  </div>
+</div>
+<!-- ========== Breadcrumb Section End ========== -->
+
+<!-- ========== Filter with 3-column Section Start ========== -->
+<section class="pb-[90px]">
+  <div class="container">
+    <div class="grid grid-cols-12 lg:gap-x-6 gap-y-6">
+      <div class="xl:col-span-3 lg:col-span-4 col-span-12 row-start-2 lg:row-start-auto">
+        <div class="sidebar sticky top-20">
+          <form id="shopFilterForm" action="/shop" method="GET" class="border border-gray-300 rounded-2xl">
+            <!-- title -->
+            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title wow animate__animated animate__fadeInUp"
+              data-wow-delay=".2s">
+              <div class="flex items-center justify-between">
+                <h5 class="text-light-primary-text">Filters</h5>
+                <a href="/shop" class="text-primary text-base leading-[26px] font-semibold hover:underline">Clear
+                  All</a>
+              </div>
+            </div>
+
+            <!-- category -->
+            <div class="px-6 py-6">
+              <!-- Category-content -->
+              <div class="widget-category wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                <div class="flex flex-col gap-y-4 pb-8 border-b border-gray-300">
+                  <div class="flex items-center justify-between widget-category-title">
+                    <h6>Category</h6>
+                    <a href="?<%= new URLSearchParams({...filters.query, category: undefined}).toString() %>"
+                      class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                  </div>
+
+                  <div class="widget-category-content-list">
+                    <div class="max-h-[170px] overflow-y-auto pr-2.5 category-scroll">
+                      <ul class="flex flex-col gap-y-2">
+                        <li class="widget-category-content-list-items">
+                          <label class="group flex items-center justify-between w-full cursor-pointer">
+                            <span class="flex items-center gap-x-2">
+                              <span
+                                class="group-has-[input:checked]:group-hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full group-hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                                <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                  <input type="radio" name="category" value="all"
+                                    class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all duration-300 ease-in-out"
+                                    <%=(!filters.query.category || filters.query.category==='all' ) ? 'checked' : '' %>
+                                  onchange="this.form.submit()"
+                                  />
+                                  <span
+                                    class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                    <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                  </span>
+                                </span>
+                              </span>
+                              <span
+                                class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                All Categories
+                              </span>
+                            </span>
+                          </label>
+                        </li>
+                        <% filters.categories.forEach(cat=> { %>
+                          <li class="widget-category-content-list-items">
+                            <label class="group flex items-center justify-between w-full cursor-pointer">
+                              <span class="flex items-center gap-x-2">
+                                <!-- custom checkbox wrapper -->
+                                <span
+                                  class="group-has-[input:checked]:group-hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full group-hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                                  <span class="relative inline-flex w-5 h-5 items-center justify-center">
+                                    <input type="radio" name="category" value="<%= cat.slug %>"
+                                      class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all duration-300 ease-in-out"
+                                      <%=filters.query.category===cat.slug ? 'checked' : '' %>
+                                    onchange="this.form.submit()"
+                                    />
+
+                                    <!-- checkbox tick icon -->
+                                    <span
+                                      class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                      <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                    </span>
+                                  </span>
+                                </span>
+                                <span
+                                  class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                  <%= cat.name %>
+                                </span>
+                              </span>
+                              <span class="group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                (<%= cat._count.products %>)
+                              </span>
+                            </label>
+                          </li>
+                          <% }) %>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- PRICE-Range-content -->
+              <div class="widget-price-range wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                <div class="flex flex-col gap-y-6 py-8 border-b border-gray-300 widget-price-range-title">
+                  <div class="flex items-center justify-between">
+                    <h6>Price Range</h6>
+                    <a href="?<%= new URLSearchParams({...filters.query, min_price: undefined, max_price: undefined}).toString() %>"
+                      class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                  </div>
+                  <div id="price-range-slider" data-min="<%= filters.priceMin %>" data-max="<%= filters.priceMax %>"
+                    data-start-min="<%= filters.query.min_price || filters.priceMin %>"
+                    data-start-max="<%= filters.query.max_price || filters.priceMax %>">
+                  </div>
+                  <div class="price-range-values flex items-center justify-between">
+                    <div class="input-group medium max-w-[147px] w-full rounded-[80px] py-2 px-3.5">
+                      <div class="input-group-addon inline-flex items-center justify-center leading-6"
+                        data-align="inline-start">
+                        ₹
+                      </div>
+                      <input class="price-range-min-value form-control" type="text" name="min_price"
+                        value="<%= filters.query.min_price || filters.priceMin %>" onchange="this.form.submit()" />
+                    </div>
+                    <span class="text-sm leading-[22px] text-light-disabled-text">To</span>
+                    <div class="input-group medium max-w-[147px] w-full rounded-[80px] py-2 px-3.5">
+                      <div class="input-group-addon inline-flex items-center justify-center leading-6"
+                        data-align="inline-start">
+                        ₹
+                      </div>
+                      <input class="price-range-max-value form-control" type="text" name="max_price"
+                        value="<%= filters.query.max_price || filters.priceMax %>" onchange="this.form.submit()" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Rating-content -->
+              <div class="widget-rating wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                <div class="flex flex-col gap-y-4 py-8 border-b border-gray-300">
+                  <div class="flex items-center justify-between widget-rating-title">
+                    <h6 class="text-light-primary-text">Rating</h6>
+                    <a href="?<%= new URLSearchParams({...filters.query, rating: undefined}).toString() %>"
+                      class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                  </div>
+                  <div class="ratings">
+                    <ul class="flex items-center flex-wrap gap-3">
+                      <% [5, 4, 3, 2, 1].forEach(star=> { %>
+                        <li>
+                          <label class="cursor-pointer">
+                            <input type="radio" name="rating" value="<%= star %>" class="peer hidden"
+                              <%=filters.query.rating==star ? 'checked' : '' %>
+                            onchange="this.form.submit()">
+                            <span
+                              class="btn btn-default outline shadow-none gap-x-1.5 items-center text-base leading-6 px-2.5 py-1.5 rounded-[80px] peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all duration-300">
+                              <%= star %>
+                                <div class="flex text-[#FFC107]">
+                                  <% for(let i=1; i <=5; i++) { %>
+                                    <i class="bx <%= i <= star ? 'bxs-star' : 'bx-star' %> text-sm"></i>
+                                    <% } %>
+                                </div>
+                            </span>
+                          </label>
+                        </li>
+                        <% }) %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Color-content -->
+              <% const colorAttr=filters.attributes.find(a=> a.name === 'Color'); %>
+                <% if (colorAttr && colorAttr.values && colorAttr.values.length> 0) { %>
+                  <div class="widget-color-picker wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                    <div class="flex flex-col gap-y-4 py-8 border-b border-gray-300">
+                      <div class="flex items-center justify-between widget-color-title">
+                        <h6>Color</h6>
+                        <a href="/shop"
+                          class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                      </div>
+                      <div class="colors">
+                        <ul class="flex items-center flex-wrap gap-5">
+                          <% colorAttr.values.forEach(color=> { %>
+                            <% const isChecked=filters.query.Color===color; %>
+                              <li class="inline-flex items-center justify-center">
+                                <label class="cursor-pointer">
+                                  <input type="checkbox" name="Color" value="<%= color %>"
+                                    class="w-5 h-5 appearance-none rounded-full border border-gray-200 cursor-pointer checked:ring-2 checked:ring-offset-1 checked:ring-primary transition-all"
+                                    style="background-color: <%= color.toLowerCase() %>;" <%=isChecked ? 'checked' : ''
+                                    %>
+                                  onchange="this.form.submit()" />
+                                </label>
+                              </li>
+                              <% }) %>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <% } %>
+
+                    <!-- Size-content -->
+                    <% const sizeAttr=filters.attributes.find(a=> a.name === 'Size'); %>
+                      <% if (sizeAttr && sizeAttr.values && sizeAttr.values.length> 0) { %>
+                        <div class="widget-size-picker wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                          <div class="flex flex-col gap-y-4 py-8 border-b border-gray-300">
+                            <div class="flex items-center justify-between widget-size-title">
+                              <h6>Size</h6>
+                              <a href="/shop"
+                                class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                            </div>
+                            <div class="sizes">
+                              <ul class="flex items-center flex-wrap gap-3">
+                                <% sizeAttr.values.forEach(size=> { %>
+                                  <% const isSizeChecked=filters.query.Size===size; %>
+                                    <li>
+                                      <label class="cursor-pointer">
+                                        <input type="checkbox" name="Size" value="<%= size %>" class="peer hidden"
+                                          <%=isSizeChecked ? 'checked' : '' %> onchange="this.form.submit()" />
+                                        <span
+                                          class="btn btn-default outline shadow-none py-[7px] px-[15px] rounded-[80px] peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all">
+                                          <%= size %>
+                                        </span>
+                                      </label>
+                                    </li>
+                                    <% }) %>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <% } %>
+                          <!-- Discount-content (Hidden) -->
+                          <!-- <div class="widget-discount wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                            ...
+                          </div> -->
+
+                          <!-- Brand-content -->
+                          <% if (filters.brands && filters.brands.length> 0) { %>
+                            <div class="widget-brand wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                              <div class="flex flex-col gap-y-4 py-8 border-b border-gray-300">
+                                <div class="flex items-center justify-between widget-brand-title">
+                                  <h6>Brand</h6>
+                                  <a href="/shop"
+                                    class="text-base leading-[26px] hover:underline hover:text-primary transition-colors duration-300 ease-in-out">Reset</a>
+                                </div>
+                                <div class="brand-content-list">
+                                  <div class="max-h-[170px] overflow-y-auto pr-2.5 category-scroll">
+                                    <ul class="flex flex-col gap-y-2">
+                                      <% filters.brands.forEach(brand=> { %>
+                                        <% const isBrandChecked=filters.query.brand===brand; %>
+                                          <li class="brand-list-item">
+                                            <label
+                                              class="group flex items-center justify-between w-full cursor-pointer">
+                                              <span class="flex items-center gap-x-2">
+                                                <!-- custom checkbox wrapper -->
+                                                <span
+                                                  class="group-has-[input:checked]:group-hover:bg-[#00AB55]/8 flex items-center justify-center w-9 h-9 bg-transparent rounded-full group-hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                                                  <span
+                                                    class="relative inline-flex w-5 h-5 items-center justify-center">
+                                                    <input type="radio" name="brand" value="<%= brand %>"
+                                                      class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all duration-300 ease-in-out"
+                                                      <%=isBrandChecked ? 'checked' : '' %>
+                                                    onchange="this.form.submit()" />
+
+                                                    <!-- checkbox tick icon -->
+                                                    <span
+                                                      class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                                                      <i
+                                                        class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                                                    </span>
+                                                  </span>
+                                                </span>
+                                                <span
+                                                  class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                                  <%= brand %>
+                                                </span>
+                                              </span>
+                                            </label>
+                                          </li>
+                                          <% }) %>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <% } %>
+
+                              <!-- Pack-size-content (Hidden) -->
+                              <!-- <div class="widget-pack-size wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                            ...
+                          </div> -->
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="xl:col-span-9 lg:col-span-8 col-span-12 row-start-1 lg:row-start-auto">
+        <div class="flex items-center justify-between pb-12 wow animate__animated animate__fadeInUp"
+          data-wow-delay=".2s">
+          <div class="flex items-center gap-x-4 shrink-0 justify-start">
+            <!-- vendor-filter-button -->
+            <div class="flex items-center gap-x-4">
+              <a class='w-10 h-10 rounded-full inline-flex items-center justify-center btn btn-default outline shadow-none cursor-pointer'
+                href='banner-list-with-sidebar.html'>
+                <span class="inline-flex items-center justify-center">
+                  <i class="hgi hgi-stroke hgi-left-to-right-list-bullet text-2xl leading-6"></i>
+                </span>
+              </a>
+              <a href="##"
+                class="w-10 h-10 rounded-full inline-flex items-center justify-center btn-primary cursor-pointer">
+                <span class="inline-flex items-center justify-center"><i
+                    class="hgi hgi-stroke hgi-more-01 text-2xl leading-6 text-white"></i></span>
+              </a>
+            </div>
+            <div class="lg:flex hidden">
+              <p class="text-light-secondary-text">
+                Showing <%= (pagination.currentPage - 1) * 12 + 1 %>-<%= Math.min(pagination.currentPage * 12,
+                    pagination.totalProducts) %> of <%= pagination.totalProducts %> results
+              </p>
+            </div>
+          </div>
+          <!-- Sorting -->
+          <div class="relative min-w-[100px]">
+            <select id="sorting" name="sort" form="shopFilterForm" class="filter-select label"
+              onchange="this.form.submit()">
+              <option value="latest" <%=filters.query.sort==='latest' ? 'selected' : '' %>>Latest</option>
+              <option value="price_asc" <%=filters.query.sort==='price_asc' ? 'selected' : '' %>>Price: Low to High
+              </option>
+              <option value="price_desc" <%=filters.query.sort==='price_desc' ? 'selected' : '' %>>Price: High to Low
+              </option>
+              <option value="name_asc" <%=filters.query.sort==='name_asc' ? 'selected' : '' %>>Name: A-Z</option>
+            </select>
+            <label for="sorting" class="nice-select-label">Sorting</label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-6 pb-12">
+          <!-- products -->
+          <% if (products.length> 0) { %>
+            <% products.forEach(product=> { %>
+              <div class="xl:col-span-4 md:col-span-6 col-span-12 wow animate__animated animate__fadeInUp"
+                data-wow-delay=".2s">
+                <div class="border border-gray-300 rounded-2xl product-card-1 p-4 group">
+                  <div class="product-image-container relative">
+                    <div class="product-image rounded-xl bg-[#F4F3F5] mb-4 overflow-hidden">
+                      <a href='/product-details/<%= product.slug %>'>
+                        <% let imageSrc='/assets/images/logo.png' ; if (product.images && product.images.length> 0 &&
+                          product.images[0]) {
+                          let dbImage = product.images[0].trim();
+                          if (dbImage.startsWith('http') || dbImage.startsWith('/')) {
+                          imageSrc = dbImage;
+                          } else {
+                          imageSrc = '/uploads/' + dbImage;
+                          }
+                          }
+                          %>
+                          <img src="<%= imageSrc %>" alt="<%= product.product_name %>"
+                            class="group-hover:scale-110 transition-all transform group-hover:-rotate-3 ease-in-out duration-300 w-full h-[250px] object-cover" />
+                      </a>
+                    </div>
+                    <div
+                      class="product-btn-actions absolute bottom-0 right-0 left-0 flex justify-center z-9 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-hover:bottom-3">
+                      <ul class="flex items-center gap-x-px">
+                        <li>
+                          <button aria-label='Add to Wishlist'
+                            class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm before:absolute before:left-[calc(50%-8px)] before:bottom-full before:z-9 before:border-8 before:border-transparent before:border-t-black before:opacity-0 before:invisible before:-mb-3.5 hover:before:opacity-100 hover:before:visible before:transition-all before:duration-300 after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-800 after:whitespace-nowrap after:text-white after:text-xs after:leading-[18px] after:py-[3px] after:px-2 after:content-[attr(aria-label)] after:opacity-0 after:invisible after:transition-all after:duration-300 hover:after:opacity-100 hover:after:visible hover:after:-translate-y-2.5 hover:before:-translate-y-2.5'
+                            onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                            <i
+                              class="bx text-2xl leading-6 <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="product-content">
+                    <h5 class="text-base leading-6 font-semibold font-dm-sans mb-4">
+                      <a href='/product-details/<%= product.slug %>'>
+                        <%= product.product_name %>
+                      </a>
+                    </h5>
+                    <div class="rating-section flex items-center mb-4">
+                      <div class="flex text-yellow-400">
+                        <% for(let i=1; i <=5; i++) { %>
+                          <i
+                            class="bx <%= i <= Math.round(product.averageRating) ? 'bxs-star' : 'bx-star' %> text-sm"></i>
+                          <% } %>
+                      </div>
+                      <span class="text-sm leading-[22px] font-normal inline-block ml-2 text-gray-500">(<%=
+                          product.reviewsCount %>)</span>
+                    </div>
+                    <div class="price-section flex items-center gap-x-3 mb-2">
+                      <% if (product.on_sale && product.sale_price && product.regular_price) { %>
+                        <span class="current-price text-base font-semibold text-light-primary-text">
+                          ₹<%= product.sale_price %>
+                        </span>
+                        <span
+                          class="old-price text-sm leading-[22px] font-normal text-light-disabled-text line-through">
+                          ₹<%= product.regular_price %>
+                        </span>
+                        <% let discount=Math.round(((product.regular_price - product.sale_price) /
+                          product.regular_price) * 100); %>
+                          <span class="discount-percentage text-sm leading-[22px] font-semibold text-error">
+                            <%= discount %>% OFF
+                          </span>
+                          <% } else { %>
+                            <span class="current-price text-base font-semibold text-light-primary-text">
+                              ₹<%= product.regular_price || product.price_amount %>
+                            </span>
+                            <% } %>
+                    </div>
+                    <div class="btn-section flex items-center gap-x-4">
+                      <button
+                        class='wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300'
+                        onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                        <i
+                          class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
+                      </button>
+                      <!-- Add to Cart Form -->
+                      <form action="/cart/add" method="POST" class="flex-1">
+                        <input type="hidden" name="productId" value="<%= product.id %>">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit"
+                          class='btn btn-primary rounded-full font-semibold text-sm leading-6 px-6.5 py-2 w-full flex items-center justify-center gap-x-2 add-to-cart-btn'>
+                          <i class="hgi hgi-stroke hgi-shopping-cart-02 text-xl text-white"></i>
+                          <span>Add to Cart</span>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <div class="col-span-12 text-center py-10">
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                  </div>
+                  <% } %>
+        </div>
+
+        <!-- pagination -->
+        <div class="grid grid-cols-12 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+          <div class="col-span-12">
+            <% if (pagination.totalPages> 1) { %>
+              <ul class="flex items-center justify-center gap-x-1.5 blog-pagination">
+                <!-- Prev -->
+                <li class="group blog-pagination-item">
+                  <a href="<%= pagination.hasPrevPage ? '?page=' + (pagination.currentPage - 1) + '&' + new URLSearchParams({...filters.query, page: undefined}).toString() : 'javascript:void(0)' %>"
+                    class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] bg-white cursor-pointer border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out <%= !pagination.hasPrevPage ? 'pointer-events-none opacity-50' : '' %>">
+                    <span class="inline-flex items-center justify-center">
+                      <i
+                        class="hgi hgi-stroke hgi-arrow-left-01 text-[20px] group-hover:font-semibold leading-5 text-light-primary-text group-hover:text-primary"></i></span>
+                  </a>
+                </li>
+
+                <!-- Pages -->
+                <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                  <% const isCurrent=pagination.currentPage===i; %>
+                    <li class="group blog-pagination-item">
+                      <a href="?page=<%= i %>&<%= new URLSearchParams({...filters.query, page: undefined}).toString() %>"
+                        class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] <%= isCurrent ? 'active bg-primary text-white' : 'bg-white text-light-primary-text group-hover:text-primary group-hover:font-semibold border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)]' %> transition-colors duration-300 ease-in-out">
+                        <%= i %>
+                      </a>
+                    </li>
+                    <% } %>
+
+                      <!-- Next -->
+                      <li class="group blog-pagination-item">
+                        <a href="<%= pagination.hasNextPage ? '?page=' + (pagination.currentPage + 1) + '&' + new URLSearchParams({...filters.query, page: undefined}).toString() : 'javascript:void(0)' %>"
+                          class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] group-hover:font-semibold bg-white cursor-pointer border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out <%= !pagination.hasNextPage ? 'pointer-events-none opacity-50' : '' %>">
+                          <span class="inline-flex items-center justify-center">
+                            <i
+                              class="hgi hgi-stroke hgi-arrow-right-01 text-[20px] leading-5 group-hover:font-semibold text-light-primary-text group-hover:text-primary"></i></span>
+                        </a>
+                      </li>
+              </ul>
+              <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ========== Filter with 3-column Section End ========== -->
+
+<!-- ========== Subscribe Section Start ========== -->
+<section
+  class="px-4 md:px-0 max-w-[932px] mx-auto text-center lg:pb-6 pb-[70px] lg:rounded-[164px] -mb-[100px] relative z-10 bg-white xl:before:absolute xl:before:bottom-0 xl:before:left-[-23px] xl:before:h-[100px] xl:before:w-[145px] xl:before:bg-[url('../images/footer-left-shape.png')] xl:before:bg-no-repeat xl:before:z-11 xl:after:absolute xl:after:bottom-0 xl:after:right-[-23px] xl:after:h-[100px] xl:after:w-[145px] xl:after:bg-[url('../images/footer-right-shape.png')] xl:after:bg-no-repeat xl:after:z-11">
+  <h3 class="mb-4 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+    Subscribe to our newsletter
+  </h3>
+  <p class="mb-6 text-dark-secondary-text wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+    Stay updated! Subscribe to our mailing list for news, updates, and
+    exclusive offers.
+  </p>
+  <div
+    class="input-group medium w-full md:max-w-[420px] mx-auto pl-4 py-1.5 pr-2.5 rounded-[100px] wow animate__animated animate__fadeInUp"
+    data-wow-delay=".2s">
+    <div class="input-group-addon inline-flex items-center" data-align="inline-start">
+      <i class="hgi hgi-stroke hgi-mail-02 text-2xl"></i>
+    </div>
+    <input type="text" class="peer form-control placeholder-transparent focus:placeholder-transparent"
+      placeholder="Enter your email" name="email" id="email" />
+    <label
+      class="absolute left-12 peer-focus:left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:left-[14px] bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1"
+      for="email">Enter your email</label>
+    <div class="input-group-addon" data-align="inline-end">
+      <button class="btn btn-primary btn-medium rounded-3xl">
+        Subscribe
+      </button>
+    </div>
+  </div>
+</section>
+<!-- ========== Subscribe Section End ========== -->

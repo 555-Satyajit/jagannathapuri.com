@@ -1,0 +1,195 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Manage Library / </span>
+        <%= content ? 'Edit' : 'Add' %> Content
+    </h4>
+
+    <form id="libraryContentForm" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<%= content ? content.id : '' %>">
+        <div class="row">
+            <!-- Left Column: Content -->
+            <div class="col-12 col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">General Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" name="title" id="lib-title"
+                                    value="<%= content ? content.title : '' %>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Slug</label>
+                                <input type="text" class="form-control" name="slug" id="lib-slug"
+                                    value="<%= content ? content.slug : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subtitle (Details Hero)</label>
+                            <input type="text" class="form-control" name="subtitle"
+                                value="<%= content ? content.subtitle : '' %>"
+                                placeholder="e.g. A spiritual analysis of Hanuman Chalisa">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Summary (Grid View)</label>
+                            <textarea class="form-control" name="summary" rows="2"
+                                placeholder="Brief summary for the library grid view..."><%= content ? content.summary : '' %></textarea>
+                        </div>
+
+                        <!-- Quill Editor -->
+                        <div class="mb-3">
+                            <label class="form-label">Main Content</label>
+                            <div id="full-editor" style="height: 400px;">
+                                <%- content ? content.content : '' %>
+                            </div>
+                            <input type="hidden" name="content" id="quill-content">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Settings -->
+            <div class="col-12 col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Organization</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select select2" name="categoryId" required>
+                                <% categories.forEach(cat=> { %>
+                                    <option value="<%= cat.id %>" <%=content && content.categoryId===cat.id ? 'selected'
+                                        : '' %>><%= cat.name %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tags</label>
+                            <input id="lib-tags" class="form-control" name="tags"
+                                value="<%= content ? content.tags.map(t => t.name).join(',') : 'Devotion,Peace' %>" />
+                            <small class="text-muted">Type and press enter to add new tags</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Author</label>
+                            <input type="text" class="form-control" name="author"
+                                value="<%= content ? content.author : 'Jay Subhdra Team' %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status">
+                                <option value="Active" <%=content && content.status==='Active' ? 'selected' : '' %>
+                                    >Active</option>
+                                <option value="Inactive" <%=content && content.status==='Inactive' ? 'selected' : '' %>
+                                    >Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Media</h5>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Banner Image</label>
+                        <input type="file" class="form-control mb-2" name="image" id="banner-input">
+                        <% if (content && content.image) { %>
+                            <div class="mb-2">
+                                <img src="/uploads/<%= content.image %>" class="rounded w-100" id="banner-preview">
+                            </div>
+                            <% } %>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/admin/library/content" class="btn btn-label-secondary text-nowrap">Discard</a>
+                    <button type="submit" class="btn btn-primary w-100">Publish Content</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Init Tagify
+        const tagInput = document.querySelector('#lib-tags');
+        new Tagify(tagInput);
+
+        // Init Quill
+        const quill = new Quill('#full-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: [
+                        [{ 'header': [1, 2, 3, 4, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                    ],
+                    handlers: {
+                        image: imageHandler
+                    }
+                }
+            }
+        });
+
+        function imageHandler() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files[0];
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const res = await fetch('/admin/library/content/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.url) {
+                    const range = quill.getSelection();
+                    quill.insertEmbed(range.index, 'image', data.url);
+                }
+            };
+        }
+
+        // Slug Gen
+        const titleInput = document.getElementById('lib-title');
+        const slugInput = document.getElementById('lib-slug');
+        titleInput.oninput = function () {
+            slugInput.value = titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        };
+
+        // Submit
+        const form = document.getElementById('libraryContentForm');
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+            document.getElementById('quill-content').value = quill.root.innerHTML;
+
+            const formData = new FormData(form);
+            const res = await fetch('/admin/library/content/save', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.redirected) {
+                window.location.href = res.url;
+            } else {
+                const data = await res.json();
+                if (data.success) window.location.href = '/admin/library/content';
+                else alert('Error saving content');
+            }
+        };
+    });
+</script>

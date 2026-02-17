@@ -1,0 +1,349 @@
+<!-- ========== Tailwind CSS ========== -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        corePlugins: {
+            preflight: false,
+        },
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#6200EA',
+                    secondary: '#3366ff',
+                    'primary-lighter': '#EDE7F6',
+                    'primary-light': '#B388FF',
+                    'primary-dark': '#3700B3',
+                },
+                fontFamily: {
+                    'urbanist': ['Urbanist', 'sans-serif'],
+                    'dm-sans': ['DM Sans', 'sans-serif'],
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.5rem;
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+    }
+
+    .calendar-day:hover {
+        background-color: var(--color-primary-lighter);
+        color: var(--color-primary);
+    }
+
+    .calendar-day.active {
+        background-color: var(--color-primary);
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 6px -1px rgba(98, 0, 234, 0.3);
+    }
+
+    .calendar-day.inactive {
+        color: #9CA3AF;
+        pointer-events: none;
+    }
+
+    .event-dot {
+        width: 4px;
+        height: 4px;
+        background-color: #EF4444;
+        /* red-500 */
+        border-radius: 50%;
+        position: absolute;
+        bottom: 6px;
+    }
+
+    .calendar-day.active .event-dot {
+        background-color: white;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="py-12 bg-[#F9FAFB] border-b border-gray-200">
+    <div class="container text-center">
+        <span
+            class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-primary/10 text-primary text-sm font-semibold border border-primary/20 mb-4">
+            <i class="hgi hgi-stroke hgi-calendar-03 text-sm"></i> Vedic Calendar 2026
+        </span>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 font-urbanist tracking-tight">
+            Daily Panchang & Almanac
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto font-dm-sans leading-relaxed">
+            Access the complete Vedic calendar with accurate Tithi, Nakshatra, and auspicious timings for every day.
+        </p>
+    </div>
+</section>
+
+<!-- 3-Column Dashboard Section -->
+<section class="py-12 bg-[#F9FAFB] min-h-screen">
+    <div class="container max-w-[1400px]">
+
+        <!-- Date Picker / Navigation Header -->
+        <div data-initial-date="<%= selectedDate %>"
+            class="flex flex-col md:flex-row items-center justify-between mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <button id="panchang-date-prev" type="button" aria-label="Previous day"
+                    class="w-10 h-10 rounded-full bg-primary-lighter flex items-center justify-center text-primary hover:bg-primary-lighter/80 transition-colors">
+                    <i class="hgi hgi-stroke hgi-arrow-left-01"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-gray-900 font-urbanist flex items-center gap-2">
+                    <i class="hgi hgi-stroke hgi-calendar-03 text-primary"></i>
+                    <span id="panchang-date-display" aria-live="polite">
+                        <%= new Date(selectedDate).toLocaleDateString('en-GB', { day: 'numeric' , month: 'long' ,
+                            year: 'numeric' }) %>
+                    </span>
+                </h2>
+                <button id="panchang-date-next" type="button" aria-label="Next day"
+                    class="w-10 h-10 rounded-full bg-primary-lighter flex items-center justify-center text-primary hover:bg-primary-lighter/80 transition-colors">
+                    <i class="hgi hgi-stroke hgi-arrow-right-01"></i>
+                </button>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-3">
+                <button id="panchang-date-today" type="button"
+                    class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary-dark transition-colors shadow-sm">Today</button>
+                <button id="panchang-date-select" type="button"
+                    class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors">Select
+                    Date</button>
+                <input id="panchang-date-input" type="date" value="<%= selectedDate %>" class="sr-only"
+                    aria-hidden="true" tabindex="-1" />
+            </div>
+        </div>
+
+        <% if (panchang) { %>
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+                <!-- COLUMN 1: Summary & Timings (3 cols) -->
+                <div class="xl:col-span-3 space-y-6">
+
+                    <!-- Dynamic Sections (First Section) -->
+                    <% if (panchang.data && panchang.data.sections && panchang.data.sections.length> 0) {
+                        const firstSection = panchang.data.sections[0];
+                        %>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
+                            <div
+                                class="absolute top-0 right-0 w-32 h-32 bg-primary-lighter rounded-bl-full -mr-8 -mt-8 opacity-50">
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 font-urbanist leading-tight mb-2">
+                                <%= firstSection.title %>
+                            </h3>
+                            <div class="space-y-2">
+                                <% firstSection.fields.forEach(field=> { %>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-500">
+                                            <%= field.label %>
+                                        </span>
+                                        <span class="font-bold text-gray-900 text-right">
+                                            <%= field.value %>
+                                        </span>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <!-- Subsequent Sections in Column 1 (Excluding "Panchang Details") -->
+                            <% if (panchang.data && panchang.data.sections) {
+                                panchang.data.sections.slice(1).forEach(section=> {
+                                if (section.title !== 'Panchang Details') {
+                                %>
+                                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                                    <h3 class="font-bold text-gray-900 mb-4 flex items-center justify-between">
+                                        <span>
+                                            <%= section.title %>
+                                        </span>
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <% section.fields.forEach(field=> { %>
+                                            <div
+                                                class="bg-primary-lighter/20 rounded-xl p-3 border border-primary-lighter/40">
+                                                <span class="text-primary font-bold text-xs block mb-1">
+                                                    <%= field.label %>
+                                                </span>
+                                                <span class="text-gray-900 font-bold text-sm">
+                                                    <%= field.value %>
+                                                </span>
+                                            </div>
+                                            <% }) %>
+                                    </div>
+                                </div>
+                                <% }})} %>
+
+                </div>
+
+                <!-- COLUMN 2: Data Grid (6 cols) - Displaying "Panchang Details" -->
+                <div class="xl:col-span-6 space-y-6">
+                    <% const detailsSection=(panchang.data && panchang.data.sections) ? panchang.data.sections.find(s=>
+                        s.title === 'Panchang Details') : null;
+                        if (detailsSection) {
+                        %>
+                        <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100 h-full">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3
+                                    class="text-xl font-bold text-gray-900 font-urbanist border-l-4 border-primary pl-3">
+                                    Panchang Details</h3>
+                            </div>
+                            <!-- Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+                                <% detailsSection.fields.forEach(field=> { %>
+                                    <div class="border-b border-gray-100 pb-4">
+                                        <span
+                                            class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1 block">
+                                            <%= field.label %>
+                                        </span>
+                                        <h4 class="font-bold text-gray-900 text-lg mb-1">
+                                            <%= field.value %>
+                                        </h4>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100 text-center">
+                                <p class="text-gray-500 italic">No specific Panchang Details found for this date.</p>
+                            </div>
+                            <% } %>
+                </div>
+
+                <!-- COLUMN 3: Festivals (3 cols) -->
+                <div class="xl:col-span-3 space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
+                        <h3 class="text-xl font-bold text-gray-900 font-urbanist mb-6 border-l-4 border-primary pl-3">
+                            Upcoming Festivals</h3>
+
+                        <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-1">
+                            <% if (upcomingFestivals && upcomingFestivals.length> 0) { %>
+                                <% upcomingFestivals.forEach(fest=> { %>
+                                    <div
+                                        class="flex items-center justify-between p-3 <%= fest.date.toISOString().split('T')[0] === selectedDate ? 'bg-primary-lighter/20 border-l-4 border-l-primary' : 'hover:bg-primary-lighter/30' %> rounded-xl transition-colors group cursor-pointer border-b border-gray-50 last:border-0">
+                                        <span class="text-xs text-gray-500 font-medium">
+                                            <%= new Date(fest.date).toLocaleDateString('en-GB', { day: 'numeric' ,
+                                                month: 'short' }) %>
+                                        </span>
+                                        <span
+                                            class="text-sm font-bold text-gray-800 group-hover:text-primary text-right">
+                                            <%= fest.name %>
+                                        </span>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <p class="text-center text-xs text-gray-400 py-4">No upcoming festivals.</p>
+                                            <% } %>
+                        </div>
+
+                        <div class="pt-4 text-center border-t border-gray-100 mt-2">
+                            <button
+                                class="text-xs font-bold text-primary hover:text-primary-dark uppercase tracking-wider">View
+                                Full Year Calendar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } else { %>
+                <div
+                    class="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center min-h-[400px] flex flex-col justify-center items-center">
+                    <i class="hgi hgi-stroke hgi-calendar-03 text-6xl text-gray-200 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">No Panchang Data Found</h3>
+                    <p class="text-gray-500 max-w-md mx-auto">Astrological data for <%= new
+                            Date(selectedDate).toLocaleDateString('en-GB', { day: 'numeric' , month: 'long' ,
+                            year: 'numeric' }) %> is not yet available.</p>
+                </div>
+                <% } %>
+    </div>
+</section>
+
+<script>
+        (function () {
+            const dateInput = document.getElementById('panchang-date-input');
+            const prevBtn = document.getElementById('panchang-date-prev');
+            const nextBtn = document.getElementById('panchang-date-next');
+            const todayBtn = document.getElementById('panchang-date-today');
+            const selectBtn = document.getElementById('panchang-date-select');
+
+            const navigateToDate = (date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                const iso = `${y}-${m}-${d}`;
+                window.location.href = `/panchang?date=${iso}`;
+            };
+
+            const fromISO = (iso) => {
+                const [y, m, d] = iso.split('-').map(Number);
+                return new Date(y, m - 1, d);
+            };
+
+            prevBtn.addEventListener('click', () => {
+                const current = fromISO(dateInput.value);
+                current.setDate(current.getDate() - 1);
+                navigateToDate(current);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const current = fromISO(dateInput.value);
+                current.setDate(current.getDate() + 1);
+                navigateToDate(current);
+            });
+
+            todayBtn.addEventListener('click', () => navigateToDate(new Date()));
+
+            selectBtn.addEventListener('click', () => {
+                if (dateInput.showPicker) {
+                    dateInput.showPicker();
+                } else {
+                    dateInput.focus();
+                    dateInput.click();
+                }
+            });
+
+            dateInput.addEventListener('change', (event) => {
+                if (!event.target.value) return;
+                window.location.href = `/panchang?date=${event.target.value}`;
+            });
+        })();
+</script>
+
+<!-- ========== Subscribe Section Start ========== -->
+<section
+    class="px-4 md:px-0 max-w-[932px] mx-auto text-center lg:pb-6 pb-[70px] lg:rounded-[164px] -mb-[100px] relative z-10 bg-white xl:before:absolute xl:before:bottom-0 xl:before:left-[-23px] xl:before:h-[100px] xl:before:w-[145px] xl:before:bg-[url('/assets/images/footer-left-shape.png')] xl:before:bg-no-repeat xl:before:z-11 xl:after:absolute xl:after:bottom-0 xl:after:right-[-23px] xl:after:h-[100px] xl:after:w-[145px] xl:after:bg-[url('/assets/images/footer-right-shape.png')] xl:after:bg-no-repeat xl:after:z-11">
+    <h3 class="mb-4 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+        Subscribe to our newsletter
+    </h3>
+    <p class="mb-6 text-dark-secondary-text wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+        Stay updated! Subscribe to our mailing list for news, updates, and
+        exclusive offers.
+    </p>
+    <div class="input-group medium w-full md:max-w-[420px] mx-auto pl-4 py-1.5 pr-2.5 rounded-[100px] wow animate__animated animate__fadeInUp relative"
+        data-wow-delay=".2s">
+        <div class="input-group-addon inline-flex items-center" data-align="inline-start">
+            <i class="hgi hgi-stroke hgi-mail-02 text-2xl"></i>
+        </div>
+        <input type="text"
+            class="peer form-control placeholder-transparent focus:placeholder-transparent outline-none ring-0 border-none bg-transparent"
+            placeholder="Enter your email" name="email" id="email" />
+        <label
+            class="absolute left-12 peer-focus:left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:left-[14px] bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1 cursor-text"
+            for="email">Enter your email</label>
+        <div class="input-group-addon" data-align="inline-end">
+            <button class="btn btn-primary btn-medium rounded-3xl">
+                Subscribe
+            </button>
+        </div>
+    </div>
+</section>
+<!-- ========== Subscribe Section End ========== -->

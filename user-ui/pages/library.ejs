@@ -1,0 +1,330 @@
+<!-- ========== Breadcrumb Section Start ========== -->
+<div class="py-12">
+    <div class="container">
+        <div class="breadcrumb">
+            <ul>
+                <li>
+                    <a href='/'>
+                        <span>
+                            <i class="hgi hgi-stroke hgi-home-01 text-[20px]"></i>
+                        </span>
+                        Home
+                    </a>
+                </li>
+                <li class="text-light-disabled-text">&#8226;</li>
+                <li><span>Library</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- ========== Breadcrumb Section End ========== -->
+
+<!-- ========== Blog Grid Section Start ========== -->
+<div class="pb-12">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-6">
+            <div class="xl:col-span-9 col-span-12">
+                <div class="flex items-center justify-between mb-12 wow animate__animated animate__fadeInUp"
+                    data-wow-delay="0.2s">
+                    <div class="flex items-center gap-x-4">
+                        <a class='w-10 h-10 rounded-full inline-flex items-center justify-center btn btn-default outline shadow-none cursor-pointer'
+                            href='blog-list.html'>
+                            <span class="inline-flex items-center justify-center">
+                                <i
+                                    class="hgi hgi-stroke hgi-left-to-right-list-bullet text-2xl leading-6 text-light-primary-text"></i>
+                            </span>
+                        </a>
+                        <a href="blog-grid.html#"
+                            class="w-10 h-10 rounded-full inline-flex items-center justify-center btn-primary cursor-pointer">
+                            <span class="inline-flex items-center justify-center"><i
+                                    class="hgi hgi-stroke hgi-more-01 text-2xl leading-6 text-white"></i></span>
+                        </a>
+                    </div>
+                    <!-- sorting -->
+                    <div class="relative min-w-[100px]">
+                        <select id="sorting" class="filter-select label">
+                            <option value="newest" selected>Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="most-viewed">Most Viewed</option>
+                            <option value="most-commented">Most Commented</option>
+                            <option value="a-z-order">A-Z Order</option>
+                            <option value="z-a-order">Z-A Order</option>
+                        </select>
+                        <label for="sorting" class="nice-select-label">Sorting</label>
+                    </div>
+                </div>
+                <div class="grid 2xl:grid-cols-3 xl:grid-cols-2 grid-cols-12 gap-6 pb-12 auto-rows-fr">
+                    <% if (contents && contents.length> 0) { %>
+                        <% contents.forEach((item, index)=> { %>
+                            <div class="2xl:col-span-1 xl:col-span-1 md:col-span-6 col-span-12 wow animate__animated animate__fadeInUp"
+                                data-wow-delay="<%= 0.2 + (index * 0.1) %>s">
+                                <div
+                                    class="h-full border border-gray-300 rounded-2xl p-6 hover:transform hover:translate-y-[-5px] hover:transition-all hover:ease-[cubic-bezier(0.02,0.01,0.47,1)] hover:duration-250 transition-all ease-[cubic-bezier(0.02,0.01,0.47,1)] duration-250 group flex flex-col justify-between">
+                                    <div>
+                                        <div class="mb-6 h-[250px] overflow-hidden rounded-2xl">
+                                            <% if (item.image) { %>
+                                                <img src="/uploads/<%= item.image %>" alt="<%= item.title %>"
+                                                    class="rounded-2xl w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    onerror="this.src='https://placehold.co/600x400/FFEB69/white?text=Spiritual+Wisdom'" />
+                                                <% } else { %>
+                                                    <img src="https://placehold.co/600x400/FFEB69/white?text=Spiritual+Wisdom"
+                                                        alt="Placeholder"
+                                                        class="rounded-2xl w-full h-full object-cover" />
+                                                    <% } %>
+                                        </div>
+                                        <div class="mb-4">
+                                            <span
+                                                class="text-warning-dark bg-[rgba(255,193,7,0.16)] px-2 py-px inline-flex rounded-full text-xs leading-[18px]">
+                                                <%= item.category.name %>
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-start gap-x-2 mb-3">
+                                            <i
+                                                class="hgi hgi-stroke hgi-calendar-03 text-base text-light-secondary-text"></i>
+                                            <span class="text-light-secondary-text text-xs font-medium">
+                                                <%= item.created_at.toLocaleDateString('en-US', { day: '2-digit' ,
+                                                    month: 'short' , year: 'numeric' }) %>
+                                            </span>
+                                        </div>
+                                        <a href='/library/<%= item.slug %>'>
+                                            <h6
+                                                class="mt-2 mb-3 hover:text-primary transition-colors line-clamp-2 min-h-[48px]">
+                                                <%= item.title %>
+                                            </h6>
+                                        </a>
+                                        <p class="mb-6 text-sm text-light-secondary-text line-clamp-3">
+                                            <%= item.summary %>
+                                        </p>
+                                    </div>
+                                    <a class='btn btn-primary btn-large rounded-[60px] group/btn py-2 pl-6 pr-3 gap-x-[18px] w-fit mt-auto'
+                                        href='/library/<%= item.slug %>'>
+                                        Read More
+                                        <span
+                                            class="size-8 bg-white inline-flex items-center justify-center rounded-full rotate-[-40deg] transform group-hover/btn:rotate-0 transition-all duration-300">
+                                            <i
+                                                class="hgi hgi-stroke hgi-arrow-right-02 text-xl text-primary-darker"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } else { %>
+                                    <div class="col-span-12 text-center py-12">
+                                        <h5 class="text-muted">No library content found.</h5>
+                                    </div>
+                                    <% } %>
+                </div>
+                <!-- pagination -->
+                <% if (pagination.totalPages> 1) { %>
+                    <div class="grid grid-cols-12 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s">
+                        <div class="col-span-12">
+                            <ul class="flex items-center justify-center gap-x-1.5 blog-pagination">
+                                <!-- Previous Page -->
+                                <li
+                                    class="group blog-pagination-item <%= pagination.currentPage === 1 ? 'pointer-events-none opacity-50' : '' %>">
+                                    <a href="/library?<%= new URLSearchParams({...pagination.query, page: pagination.currentPage - 1}).toString() %>"
+                                        class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] bg-white cursor-pointer border border-gray-300 group-hover:font-semibold group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out">
+                                        <span class="inline-flex items-center justify-center">
+                                            <i
+                                                class="hgi hgi-stroke hgi-arrow-left-01 text-[20px] group-hover:font-semibold leading-5 text-light-primary-text group-hover:text-primary"></i>
+                                        </span>
+                                    </a>
+                                </li>
+
+                                <!-- Page Numbers -->
+                                <% let startPage=Math.max(1, pagination.currentPage - 2); let
+                                    endPage=Math.min(pagination.totalPages, startPage + 4); if (endPage - startPage < 4)
+                                    { startPage=Math.max(1, endPage - 4); } if (startPage < 1) startPage=1; %>
+
+                                    <% if (startPage> 1) { %>
+                                        <li class="group blog-pagination-item">
+                                            <a href="/library?<%= new URLSearchParams({...pagination.query, page: 1}).toString() %>"
+                                                class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] text-base leading-6 text-light-primary-text group-hover:text-primary group-hover:font-semibold bg-white cursor-pointer border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out">
+                                                1
+                                            </a>
+                                        </li>
+                                        <% if (startPage> 2) { %>
+                                            <li class="blog-pagination-item">
+                                                <span
+                                                    class="inline-flex items-center justify-center md:size-10 size-9">...</span>
+                                            </li>
+                                            <% } %>
+                                                <% } %>
+
+                                                    <% for(let i=startPage; i <=endPage; i++) { %>
+                                                        <li class="group blog-pagination-item">
+                                                            <a href="/library?<%= new URLSearchParams({...pagination.query, page: i}).toString() %>"
+                                                                class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] <%= pagination.currentPage === i ? 'active bg-primary text-white' : 'text-base leading-6 text-light-primary-text group-hover:text-primary group-hover:font-semibold bg-white cursor-pointer border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)]' %> transition-colors duration-300 ease-in-out">
+                                                                <%= i %>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+
+                                                            <% if (endPage < pagination.totalPages) { %>
+                                                                <% if (endPage < pagination.totalPages - 1) { %>
+                                                                    <li class="blog-pagination-item">
+                                                                        <span
+                                                                            class="inline-flex items-center justify-center md:size-10 size-9">...</span>
+                                                                    </li>
+                                                                    <% } %>
+                                                                        <li class="group blog-pagination-item">
+                                                                            <a href="/library?<%= new URLSearchParams({...pagination.query, page: pagination.totalPages}).toString() %>"
+                                                                                class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] text-base leading-6 text-light-primary-text group-hover:text-primary group-hover:font-semibold bg-white cursor-pointer border border-gray-300 group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out">
+                                                                                <%= pagination.totalPages %>
+                                                                            </a>
+                                                                        </li>
+                                                                        <% } %>
+
+                                                                            <!-- Next Page -->
+                                                                            <li
+                                                                                class="group blog-pagination-item <%= pagination.currentPage === pagination.totalPages ? 'pointer-events-none opacity-50' : '' %>">
+                                                                                <a href="/library?<%= new URLSearchParams({...pagination.query, page: pagination.currentPage + 1}).toString() %>"
+                                                                                    class="inline-flex items-center justify-center md:size-10 size-9 rounded-[50px] bg-white cursor-pointer border border-gray-300 group-hover:font-semibold group-hover:border-primary group-hover:bg-[rgba(0,171,85,0.08)] transition-colors duration-300 ease-in-out">
+                                                                                    <span
+                                                                                        class="inline-flex items-center justify-center">
+                                                                                        <i
+                                                                                            class="hgi hgi-stroke hgi-arrow-right-01 text-[20px] group-hover:font-semibold leading-5 text-light-primary-text group-hover:text-primary"></i>
+                                                                                    </span>
+                                                                                </a>
+                                                                            </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+            <div class="xl:col-span-3 col-span-12">
+                <div class="sticky top-4">
+                    <div class="flex flex-col gap-y-6">
+                        <!-- Category-content -->
+                        <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
+                            data-wow-delay="0.3s">
+                            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="text-light-primary-text">Category</h5>
+                                    <a href="/library"
+                                        class="text-primary text-base leading-[26px] font-semibold hover:underline">Clear
+                                        All</a>
+                                </div>
+                            </div>
+
+                            <div class="category-content-list p-6">
+                                <div class="max-h-[300px] overflow-y-auto pr-2.5 category-scroll">
+                                    <ul class="flex flex-col gap-y-2">
+                                        <% categories.forEach(cat=> { %>
+                                            <li class="widget-category-content-list-items">
+                                                <a href="/library?category=<%= cat.slug %>"
+                                                    class="group flex items-center justify-between w-full cursor-pointer">
+                                                    <span class="flex items-center gap-x-2">
+                                                        <span
+                                                            class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                                            <%= cat.name %>
+                                                        </span>
+                                                    </span>
+                                                    <span
+                                                        class="group-hover:text-primary transition-colors duration-300 ease-in-out">
+                                                        (<%= cat._count.contents %>)
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <% }); %>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Popular Tags -->
+                        <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
+                            data-wow-delay="0.4s">
+                            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
+                                <h5 class="text-light-primary-text">Popular Tags</h5>
+                            </div>
+
+                            <div class="popular-tags-content p-6">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <% tags.forEach(tag=> { %>
+                                        <a href="/library?tag=<%= tag.slug %>"
+                                            class="btn btn-default outline text-xs leading-[20px] font-normal py-1 px-3 rounded-[50px] cursor-pointer shadow-none hover:bg-primary hover:text-white transition-all">
+                                            <%= tag.name %>
+                                        </a>
+                                        <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recent Posts -->
+                        <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
+                            data-wow-delay="0.5s">
+                            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
+                                <h5 class="text-light-primary-text">Recent Posts</h5>
+                            </div>
+
+                            <div class="recent-posts-content p-6">
+                                <div class="flex flex-col divide-y divide-gray-300">
+                                    <% recentPosts.forEach(post=> { %>
+                                        <div class="py-4 first:pt-0 last:pb-0">
+                                            <div
+                                                class="p-3 border border-gray-300 rounded-2xl single-blog-post hover:border-primary transition-colors">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="size-16 flex-shrink-0 rounded-lg overflow-hidden">
+                                                        <% if (post.image) { %>
+                                                            <img src="/uploads/<%= post.image %>" alt="post-image"
+                                                                class="h-full w-full object-cover"
+                                                                onerror="this.src='https://placehold.co/100x100/FFEB69/white?text=JS'" />
+                                                            <% } else { %>
+                                                                <img src="https://placehold.co/100x100/FFEB69/white?text=JS"
+                                                                    alt="post-image"
+                                                                    class="h-full w-full object-cover" />
+                                                                <% } %>
+                                                    </div>
+                                                    <div class="flex flex-col gap-y-1 flex-1">
+                                                        <a class='text-sm leading-tight text-light-primary-text font-medium cursor-pointer hover:text-primary transition-colors line-clamp-2'
+                                                            href='/library/<%= post.slug %>'>
+                                                            <%= post.title %>
+                                                        </a>
+                                                        <span
+                                                            class="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                                                            <%= post.created_at.toLocaleDateString('en-US', {
+                                                                day: '2-digit' , month: 'short' }) %>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ========== Blog Grid Section End ========== -->
+
+<!-- ========== Subscribe Section Start ========== -->
+<section
+    class="px-4 md:px-0 max-w-[932px] mx-auto text-center lg:pb-6 pb-[70px] lg:rounded-[164px] -mb-[100px] relative z-10 bg-white xl:before:absolute xl:before:bottom-0 xl:before:left-[-23px] xl:before:h-[100px] xl:before:w-[145px] xl:before:bg-[url('../images/footer-left-shape.png')] xl:before:bg-no-repeat xl:before:z-11 xl:after:absolute xl:after:bottom-0 xl:after:right-[-23px] xl:after:h-[100px] xl:after:w-[145px] xl:after:bg-[url('../images/footer-right-shape.png')] xl:after:bg-no-repeat xl:after:z-11">
+    <h3 class="mb-4 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+        Subscribe to our newsletter
+    </h3>
+    <p class="mb-6 text-dark-secondary-text wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+        Stay updated! Subscribe to our mailing list for news, updates, and
+        exclusive offers.
+    </p>
+    <div class="input-group medium w-full md:max-w-[420px] mx-auto pl-4 py-1.5 pr-2.5 rounded-[100px] wow animate__animated animate__fadeInUp"
+        data-wow-delay=".2s">
+        <div class="input-group-addon inline-flex items-center" data-align="inline-start">
+            <i class="hgi hgi-stroke hgi-mail-02 text-2xl"></i>
+        </div>
+        <input type="text" class="peer form-control placeholder-transparent focus:placeholder-transparent"
+            placeholder="Enter your email" name="email" id="email" />
+        <label
+            class="absolute left-12 peer-focus:left-[14px] top-1/2 -translate-y-1/2 text-xs leading-[18px] transition-all peer-placeholder-shown:text-light-disabled-text peer-placeholder-shown:text-[16px] peer-placeholder-shown:top-1/2 peer-focus:text-[12px] peer-focus:top-0 peer-[:not(:placeholder-shown)]:text-[12px] peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:left-[14px] bg-white peer-focus:px-1 peer-[:not(:placeholder-shown)]:px-1"
+            for="email">Enter your email</label>
+        <div class="input-group-addon" data-align="inline-end">
+            <button class="btn btn-primary btn-medium rounded-3xl">
+                Subscribe
+            </button>
+        </div>
+    </div>
+</section>
+<!-- ========== Subscribe Section End ========== -->

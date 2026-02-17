@@ -1,0 +1,67 @@
+<h4 class="py-3 breadcrumb-wrapper mb-4">
+    <span class="text-muted fw-light">eCommerce /</span> Coupon List
+</h4>
+
+<!-- Coupon List Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Coupons</h5>
+        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+            <div class="col-md-4 coupon_status"></div>
+            <div class="col-md-4 coupon_type"></div>
+        </div>
+    </div>
+    <div class="card-datatable table-responsive">
+        <table class="datatables-coupons table border-top">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Expiry</th>
+                    <th>Usage Limit</th>
+                    <th>Used Count</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% coupons.forEach(function(coupon) { %>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <%= coupon.code %>
+                        </td>
+                        <td>
+                            <%= coupon.type %>
+                        </td>
+                        <td>
+                            <%= coupon.amount %>
+                        </td>
+                        <td>
+                            <%= coupon.expiry %>
+                        </td>
+                        <td>
+                            <%= coupon.usage_limit || 'No limit' %>
+                        </td>
+                        <td>
+                            <%= coupon.used_count %>
+                        </td>
+                        <td><span class="badge bg-label-<%= coupon.status === 'Active' ? 'success' : 'secondary' %>">
+                                <%= coupon.status %>
+                            </span></td>
+                        <td>
+                            <div class="d-inline-block text-nowrap">
+                                <a href="/admin/ecommerce/coupons/edit/<%= coupon.id %>" class="btn btn-sm btn-icon"><i
+                                        class="bx bx-edit"></i></a>
+                                <button class="btn btn-sm btn-icon delete-record" data-id="<%= coupon.id %>"><i
+                                        class="bx bx-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>

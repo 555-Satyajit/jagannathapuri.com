@@ -1,0 +1,102 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Store Configuration / Manage Home /</span> Hero Section
+    </h4>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header">Hero Section Configuration</h5>
+                <div class="card-body">
+                    <form id="heroSectionForm" action="/admin/store/home/hero/save" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Banner Image -->
+                            <div class="col-md-6 mb-3">
+                                <label for="heroImage" class="form-label">Banner Image</label>
+                                <div class="dropzone needsclick" id="dropzone-hero">
+                                    <div class="dz-message needsclick">
+                                        Drop files here or click to upload
+                                        <span class="note needsclick">(This is just a demo dropzone. Selected files are
+                                            <span class="fw-medium">not</span> actually uploaded.)</span>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="image" id="heroImageInput" value="<%= hero.image %>">
+                                <% if (hero.image) { %>
+                                    <div class="mt-2">
+                                        <img src="/assets/img/hero/<%= hero.image %>" alt="Current Hero"
+                                            class="img-fluid rounded" style="max-height: 150px;">
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <!-- Content Fields -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="header" class="form-label">Header / Sub-title</label>
+                                    <input type="text" class="form-control" id="header" name="header"
+                                        value="<%= hero.header %>" placeholder="e.g. Adorn Your Walls with History">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Main Title</label>
+                                    <input type="text" class="form-control" id="title" name="title"
+                                        value="<%= hero.title %>" placeholder="e.g. Authentic Pattachitra...">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="buttonText" class="form-label">Button Text</label>
+                                    <input type="text" class="form-control" id="buttonText" name="buttonText"
+                                        value="<%= hero.buttonText %>" placeholder="Shop Now">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="buttonLink" class="form-label">Button Link</label>
+                                    <input type="text" class="form-control" id="buttonLink" name="buttonLink"
+                                        value="<%= hero.buttonLink %>" placeholder="/shop">
+                                </div>
+                            </div>
+
+                            <!-- Description with Quill -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Description</label>
+                                <div id="editor-container" style="height: 200px;">
+                                    <%- hero.description %>
+                                </div>
+                                <input type="hidden" name="description" id="descriptionInput">
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="btn btn-primary me-sm-3 me-1">Save Changes</button>
+                            <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Quill
+        const quill = new Quill('#editor-container', {
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'code-block']
+                ]
+            },
+            placeholder: 'Write the hero section description...',
+            theme: 'snow'
+        });
+
+        // Handle Form Submission
+        const form = document.getElementById('heroSectionForm');
+        form.onsubmit = function () {
+            // Update hidden input with quill content
+            const description = document.querySelector('#descriptionInput');
+            description.value = quill.root.innerHTML;
+            return true;
+        };
+    });
+</script>

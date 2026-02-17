@@ -1,0 +1,161 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold py-3 mb-0"><span class="text-muted fw-light">Manage /</span> Festivals</h4>
+        <button type="button" class="btn btn-primary" onclick="openFestivalModal()">
+            <i class="bx bx-plus me-1"></i> Add Festival
+        </button>
+    </div>
+
+    <!-- Festivals Table -->
+    <div class="card">
+        <div class="card-datatable table-responsive">
+            <table class="datatables-festivals table border-top">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Festival Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% festivals.forEach(f=> { %>
+                        <tr>
+                            <td><strong>
+                                    <%= new Date(f.date).toLocaleDateString('en-GB') %>
+                                </strong></td>
+                            <td>
+                                <%= f.name %>
+                            </td>
+                            <td><span class="badge bg-label-secondary">
+                                    <%= f.type || 'N/A' %>
+                                </span></td>
+                            <td><span class="badge bg-label-<%= f.status === 'Active' ? 'success' : 'warning' %>">
+                                    <%= f.status %>
+                                </span></td>
+                            <td>
+                                <div class="d-inline-block">
+                                    <button class="btn btn-sm btn-icon text-primary edit-festival-btn"
+                                        data-festival='<%= JSON.stringify(f) %>'>
+                                        <i class="bx bxs-edit"></i>
+                                    </button>
+                                    <button onclick="deleteFestival(<%= f.id %>)"
+                                        class="btn btn-sm btn-icon text-danger"><i class="bx bxs-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Festival Modal -->
+<div class="modal fade" id="festivalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3 p-md-5">
+            <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h3 id="modalTitle">Add New Festival</h3>
+                    <p>Enter festival details to display on the Vedic Calendar.</p>
+                </div>
+                <form id="festivalForm" class="row g-3" action="/admin/festivals/save" method="POST">
+                    <input type="hidden" name="id" id="festivalId">
+                    <div class="col-12">
+                        <label class="form-label" for="festivalName">Festival Name</label>
+                        <input type="text" id="festivalName" name="name" class="form-control"
+                            placeholder="e.g. Maha Shivratri" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="festivalDate">Date</label>
+                        <input type="text" id="festivalDate" name="date" class="form-control flatpickr"
+                            placeholder="YYYY-MM-DD" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="festivalType">Type</label>
+                        <input type="text" id="festivalType" name="type" class="form-control"
+                            placeholder="e.g. Major, Regional" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="festivalStatus">Status</label>
+                        <select id="festivalStatus" name="status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="festivalDescription">Description</label>
+                        <textarea id="festivalDescription" name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flatpickrDate = document.querySelector('.flatpickr');
+        if (flatpickrDate) {
+            flatpickrDate.flatpickr({
+                dateFormat: 'Y-m-d'
+            });
+        }
+
+        if ($('.datatables-festivals').length) {
+            $('.datatables-festivals').DataTable({
+                order: [[0, 'asc']],
+                displayLength: 10
+            });
+        }
+
+        // Handle Edit Festival
+        $(document).on('click', '.edit-festival-btn', function () {
+            const festival = JSON.parse($(this).attr('data-festival'));
+            editFestival(festival);
+        });
+    });
+
+    function openFestivalModal() {
+        document.getElementById('festivalForm').reset();
+        document.getElementById('festivalId').value = '';
+        document.getElementById('modalTitle').textContent = 'Add New Festival';
+        new bootstrap.Modal(document.getElementById('festivalModal')).show();
+    }
+
+    function editFestival(festival) {
+        document.getElementById('festivalId').value = festival.id;
+        document.getElementById('festivalName').value = festival.name;
+        document.getElementById('festivalDate').value = festival.date.split('T')[0];
+        document.getElementById('festivalType').value = festival.type || '';
+        document.getElementById('festivalStatus').value = festival.status;
+        document.getElementById('festivalDescription').value = festival.description || '';
+        document.getElementById('modalTitle').textContent = 'Edit Festival';
+        new bootstrap.Modal(document.getElementById('festivalModal')).show();
+    }
+
+    function deleteFestival(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/festivals/delete/${id}`, { method: 'DELETE' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) location.reload();
+                    });
+            }
+        });
+    }
+</script>

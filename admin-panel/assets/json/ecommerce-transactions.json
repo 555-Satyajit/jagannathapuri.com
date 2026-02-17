@@ -1,0 +1,64 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "transaction_id": "TR-9876",
+            "customer_id": 1,
+            "customer_name": "Jordan Stevenson",
+            "customer_email": "jstevenson@example.com",
+            "amount": 234.50,
+            "date": "2026-02-10T10:30:00Z",
+            "payment_method": "Mastercard",
+            "payment_last4": "4321",
+            "status": "Paid"
+        },
+        {
+            "id": 2,
+            "transaction_id": "TR-9875",
+            "customer_id": 2,
+            "customer_name": "Richard Hughes",
+            "customer_email": "rhughes@example.com",
+            "amount": 12.99,
+            "date": "2026-02-09T14:15:00Z",
+            "payment_method": "Visa",
+            "payment_last4": "1234",
+            "status": "Paid"
+        },
+        {
+            "id": 3,
+            "transaction_id": "TR-9874",
+            "customer_id": 3,
+            "customer_name": "Thomas Smith",
+            "customer_email": "tsmith@example.com",
+            "amount": 567.00,
+            "date": "2026-02-09T09:00:00Z",
+            "payment_method": "PayPal",
+            "payment_last4": null,
+            "status": "Pending"
+        },
+        {
+            "id": 4,
+            "transaction_id": "TR-9873",
+            "customer_id": 4,
+            "customer_name": "Emily Robinson",
+            "customer_email": "erobinson@example.com",
+            "amount": 105.20,
+            "date": "2026-02-08T16:45:00Z",
+            "payment_method": "Mastercard",
+            "payment_last4": "8765",
+            "status": "Failed"
+        },
+        {
+            "id": 5,
+            "transaction_id": "TR-9872",
+            "customer_id": 5,
+            "customer_name": "William Fisher",
+            "customer_email": "wfisher@example.com",
+            "amount": 89.00,
+            "date": "2026-02-08T11:20:00Z",
+            "payment_method": "Visa",
+            "payment_last4": "5678",
+            "status": "Paid"
+        }
+    ]
+}

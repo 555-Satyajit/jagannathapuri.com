@@ -1,0 +1,173 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Store Configuration / </span> Manage Services
+    </h4>
+
+    <form action="/admin/store/home/service/save" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-12 col-xl-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <%= service ? 'Edit' : 'Add' %> Service
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (service) { %>
+                            <input type="hidden" name="id" value="<%= service.id %>">
+                            <input type="hidden" name="existing_image" value="<%= service.image %>">
+                            <% } %>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="title">Service Title</label>
+                                        <input type="text" class="form-control" id="title" name="title"
+                                            value="<%= service ? service.title : '' %>"
+                                            placeholder="e.g. Tours & Travel" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="slug">Slug</label>
+                                        <input type="text" class="form-control" id="slug" name="slug"
+                                            value="<%= service ? service.slug : '' %>" placeholder="tours-travel"
+                                            required />
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="subtitle">Subtitle (For Home Grid)</label>
+                                    <input type="text" class="form-control" id="subtitle" name="subtitle"
+                                        value="<%= service ? service.subtitle : '' %>" placeholder="e.g. Guided Tours"
+                                        required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="description">Full Description (For Details
+                                        Page)</label>
+                                    <textarea class="form-control" name="description" rows="4"
+                                        placeholder="Describe the service in detail..."><%= service ? service.description : '' %></textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="phone">Contact Number</label>
+                                        <input type="text" class="form-control" id="phone" name="phone"
+                                            value="<%= service ? service.phone : '' %>" placeholder="+91 98765 43210" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="status">Status</label>
+                                        <select class="form-select" name="status">
+                                            <option value="Active" <%=service && service.status==='Active' ? 'selected'
+                                                : '' %>>Active</option>
+                                            <option value="Inactive" <%=service && service.status==='Inactive'
+                                                ? 'selected' : '' %>>Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="rating">Rating</label>
+                                        <input type="number" step="0.1" max="5" min="0" class="form-control"
+                                            name="rating" value="<%= service ? service.rating : '5.0' %>" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="reviewsCount">Reviews Count</label>
+                                        <input type="number" class="form-control" name="reviewsCount"
+                                            value="<%= service ? service.reviewsCount : '0' %>" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="link">Link</label>
+                                        <input type="text" class="form-control" name="link"
+                                            value="<%= service ? service.link : '/service' %>" />
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="image">Banner Image (For Grid View)</label>
+                                    <input type="file" class="form-control" name="image" id="image" />
+                                    <% if (service && service.image) { %>
+                                        <div class="mt-2 text-center border rounded p-2">
+                                            <img src="/uploads/<%= service.image %>" alt="Current Image"
+                                                class="img-fluid rounded" style="max-height: 150px;">
+                                            <div class="mt-1 small text-muted">Current Banner</div>
+                                        </div>
+                                        <% } %>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Save
+                                    Service</button>
+                                <a href="/admin/store/home/service/list" class="btn btn-label-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Icon & Appearance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="icon">Icon Class (Huge Icons)</label>
+                            <div class="input-group input-group-merge">
+                                <span class="input-group-text"><i id="icon-preview"
+                                        class="hgi <%= service ? service.icon : 'hgi-package' %>"></i></span>
+                                <input type="text" class="form-control" id="icon" name="icon"
+                                    value="<%= service ? service.icon : 'hgi-package' %>" placeholder="e.g. hgi-car-01"
+                                    required />
+                            </div>
+                            <div class="form-text">e.g., <code>hgi-car-01</code>, <code>hgi-guide</code></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Help & Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Slug Generation</h6>
+                        <p class="small">Slugs are used for URLs. They are auto-generated from the title but can be
+                            edited manually.</p>
+
+                        <h6>Icon Guide </h6>
+                        <ul class="small">
+                            <li><code>hgi-car-01</code> - Tours</li>
+                            <li><code>hgi-guide</code> - Guidance</li>
+                            <li><code>hgi-hotel-01</code> - Hotels</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const titleInput = document.getElementById('title');
+        const slugInput = document.getElementById('slug');
+        const iconInput = document.getElementById('icon');
+        const iconPreview = document.getElementById('icon-preview');
+
+        // Auto-generate slug from title
+        if (titleInput && slugInput) {
+            titleInput.addEventListener('input', function () {
+                if (!slugInput.getAttribute('data-edited')) {
+                    const slug = this.value.toLowerCase()
+                        .replace(/[^\w ]+/g, '')
+                        .replace(/ +/g, '-');
+                    slugInput.value = slug;
+                }
+            });
+
+            slugInput.addEventListener('input', function () {
+                this.setAttribute('data-edited', 'true');
+            });
+        }
+
+        iconInput.addEventListener('input', function () {
+            iconPreview.className = 'hgi ' + this.value;
+        });
+    });
+</script>

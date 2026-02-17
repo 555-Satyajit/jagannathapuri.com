@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Authenticating...</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
+        <p>Completing login, please wait...</p>
+    </div>
+
+    <script>
+        const supabaseUrl = "<%= process.env.SUPABASE_URL %>";
+        const supabaseAnonKey = "<%= process.env.SUPABASE_ANON_KEY %>";
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        async function handleCallback() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+            if (error || !session) {
+                console.error("Auth callback error:", error);
+                window.location.href = "/login?error=auth_failed";
+                return;
+            }
+
+            const user = session.user;
+
+            // Send to our backend to create local session
+            try {
+                const response = await fetch("/auth/session", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: user.email,
+                        fullName: user.user_metadata.full_name || user.email.split('@')[0],
+                        supabase_id: user.id
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = "/user-account";
+                } else {
+                    alert("Session syncing failed");
+                    window.location.href = "/login";
+                }
+            } catch (err) {
+                console.error("Session sync error:", err);
+                window.location.href = "/login?error=sync_failed";
+            }
+        }
+
+        handleCallback();
+    </script>
+</body>
+
+</html>

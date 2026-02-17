@@ -1,0 +1,64 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "full_name": "Aditya Sharma",
+            "role": "Admin",
+            "username": "aditya.s",
+            "email": "aditya.sharma@jaysubhdra.com",
+            "password": "Admin@123",
+            "status": "Active",
+            "avatar": "",
+            "contact": "+91 98765 43210",
+            "joining_date": "10 Jan 2024"
+        },
+        {
+            "id": 2,
+            "full_name": "Priya Patel",
+            "role": "Manager",
+            "username": "priya.p",
+            "email": "priya.patel@jaysubhdra.com",
+            "password": "Admin@123",
+            "status": "Active",
+            "avatar": "2.png",
+            "contact": "+91 87654 32109",
+            "joining_date": "15 Feb 2024"
+        },
+        {
+            "id": 3,
+            "full_name": "Rahul Verma",
+            "role": "Support",
+            "username": "rahul.v",
+            "email": "rahul.verma@jaysubhdra.com",
+            "password": "Admin@123",
+            "status": "Inactive",
+            "avatar": "3.png",
+            "contact": "+91 76543 21098",
+            "joining_date": "20 Mar 2024"
+        },
+        {
+            "id": 4,
+            "full_name": "Sneha Gupta",
+            "role": "Editor",
+            "username": "sneha.g",
+            "email": "sneha.gupta@jaysubhdra.com",
+            "password": "Admin@123",
+            "status": "Active",
+            "avatar": "4.png",
+            "contact": "+91 65432 10987",
+            "joining_date": "05 Apr 2024"
+        },
+        {
+            "id": 5,
+            "full_name": "Vikram Singh",
+            "role": "Administrator",
+            "username": "vikram.s",
+            "email": "vikram.singh@jaysubhdra.com",
+            "password": "Admin@123",
+            "status": "Active",
+            "avatar": "5.png",
+            "contact": "+91 54321 09876",
+            "joining_date": "12 May 2024"
+        }
+    ]
+}

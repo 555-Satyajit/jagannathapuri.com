@@ -1,0 +1,156 @@
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span>Total Tickets</span>
+                        <div class="d-flex align-items-end mt-2">
+                            <h4 class="mb-0 me-2">
+                                <%= stats.totalCount %>
+                            </h4>
+                            <small class="text-success">(<%= stats.totalGrowth %>)</small>
+                        </div>
+                        <small>Total Tickets</small>
+                    </div>
+                    <span class="badge bg-label-primary rounded p-2">
+                        <i class="bx bx-receipt bx-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span>Open Tickets</span>
+                        <div class="d-flex align-items-end mt-2">
+                            <h4 class="mb-0 me-2">
+                                <%= stats.openCount %>
+                            </h4>
+                            <small class="text-success">(<%= stats.openGrowth %>)</small>
+                        </div>
+                        <small>Currently Open</small>
+                    </div>
+                    <span class="badge bg-label-danger rounded p-2">
+                        <i class="bx bx-error-circle bx-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span>In Progress</span>
+                        <div class="d-flex align-items-end mt-2">
+                            <h4 class="mb-0 me-2">
+                                <%= stats.inProgressCount %>
+                            </h4>
+                            <small class="text-danger">(<%= stats.inProgressGrowth %>)</small>
+                        </div>
+                        <small>Work in Progress</small>
+                    </div>
+                    <span class="badge bg-label-warning rounded p-2">
+                        <i class="bx bx-time-five bx-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span>Closed Tickets</span>
+                        <div class="d-flex align-items-end mt-2">
+                            <h4 class="mb-0 me-2">
+                                <%= stats.closedCount %>
+                            </h4>
+                            <small class="text-success">(<%= stats.closedGrowth %>)</small>
+                        </div>
+                        <small>Resolved Tickets</small>
+                    </div>
+                    <span class="badge bg-label-success rounded p-2">
+                        <i class="bx bx-check-circle bx-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tickets List Table -->
+<div class="card">
+    <div class="card-header border-bottom">
+        <h5 class="card-title mb-3">Search Filter</h5>
+        <div class="d-flex justify-content-between align-items-center row pb-2 gap-3 gap-md-0">
+            <div class="col-md-4 ticket_status"></div>
+            <div class="col-md-4 ticket_priority"></div>
+        </div>
+    </div>
+    <div class="card-datatable table-responsive">
+        <table class="datatables-tickets table border-top">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Ticket ID</th>
+                    <th>Subject</th>
+                    <th>Customer</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created Date</th>
+                    <th>Assignee</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Add Ticket Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddTicket" aria-labelledby="offcanvasAddTicketLabel">
+    <div class="offcanvas-header border-bottom">
+        <h6 id="offcanvasAddTicketLabel" class="offcanvas-title">Add Ticket</h6>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body mx-0 flex-grow-0">
+        <form class="add-new-ticket pt-0" id="addNewTicketForm" action="/admin/tickets/add" method="POST"
+            enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label" for="ticketSubject">Subject</label>
+                <input type="text" class="form-control" id="ticketSubject" placeholder="Brief issue description"
+                    name="ticketSubject" aria-label="Subject" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="ticketCustomer">Customer</label>
+                <input type="text" id="ticketCustomer" class="form-control" placeholder="Customer Name"
+                    aria-label="Customer Name" name="ticketCustomer" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="ticketPriority">Priority</label>
+                <select id="ticketPriority" class="form-select">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="ticketDescription">Description</label>
+                <textarea class="form-control" id="ticketDescription" name="ticketDescription" rows="4"></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="ticketAttachments">Attachments</label>
+                <input type="file" class="form-control" id="ticketAttachments" name="attachments" multiple />
+                <small class="text-muted">You can upload multiple documents or images.</small>
+            </div>
+            <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+            <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+        </form>
+    </div>
+</div>

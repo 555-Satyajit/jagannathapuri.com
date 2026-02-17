@@ -1,0 +1,150 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">Manage Library / </span> Categories
+    </h4>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Library Categories</h5>
+            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCategory">
+                <i class="bx bx-plus me-1"></i> Add Category
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Contents</th>
+                            <th>Home</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <% if (categories && categories.length> 0) { %>
+                            <% categories.forEach(cat=> { %>
+                                <tr>
+                                    <td>
+                                        <% if (cat.image) { %>
+                                            <img src="/uploads/<%= cat.image %>" alt="Cat" class="rounded"
+                                                style="width: 40px; height: 40px; object-fit: cover;">
+                                            <% } else { %>
+                                                <span class="badge bg-label-secondary">No Img</span>
+                                                <% } %>
+                                    </td>
+                                    <td><strong>
+                                            <%= cat.name %>
+                                        </strong></td>
+                                    <td><code><%= cat.slug %></code></td>
+                                    <td><span class="badge bg-label-info">
+                                            <%= cat._count.contents %> Items
+                                        </span></td>
+                                    <td>
+                                        <span class="badge bg-label-<%= cat.show_on_home ? 'primary' : 'secondary' %>">
+                                            <%= cat.show_on_home ? 'Yes' : 'No' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-<%= cat.status === 'Active' ? 'success' : 'warning' %>">
+                                            <%= cat.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon edit-cat" data-id="<%= cat.id %>"
+                                                data-name="<%= cat.name %>" data-desc="<%= cat.description %>"
+                                                data-status="<%= cat.status %>" data-home="<%= cat.show_on_home %>">
+                                                <i class="bx bx-edit text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-icon delete-cat" data-id="<%= cat.id %>">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No categories found.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCategory">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Manage Category</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form action="/admin/library/categories/save" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="id" id="cat-id">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" id="cat-name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" id="cat-desc" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Image</label>
+                    <input type="file" class="form-control" name="image">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" id="cat-status">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="show_on_home" id="cat-home">
+                        <label class="form-check-label">Show on Home Page</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Category</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Edit
+        document.querySelectorAll('.edit-cat').forEach(btn => {
+            btn.onclick = function () {
+                document.getElementById('cat-id').value = this.dataset.id;
+                document.getElementById('cat-name').value = this.dataset.name;
+                document.getElementById('cat-desc').value = this.dataset.desc;
+                document.getElementById('cat-status').value = this.dataset.status;
+                document.getElementById('cat-home').checked = this.dataset.home === 'true';
+                new bootstrap.Offcanvas(document.getElementById('offcanvasCategory')).show();
+            };
+        });
+
+        // Delete
+        document.querySelectorAll('.delete-cat').forEach(btn => {
+            btn.onclick = function () {
+                if (confirm('Are you sure? This will fail if category has contents.')) {
+                    fetch(`/admin/library/categories/delete/${this.dataset.id}`, { method: 'DELETE' })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) location.reload();
+                            else alert(data.error || 'Failed to delete');
+                        });
+                }
+            };
+        });
+    });
+</script>
