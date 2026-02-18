@@ -15,6 +15,9 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false
 }));
 
+// Trust Proxy (Required for Nginx/Load Balancers)
+app.set('trust proxy', 1);
+
 // 2. Serve static files FIRST (High priority for performance)
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/admin-assets', express.static(path.join(__dirname, '../../admin-panel/assets')));
