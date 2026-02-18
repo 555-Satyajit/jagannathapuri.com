@@ -11,8 +11,10 @@ const helmet = require('helmet');
 
 // 1. Security Headers (Helmet)
 app.use(helmet({
-    contentSecurityPolicy: false, // Access to external scripts/styles might be needed
-    crossOriginEmbedderPolicy: false
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false
 }));
 
 // Trust Proxy (Required for Nginx/Load Balancers)
