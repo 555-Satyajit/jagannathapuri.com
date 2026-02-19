@@ -1190,23 +1190,40 @@ exports.getCustomerData = async (req, res) => {
     try {
         const customers = await prisma.customer.findMany({
             include: {
-                addresses: {
-                    where: { isDefault: true }
+                addresses: true,
+                orders: {
+                    select: {
+                        totalAmount: true,
+                        paymentStatus: true
+                    }
                 }
             }
         });
 
-        const formattedData = customers.map(c => ({
-            id: c.id,
-            customer: c.fullName,
-            customer_id: c.id.toString().padStart(4, '0'),
-            country: c.addresses[0]?.country || 'N/A',
-            country_code: 'in', // Defaulting to India for now or mapping if needed
-            order: c.orderCount,
-            total_spent: `₹${c.totalSpent}`,
-            email: c.email,
-            image: c.avatar || ''
-        }));
+        const formattedData = customers.map(c => {
+            // Find default address or fallback to first one
+            const displayAddress = c.addresses.find(a => a.isDefault) || c.addresses[0];
+
+            // Calculate total spent from paid orders (paymentStatus: 1)
+            const paidOrders = c.orders.filter(o => o.paymentStatus === 1);
+            const totalSpent = paidOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+            return {
+                id: c.id,
+                customer: c.fullName,
+                customer_id: c.id.toString().padStart(4, '0'),
+                country: displayAddress?.country || 'N/A',
+                country_code: displayAddress?.country ? 'in' : 'xx', // Simplification for now, but better than hardcoded 'in' always
+                order: c.orders.length,
+                total_spent: totalSpent.toLocaleString('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    maximumFractionDigits: 0
+                }),
+                email: c.email,
+                image: c.avatar || ''
+            };
+        });
 
         res.json({ data: formattedData });
     } catch (error) {
