@@ -380,8 +380,21 @@ exports.deleteCategory = async (req, res) => {
 
 exports.getProductList = async (req, res) => {
     try {
-        const categories = await prisma.category.findMany();
-        req.app.render('pages/admin-product-list', { categories }, (err, html) => {
+        const [categories, totalProducts, activeProducts, onSaleProducts, lowStockProducts] = await Promise.all([
+            prisma.category.findMany(),
+            prisma.product.count(),
+            prisma.product.count({ where: { status: 1 } }),
+            prisma.product.count({ where: { on_sale: true } }),
+            prisma.product.count({ where: { quantity: { lte: 10 } } })
+        ]);
+
+        req.app.render('pages/admin-product-list', {
+            categories,
+            totalProducts,
+            activeProducts,
+            onSaleProducts,
+            lowStockProducts
+        }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin product list:', err);
                 return res.status(500).send('Error rendering admin product list');

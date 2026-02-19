@@ -10,14 +10,15 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
                         <div>
-                            <h6 class="mb-2">In-store Sales</h6>
-                            <h4 class="mb-2">$5,345.43</h4>
-                            <p class="mb-0"><span class="text-muted me-2">5k orders</span><span
-                                    class="badge bg-label-success">+5.7%</span></p>
+                            <h6 class="mb-2">Total Products</h6>
+                            <h4 class="mb-2">
+                                <%= totalProducts %>
+                            </h4>
+                            <p class="mb-0"><span class="text-muted me-2">All items</span></p>
                         </div>
                         <div class="avatar me-sm-4">
                             <span class="avatar-initial rounded bg-label-secondary">
-                                <i class="bx bx-store-alt bx-sm"></i>
+                                <i class="bx bx-package bx-sm"></i>
                             </span>
                         </div>
                     </div>
@@ -26,14 +27,15 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
                         <div>
-                            <h6 class="mb-2">Website Sales</h6>
-                            <h4 class="mb-2">$674,347.12</h4>
-                            <p class="mb-0"><span class="text-muted me-2">21k orders</span><span
-                                    class="badge bg-label-success">+12.4%</span></p>
+                            <h6 class="mb-2">Active Products</h6>
+                            <h4 class="mb-2">
+                                <%= activeProducts %>
+                            </h4>
+                            <p class="mb-0"><span class="text-muted me-2">Live on store</span></p>
                         </div>
                         <div class="avatar me-lg-4">
                             <span class="avatar-initial rounded bg-label-secondary">
-                                <i class="bx bx-laptop bx-sm"></i>
+                                <i class="bx bx-check-circle bx-sm"></i>
                             </span>
                         </div>
                     </div>
@@ -42,13 +44,15 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
                         <div>
-                            <h6 class="mb-2">Discount</h6>
-                            <h4 class="mb-2">$14,235.12</h4>
-                            <p class="mb-0"><span class="text-muted me-2">6k orders</span></p>
+                            <h6 class="mb-2">On Sale</h6>
+                            <h4 class="mb-2">
+                                <%= onSaleProducts %>
+                            </h4>
+                            <p class="mb-0"><span class="text-muted me-2">Special offers</span></p>
                         </div>
                         <div class="avatar me-sm-4">
                             <span class="avatar-initial rounded bg-label-secondary">
-                                <i class="bx bx-gift bx-sm"></i>
+                                <i class="bx bx-badge-check bx-sm"></i>
                             </span>
                         </div>
                     </div>
@@ -56,14 +60,15 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-2">Affiliate</h6>
-                            <h4 class="mb-2">$8,345.23</h4>
-                            <p class="mb-0"><span class="text-muted me-2">150 orders</span><span
-                                    class="badge bg-label-danger">-3.5%</span></p>
+                            <h6 class="mb-2">Low Stock</h6>
+                            <h4 class="mb-2 text-danger">
+                                <%= lowStockProducts %>
+                            </h4>
+                            <p class="mb-0"><span class="text-muted me-2">Items to restock</span></p>
                         </div>
                         <div class="avatar">
-                            <span class="avatar-initial rounded bg-label-secondary">
-                                <i class="bx bx-wallet bx-sm"></i>
+                            <span class="avatar-initial rounded bg-label-danger">
+                                <i class="bx bx-error bx-sm"></i>
                             </span>
                         </div>
                     </div>
