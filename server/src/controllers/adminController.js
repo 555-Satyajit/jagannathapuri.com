@@ -9,9 +9,65 @@ const parsePrice = (priceStr) => {
     return parseFloat(cleanPrice) || 0;
 };
 
+const { logAction } = require('../lib/auditLogger');
+
+// ... existing imports
+
+exports.getAuditLogs = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 20;
+        const skip = (page - 1) * limit;
+
+        const [logs, total] = await Promise.all([
+            prisma.auditLog.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    admin: {
+                        select: { full_name: true, username: true, avatar: true }
+                    }
+                }
+            }),
+            prisma.auditLog.count()
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        req.app.render('pages/audit-logs', {
+            logs,
+            currentPage: page,
+            totalPages,
+            user: req.user
+        }, (err, html) => {
+            if (err) {
+                console.error('Error rendering audit logs:', err);
+                return res.status(500).send('Error rendering audit logs');
+            }
+
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Audit Logs',
+                styles: [
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
+                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css'
+                ],
+                scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'
+                ]
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching audit logs:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 exports.getDashboard = async (req, res) => {
     try {
-        const staffId = req.session.staffId;
+        const staffId = req.session.admin ? req.session.admin.id : null;
         const staff = staffId ? await prisma.staff.findUnique({ where: { id: staffId }, include: { role: true } }) : null;
 
         const now = new Date();
@@ -552,7 +608,8 @@ exports.saveProduct = async (req, res) => {
             }
         });
 
-        res.status(200).json({ success: true, message: 'Product added successfully', product: newProduct });
+        await logAction(req, 'CREATE_PRODUCT', 'Product', newProduct.id, `Created product: ${product_name}`);
+        res.status(200).json({ success: true, message: 'Product added successfully', redirectUrl: '/admin/ecommerce/products' });
     } catch (error) {
         console.error('Error saving product:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -638,7 +695,9 @@ exports.updateProduct = async (req, res) => {
             });
         }
 
-        res.status(200).json({ success: true, message: 'Product updated successfully', product: updatedProduct });
+        await logAction(req, 'UPDATE_PRODUCT', 'Product', updatedProduct.id, `Updated product: ${product_name}`);
+        // Return JSON success for client-side redirection
+        res.status(200).json({ success: true, message: 'Product updated successfully', redirectUrl: '/admin/ecommerce/products' });
     } catch (error) {
         console.error('Error updating product:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -678,8 +737,17 @@ exports.markNotificationRead = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        await prisma.product.delete({ where: { id: parseInt(id) } });
-        res.json({ success: true, message: 'Product deleted successfully' });
+        const product = await prisma.product.findUnique({ where: { id: parseInt(id) } }); // Fetch before delete to get name
+
+        await prisma.product.delete({
+            where: { id: parseInt(id) }
+        });
+
+        if (product) {
+            await logAction(req, 'DELETE_PRODUCT', 'Product', product.id, `Deleted product: ${product.product_name}`);
+        }
+
+        res.redirect('/admin/ecommerce/products');
     } catch (error) {
         console.error('Error deleting product:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -963,6 +1031,7 @@ exports.getOrderDetails = async (req, res) => {
                         addresses: true
                     }
                 },
+                shippingAddress: true,
                 items: {
                     include: {
                         product: true
@@ -1035,21 +1104,14 @@ exports.downloadInvoice = async (req, res) => {
                 items: {
                     include: { product: true }
                 },
-                customer: true
+                customer: true,
+                shippingAddress: true
             }
         });
 
         if (!order) {
             return res.status(404).send('Order not found');
         }
-
-        let shippingAddress = null;
-        if (order.shippingAddressId) {
-            shippingAddress = await prisma.address.findUnique({
-                where: { id: order.shippingAddressId }
-            });
-        }
-        order.shippingAddress = shippingAddress;
 
         // Render the EJS template to a string
         req.app.render('pages/invoice-print', { order }, async (err, html) => {
@@ -1525,6 +1587,7 @@ exports.saveStaff = async (req, res) => {
         });
 
         res.status(200).json({ message: 'Staff added successfully', staff: newStaff });
+        await logAction(req, 'CREATE_STAFF', 'Staff', newStaff.id, `Created staff member: ${userFullname} (${userRole})`);
     } catch (error) {
         console.error('Error saving staff:', error);
         res.status(500).json({ error: 'Error saving staff' });
@@ -1563,6 +1626,7 @@ exports.updateStaff = async (req, res) => {
         });
 
         res.redirect(`/admin/staff/view/${staff_id}`);
+        await logAction(req, 'UPDATE_STAFF', 'Staff', staff_id, `Updated staff member: ${updateData.full_name}`);
     } catch (error) {
         console.error('Error updating staff:', error);
         res.status(500).send('Error updating staff');
@@ -1598,20 +1662,25 @@ exports.postLogin = async (req, res) => {
             // Verify Password
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
+                await logAction(req, 'LOGIN_FAILED', 'Staff', user.id, `Failed login attempt with incorrect password for username: ${user.username}`);
                 return res.redirect('/admin/login?error=Invalid email/username or password.');
             }
 
             req.session.admin = {
-                id: user.id,
-                name: user.full_name,
-                role: user.role, // This passes the whole role object including permissions if loaded
-                username: user.username,
-                avatar: user.avatar
+                id: user.id
+                // Thin session: We only store ID. Middleware fetches the rest.
             };
 
-            res.redirect('/admin');
+            await logAction(req, 'LOGIN', 'Staff', user.id, `Admin logged in: ${user.username}`);
+
+            // Force session save before redirect to prevent race conditions on fast redirects
+            return req.session.save((err) => {
+                if (err) console.error('Session save error:', err);
+                res.redirect('/admin');
+            });
         } else {
-            res.redirect('/admin/login?error=Invalid email/username or password.');
+            await logAction(req, 'LOGIN_FAILED', 'Staff', null, `Failed login attempt for username: ${emailOrUsername}`);
+            return res.render('pages/admin-login', { error: 'Invalid email/username or password.' });
         }
     } catch (error) {
         console.error('Login error:', error);
@@ -1619,13 +1688,12 @@ exports.postLogin = async (req, res) => {
     }
 };
 
-exports.logout = (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-        }
-        res.redirect('/admin/login');
-    });
+exports.logout = async (req, res) => {
+    if (req.session.admin) {
+        await logAction(req, 'LOGOUT', 'Staff', req.session.admin.id, 'Admin logged out');
+        req.session.destroy();
+    }
+    res.redirect('/admin/login');
 };
 
 exports.getTicketList = async (req, res) => {

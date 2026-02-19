@@ -15,9 +15,17 @@ const pgSession = require('connect-pg-simple')(session);
 // Create a separate pool for sessions with limited connections
 const sessionPool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
-    max: 2, // Reduced to 2 to prevent "Max client connections reached" (Supabase limit)
+    max: 5, // Increased from 2 to handle concurrent session requests better
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
+});
+
+// Diagnostic Middleware for Proxy/SSL
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+        console.log(`[Debug] ${req.method} ${req.url} - Secure: ${req.secure}, Protocol: ${req.protocol}, X-Forwarded-Proto: ${req.get('x-forwarded-proto')}`);
+    }
+    next();
 });
 
 // 1. Security Headers (Helmet)
@@ -76,10 +84,12 @@ app.use(session({
     resave: false,
     saveUninitialized: false, // Don't create session until something is stored
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Only secure if explicitly enabled or prod
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    }
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        sameSite: 'lax' // Ensure compatibility
+    },
+    proxy: true // Trust the proxy for cookie security (required for secure: true behind nginx)
 }));
 
 
