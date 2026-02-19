@@ -87,8 +87,7 @@ exports.getDashboard = async (req, res) => {
             last7DaysOrders,
             paidOrdersForProfit,
             currentMonthOrders,
-            lastMonthOrders,
-            orderStatusCounts
+            lastMonthOrders
         ] = await Promise.all([
             prisma.order.aggregate({
                 _sum: { totalAmount: true },
@@ -194,26 +193,31 @@ exports.getDashboard = async (req, res) => {
         const weeklyOrderSummaryLabels = Object.keys(salesData);
 
         // Order Status Overview (Donut Chart)
-        // Mapping based on admin-order-details.ejs:
-        // 1: Dispatched (Active)
-        // 2: Delivered (Completed)
-        // 3: Out for Delivery (Active)
-        // 4: Ready to Pickup (Active)
+        const [orderStatusCounts, failedOrdersCount] = await Promise.all([
+            prisma.order.groupBy({
+                by: ['status'],
+                _count: { status: true },
+                where: {
+                    paymentStatus: { notIn: [3, 4] } // Exclude Failed/Cancelled from active/completed counts
+                }
+            }),
+            prisma.order.count({
+                where: {
+                    paymentStatus: { in: [3, 4] } // 3: Failed, 4: Cancelled
+                }
+            })
+        ]);
 
-        let completed = 0, active = 0; // "Pending" in UI effectively means "Active" or "Processing"
-        // Note: Failed/Cancelled is tracked via paymentStatus, not order status in this schema, ignoring for this chart
-
+        let completed = 0, active = 0;
         orderStatusCounts.forEach(stat => {
             if (stat.status === 2) {
                 completed += stat._count.status; // Delivered
             } else {
-                active += stat._count.status; // 1, 3, 4 are all active states
+                active += stat._count.status; // 1, 3, 4 are active states
             }
         });
 
-        // Use raw counts for Donut chart
-        // Pending/Active vs Completed
-        const orderStatusSeries = [completed, active, 0]; // 0 for Failed as strict Status doesn't track it
+        const orderStatusSeries = [completed, active, failedOrdersCount];
 
         req.app.render('pages/admin-dashboard', {
             totalRevenue,
