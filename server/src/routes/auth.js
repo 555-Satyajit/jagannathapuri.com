@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
+console.log('[Debug] authController exports:', Object.keys(authController));
+console.log('[Debug] postSessionVerify type:', typeof authController.postSessionVerify);
+
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
 
@@ -16,6 +19,6 @@ router.post('/change-password', authController.postChangePassword);
 router.get('/logout', authController.logout);
 
 router.get('/auth/callback', authController.getGoogleCallback);
-router.post('/auth/session', authController.postSession);
+router.post('/auth/session/verify', authController.postSessionVerify);
 
 module.exports = router;
