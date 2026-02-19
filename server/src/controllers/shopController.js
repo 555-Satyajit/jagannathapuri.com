@@ -284,54 +284,32 @@ exports.getShop = async (req, res) => {
         }
 
         // 1. Fetch Products and Total Count using DB Pagination
-        // Note: Rating filter is still handled in memory if applied because it's a mock
         let products, totalProducts;
 
         if (rating) {
-            // Real Rating Filtering
-            const ratingThreshold = parseInt(rating) || 0;
+            where.averageRating = { gte: parseInt(rating) || 0 };
+        }
 
-            // Fetch all products with reviews to filter by aggregate rating
-            // In a large DB, we'd use a raw query or a summary field in the DB.
-            const allProductsWithReviews = await prisma.product.findMany({
+        // HIGH PERFORMANCE PATH
+        [products, totalProducts] = await Promise.all([
+            prisma.product.findMany({
                 where,
                 include: {
-                    category: true,
-                    reviews: { select: { rating: true } }
+                    category: true
                 },
-                orderBy
-            });
+                orderBy,
+                skip,
+                take: itemsPerPage
+            }),
+            prisma.product.count({ where })
+        ]);
 
-            const filteredByRating = allProductsWithReviews.map(p => {
-                const count = p.reviews.length;
-                const avg = count > 0 ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / count : 0;
-                return { ...p, averageRating: avg.toFixed(1), reviewsCount: count };
-            }).filter(p => p.averageRating >= ratingThreshold);
-
-            totalProducts = filteredByRating.length;
-            products = filteredByRating.slice(skip, skip + itemsPerPage);
-        } else {
-            // HIGH PERFORMANCE PATH
-            [products, totalProducts] = await Promise.all([
-                prisma.product.findMany({
-                    where,
-                    include: {
-                        category: true,
-                        reviews: { select: { rating: true } }
-                    },
-                    orderBy,
-                    skip,
-                    take: itemsPerPage
-                }),
-                prisma.product.count({ where })
-            ]);
-
-            products = products.map(p => {
-                const count = p.reviews.length;
-                const avg = count > 0 ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / count : 0;
-                return { ...p, averageRating: avg.toFixed(1), reviewsCount: count };
-            });
-        }
+        // Map for display (using schema fields)
+        products = products.map(p => ({
+            ...p,
+            reviewsCount: p.reviewCount,
+            averageRating: p.averageRating.toFixed(1)
+        }));
 
         // Metadata for Sidebar
         const [categories, brands, allAttributes] = await Promise.all([
@@ -344,23 +322,15 @@ exports.getShop = async (req, res) => {
             prisma.attribute.findMany()
         ]);
 
-        // Calculate Price Range (Global or Filtered)
-        // Adjust price stats to be accurate numerically
-        const allActiveProducts = await prisma.product.findMany({
+        // Calculate Price Range using DB aggregation
+        const priceStats = await prisma.product.aggregate({
             where: { status: 1 },
-            select: { price: true }
+            _min: { price_amount: true },
+            _max: { price_amount: true }
         });
 
-        let globalMin = 0;
-        let globalMax = 1000;
-
-        if (allActiveProducts.length > 0) {
-            const prices = allActiveProducts.map(p => parsePrice(p.price)).filter(n => !isNaN(n));
-            if (prices.length > 0) {
-                globalMin = Math.min(...prices);
-                globalMax = Math.max(...prices);
-            }
-        }
+        const globalMin = priceStats._min.price_amount || 0;
+        const globalMax = priceStats._max.price_amount || 1000;
 
         // Sanitize query params for view to avoid NaN propagation
         const sanitizedQuery = { ...req.query };
@@ -619,33 +589,14 @@ exports.getProductDetails = async (req, res) => {
             return res.status(404).send('Product not found');
         }
 
-        // Fetch Real Reviews
-        const reviews = await prisma.review.findMany({
-            where: { productId: product.id },
-            include: { customer: { select: { fullName: true, avatar: true } } },
-            orderBy: { created_at: 'desc' }
-        });
-
-        // Calculate Rating Statistics
-        const reviewsCount = reviews.length;
-        const averageRating = reviewsCount > 0
-            ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviewsCount).toFixed(1)
-            : 0;
-
-        const starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-        reviews.forEach(rev => {
-            if (starCounts[rev.rating] !== undefined) starCounts[rev.rating]++;
-        });
-
-        const starPercentages = {};
-        [1, 2, 3, 4, 5].forEach(star => {
-            starPercentages[star] = reviewsCount > 0 ? Math.round((starCounts[star] / reviewsCount) * 100) : 0;
-        });
-
-        // Fetch Related Products (same category, limit 4) - Optional fetch
-        let relatedProducts = [];
-        try {
-            relatedProducts = await prisma.product.findMany({
+        // Parallelize fetching reviews, related products, and wishlist
+        const [reviews, relatedProductsResult, wishlist] = await Promise.all([
+            prisma.review.findMany({
+                where: { productId: product.id },
+                include: { customer: { select: { fullName: true, avatar: true } } },
+                orderBy: { created_at: 'desc' }
+            }),
+            prisma.product.findMany({
                 where: {
                     category_id: product.category_id,
                     id: { not: product.id },
@@ -666,20 +617,34 @@ exports.getProductDetails = async (req, res) => {
                         select: { name: true }
                     }
                 }
-            });
-        } catch (relatedError) {
-            console.error('Error fetching related products:', relatedError);
-            // Non-fatal, proceed with empty array
-        }
-
-        // Fetch Wishlist if logged in
-        if (req.session.customerId) {
-            const wishlist = await prisma.wishlistItem.findMany({
+            }).catch(e => {
+                console.error('Error fetching related products:', e);
+                return [];
+            }),
+            req.session.customerId ? prisma.wishlistItem.findMany({
                 where: { customerId: req.session.customerId },
                 select: { productId: true }
-            });
-            wishlistIds = wishlist.map(item => item.productId);
-        }
+            }) : Promise.resolve([])
+        ]);
+
+        const wishlistIds = wishlist.map(item => item.productId);
+        const relatedProducts = relatedProductsResult;
+
+        // Calculate Rating Statistics
+        const reviewsCount = reviews.length;
+        const averageRating = reviewsCount > 0
+            ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviewsCount).toFixed(1)
+            : 0;
+
+        const starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        reviews.forEach(rev => {
+            if (starCounts[rev.rating] !== undefined) starCounts[rev.rating]++;
+        });
+
+        const starPercentages = {};
+        [1, 2, 3, 4, 5].forEach(star => {
+            starPercentages[star] = reviewsCount > 0 ? Math.round((starCounts[star] / reviewsCount) * 100) : 0;
+        });
 
         req.app.render('pages/product-details', {
             product: product,
@@ -1124,7 +1089,7 @@ exports.getOrderSuccessful = async (req, res) => {
         const order = await prisma.order.findUnique({
             where: { orderNumber },
             include: {
-                orderItems: {
+                items: {
                     include: {
                         product: true
                     }
@@ -1356,14 +1321,35 @@ exports.submitReview = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Product ID and Rating are required' });
         }
 
-        const review = await prisma.review.create({
-            data: {
-                customerId: parseInt(customerId),
-                productId: parseInt(productId),
-                rating: parseInt(rating),
-                comment: comment || '',
-                images: images
-            }
+        const review = await prisma.$transaction(async (tx) => {
+            const newReview = await tx.review.create({
+                data: {
+                    customerId: parseInt(customerId),
+                    productId: parseInt(productId),
+                    rating: parseInt(rating),
+                    comment: comment || '',
+                    images: images
+                }
+            });
+
+            // Recalculate Product Ratings
+            const allReviews = await tx.review.findMany({
+                where: { productId: parseInt(productId) },
+                select: { rating: true }
+            });
+
+            const count = allReviews.length;
+            const avg = count > 0 ? allReviews.reduce((acc, r) => acc + r.rating, 0) / count : 0;
+
+            await tx.product.update({
+                where: { id: parseInt(productId) },
+                data: {
+                    averageRating: parseFloat(avg.toFixed(1)),
+                    reviewCount: count
+                }
+            });
+
+            return newReview;
         });
 
         res.json({ success: true, message: 'Review submitted successfully', review });

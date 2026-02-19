@@ -10,19 +10,26 @@ module.exports = (requiredPermission) => {
                 return res.redirect('/admin/login');
             }
 
-            const staffId = req.session.admin.id;
+            // req.user is populated by authMiddleware
+            const staff = req.user;
+
+            if (!staff) {
+                // Should be caught by authMiddleware but double check
+                return res.redirect('/admin/login');
+            }
 
             // Fetch user with role and permissions
-            const staff = await prisma.staff.findUnique({
-                where: { id: staffId },
-                include: {
-                    role: {
-                        include: {
-                            permissions: true
-                        }
-                    }
-                }
-            });
+            // OPTIMIZATION: Use the staff object already fetched in authMiddleware
+            /* const staff = await prisma.staff.findUnique({
+                 where: { id: staffId },
+                 include: {
+                     role: {
+                         include: {
+                             permissions: true
+                         }
+                     }
+                 }
+             }); */
 
             if (!staff || !staff.role) {
                 console.warn(`User ${staffId} has no role assigned.`);

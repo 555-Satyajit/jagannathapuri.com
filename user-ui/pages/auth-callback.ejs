@@ -29,11 +29,12 @@
 
             // Send to our backend to create local session
             try {
-                const response = await fetch("/auth/session", {
+                const response = await fetch("/auth/session/verify", { // Changed endpoint name to reflect purpose
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        email: user.email,
+                        access_token: session.access_token,
+                        email: user.email, // Still sending for redundancy/logging, but token is source of truth
                         fullName: user.user_metadata.full_name || user.email.split('@')[0],
                         supabase_id: user.id
                     })

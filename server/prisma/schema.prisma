@@ -53,6 +53,8 @@ model Product {
   reviews         Review[]
   wishlistedBy    WishlistItem[]
   lowStockThreshold Int @default(10)
+  averageRating   Float          @default(0)
+  reviewCount     Int            @default(0)
 }
 
 model Notification {
@@ -170,6 +172,7 @@ model Staff {
   role            Role?           @relation(fields: [roleId], references: [id])
   assignedTickets Ticket[]
   ticketMessages  TicketMessage[]
+  auditLogs       AuditLog[]
 }
 
 model Customer {
@@ -258,6 +261,8 @@ model Address {
   updated_at   DateTime @updatedAt
   phone        String?
   customer     Customer @relation(fields: [customer_id], references: [id])
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
 }
 
 model Order {
@@ -278,6 +283,8 @@ model Order {
   tax               Float         @default(0)
   totalAmount       Float         @default(0)
   customer          Customer      @relation(fields: [customer_id], references: [id])
+  shippingAddress   Address?      @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress    Address?      @relation("BillingAddress", fields: [billingAddressId], references: [id])
   items             OrderItem[]
   transactions      Transaction[]
 }
@@ -456,4 +463,24 @@ model HomeTab {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  action    String
+  entity    String?
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  admin     Staff    @relation(fields: [adminId], references: [id])
+}
+
+model Session {
+  sid    String   @id @map("sid")
+  sess   Json     @map("sess")
+  expire DateTime @map("expire")
+
+  @@map("session")
 }

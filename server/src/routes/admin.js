@@ -93,6 +93,9 @@ router.post('/settings/general', upload.single('logo'), adminController.saveGene
 router.get('/settings/shipping-payment', checkPermission('manage_settings'), adminController.getShippingPaymentSettings);
 router.post('/settings/shipping-payment', checkPermission('manage_settings'), adminController.saveShippingPaymentSettings);
 
+// Audit Logs
+router.get('/settings/audit-logs', checkPermission('manage_settings'), adminController.getAuditLogs);
+
 // Store Configuration - Manage Home
 // Hero Section
 router.get('/store/home/hero/list', checkPermission('manage_settings'), adminController.getHeroList);
