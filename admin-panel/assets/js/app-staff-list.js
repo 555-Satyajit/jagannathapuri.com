@@ -65,16 +65,30 @@ $(function () {
                     // User Role
                     targets: 2,
                     render: function (data, type, full, meta) {
-                        var $role = data; // Data is the cell content (Role Name)
+                        var $role = data;
                         var roleBadgeObj = {
-                            Support: '<span class="badge border border-info text-info"><i class="bx bx-support me-2"></i>' + $role + "</span>",
-                            Editor: '<span class="badge border border-warning text-warning"><i class="bx bx-edit-alt me-2"></i>' + $role + "</span>",
-                            Admin: '<span class="badge border border-primary text-primary"><i class="bx bx-crown me-2"></i>' + $role + "</span>",
-                            Administrator: '<span class="badge border border-primary text-primary"><i class="bx bx-crown me-2"></i>' + $role + "</span>",
-                            Manager: '<span class="badge border border-success text-success"><i class="bx bx-user me-2"></i>' + $role + "</span>",
-                            Restricted: '<span class="badge border border-danger text-danger"><i class="bx bx-user-x me-2"></i>' + $role + "</span>"
+                            Support: 'border-info text-info',
+                            Editor: 'border-warning text-warning',
+                            Admin: 'border-primary text-primary',
+                            Administrator: 'border-primary text-primary',
+                            Manager: 'border-success text-success',
+                            Restricted: 'border-danger text-danger',
+                            'Managing Director': 'border-primary text-primary'
                         };
-                        return roleBadgeObj[$role] || $role;
+                        var roleIconObj = {
+                            Support: 'bx-support',
+                            Editor: 'bx-edit-alt',
+                            Admin: 'bx-crown',
+                            Administrator: 'bx-crown',
+                            Manager: 'bx-user',
+                            Restricted: 'bx-user-x',
+                            'Managing Director': 'bx-briefcase'
+                        };
+
+                        var badgeClass = roleBadgeObj[$role] || 'border-secondary text-secondary';
+                        var iconClass = roleIconObj[$role] || 'bx-user';
+
+                        return '<span class="badge border ' + badgeClass + '"><i class="bx ' + iconClass + ' me-2"></i>' + $role + "</span>";
                     }
                 },
                 {

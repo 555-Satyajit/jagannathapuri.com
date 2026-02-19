@@ -63,22 +63,31 @@ $(function () {
                 {
                     targets: 2,
                     render: function (e, a, t, s) {
-                        t = t.role;
+                        var roleName = t.role;
+                        var badgeStyles = {
+                            Subscriber: 'bg-label-warning',
+                            Author: 'bg-label-success',
+                            Maintainer: 'bg-label-primary',
+                            Editor: 'bg-label-info',
+                            Admin: 'bg-label-secondary',
+                            'Managing Director': 'bg-label-primary'
+                        };
+                        var icons = {
+                            Subscriber: 'bx-user',
+                            Author: 'bx-cog',
+                            Maintainer: 'bx-pie-chart-alt',
+                            Editor: 'bx-edit',
+                            Admin: 'bx-mobile-alt',
+                            'Managing Director': 'bx-briefcase'
+                        };
+
+                        var styleClass = badgeStyles[roleName] || 'bg-label-secondary';
+                        var iconClass = icons[roleName] || 'bx-user';
+
                         return (
                             "<span class='text-truncate d-flex align-items-center'>" +
-                            {
-                                Subscriber:
-                                    '<span class="badge badge-center rounded-pill bg-label-warning w-px-30 h-px-30 me-2"><i class="bx bx-user bx-xs"></i></span>',
-                                Author:
-                                    '<span class="badge badge-center rounded-pill bg-label-success w-px-30 h-px-30 me-2"><i class="bx bx-cog bx-xs"></i></span>',
-                                Maintainer:
-                                    '<span class="badge badge-center rounded-pill bg-label-primary w-px-30 h-px-30 me-2"><i class="bx bx-pie-chart-alt bx-xs"></i></span>',
-                                Editor:
-                                    '<span class="badge badge-center rounded-pill bg-label-info w-px-30 h-px-30 me-2"><i class="bx bx-edit bx-xs"></i></span>',
-                                Admin:
-                                    '<span class="badge badge-center rounded-pill bg-label-secondary w-px-30 h-px-30 me-2"><i class="bx bx-mobile-alt bx-xs"></i></span>'
-                            }[t] +
-                            t +
+                            '<span class="badge badge-center rounded-pill ' + styleClass + ' w-px-30 h-px-30 me-2"><i class="bx ' + iconClass + ' bx-xs"></i></span>' +
+                            roleName +
                             "</span>"
                         );
                     }
