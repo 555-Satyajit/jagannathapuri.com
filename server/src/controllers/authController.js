@@ -111,7 +111,7 @@ exports.postRegister = async (req, res) => {
             email,
             password,
             options: {
-                emailRedirectTo: process.env.SITE_URL || 'http://localhost:3000/user-account',
+                emailRedirectTo: process.env.SITE_URL || 'https://jagannathapuri.com/user-account',
                 data: {
                     full_name: fullName,
                     phone: phone
@@ -185,7 +185,7 @@ exports.postSendOTP = async (req, res) => {
             email,
             options: {
                 // Supabase will send the email automatically if configured
-                emailRedirectTo: process.env.SITE_URL || 'http://localhost:3000'
+                emailRedirectTo: process.env.SITE_URL || 'https://jagannathapuri.com'
             }
         });
 
@@ -277,17 +277,26 @@ exports.getGoogleCallback = async (req, res) => {
     }
 };
 
-exports.postSession = async (req, res) => {
-    const { email, fullName, supabase_id, apiKey } = req.body;
+exports.postSessionVerify = async (req, res) => {
+    const { access_token } = req.body;
 
-    // PROTECT THIS ENDPOINT
-    const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || 'secure-internal-key-change-this';
-    if (apiKey !== INTERNAL_API_KEY) {
-        console.warn(`Unauthorized access attempt to /auth/session from ${req.ip}`);
-        return res.status(403).json({ success: false, error: 'Unauthorized' });
+    if (!access_token) {
+        return res.status(400).json({ success: false, error: 'Access token required' });
     }
 
     try {
+        // Verify with Supabase
+        const { data: { user }, error } = await supabase.auth.getUser(access_token);
+
+        if (error || !user) {
+            console.warn(`[Auth] Invalid access token from ${req.ip}`);
+            return res.status(401).json({ success: false, error: 'Invalid token' });
+        }
+
+        const email = user.email;
+        const fullName = user.user_metadata.full_name || email.split('@')[0];
+        const supabase_id = user.id;
+
         let customer = await prisma.customer.findUnique({
             where: { email }
         });
@@ -329,7 +338,7 @@ exports.postSession = async (req, res) => {
             res.json({ success: true, message: 'Session synced' });
         });
     } catch (error) {
-        console.error('Error in postSession:', error);
+        console.error('Error in postSessionVerify:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };

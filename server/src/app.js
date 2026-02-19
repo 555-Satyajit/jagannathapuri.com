@@ -8,61 +8,80 @@ const configStore = require('./lib/configStore');
 const app = express();
 
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const pg = require('pg');
+const pgSession = require('connect-pg-simple')(session);
+
+// Create a separate pool for sessions with limited connections
+const sessionPool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 2, // Reduced to 2 to prevent "Max client connections reached" (Supabase limit)
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+});
 
 // 1. Security Headers (Helmet)
 app.use(helmet({
     contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false,
-    originAgentCluster: false
+    crossOriginEmbedderPolicy: false
 }));
 
 // Trust Proxy (Required for Nginx/Load Balancers)
 app.set('trust proxy', 1);
+
+// Rate Limiting definition
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5000, // Increased to 5000 to ensure NO real user gets blocked (approx 5 pages/sec)
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes',
+    skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' // Skip localhost
+});
 
 // 2. Serve static files FIRST (High priority for performance)
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/admin-assets', express.static(path.join(__dirname, '../../admin-panel/assets')));
 app.use('/uploads', express.static(path.join(__dirname, '../../admin-panel/assets/uploads')));
 
+// Apply rate limiting AFTER static files
+app.use(limiter);
+
 // 3. Middleware to fetch site configuration (Using Cache)
 app.use(async (req, res, next) => {
-    // Skip config for common static extensions if they somehow reach here
-    if (req.path.match(/\.(jpg|jpeg|png|gif|css|js|ico|svg|woff|woff2)$/)) {
-        return next();
-    }
-
     try {
-        const settings = await configStore.getConfig();
-        res.locals.siteConfig = settings || {};
+        const config = await configStore.getConfig();
+        res.locals.siteConfig = config;
 
-        // Expose public Supabase keys to views
-        res.locals.process = {
-            env: {
-                SUPABASE_URL: process.env.SUPABASE_URL,
-                SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
-            }
-        };
+        // Ensure header/footer objects exist to prevent ejs errors
+        if (!res.locals.siteConfig.header) res.locals.siteConfig.header = {};
+        if (!res.locals.siteConfig.footer) res.locals.siteConfig.footer = {};
 
         next();
     } catch (error) {
-        console.error('Error in site config middleware:', error);
-        res.locals.siteConfig = {};
+        console.error('Error loading site config:', error);
+        res.locals.siteConfig = { header: {}, footer: {} }; // Fallback
         next();
     }
 });
 
 // 4. Session and Body Parsing
 app.use(session({
+    store: new pgSession({
+        pool: sessionPool, // Use our limited pool
+        tableName: 'session',
+        createTableIfMissing: true
+    }),
     secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key', // Use ENV in production
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, // Don't create session until something is stored
     cookie: {
-        secure: process.env.NODE_ENV === 'production' && process.env.USE_SECURE_COOKIES === 'true', // Only secure if explicitly enabled
+        secure: process.env.NODE_ENV === 'production', // Only secure if explicitly enabled or prod
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 // 1 day
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     }
 }));
+
 
 // Add user session to locals for all views
 // Add user session to locals for all views
