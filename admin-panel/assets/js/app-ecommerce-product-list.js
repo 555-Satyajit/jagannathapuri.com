@@ -145,6 +145,7 @@ $(function () {
                     responsivePriority: 3,
                     render: function (t, e, s, a) {
                         var qty = s.qty;
+                        var stockStatus = qty <= 0 ? 'Out of Stock' : (qty <= 10 ? 'Low Stock' : 'In Stock');
                         var inStock = qty > 0;
                         return (
                             "<span class='text-truncate'>" +
@@ -153,7 +154,7 @@ $(function () {
                                 '<label class="switch switch-primary switch-sm"><input type="checkbox" class="switch-input" id="switch"><span class="switch-toggle-slider"><span class="switch-off"></span></span></label>'
                             ) +
                             '<span class="d-none">' +
-                            (inStock ? 'In Stock' : 'Out of Stock') +
+                            stockStatus +
                             "</span></span>"
                         );
                     },
@@ -465,19 +466,18 @@ $(function () {
                                         var t = $.fn.dataTable.util.escapeRegex($(this).val());
                                         e.search(t ? "^" + t + "$" : "", !0, !1).draw();
                                     });
-                            e.data()
-                                .unique()
-                                .sort()
-                                .each(function (t, e) {
-                                    var label = t > 0 ? 'In Stock' : 'Out of Stock';
-                                    s.append(
-                                        '<option value="' +
-                                        label +
-                                        '">' +
-                                        label +
-                                        "</option>"
-                                    );
-                                });
+
+                            // Only add unique stock labels
+                            var stockLabels = ['In Stock', 'Out of Stock', 'Low Stock'];
+                            stockLabels.forEach(function (label) {
+                                s.append(
+                                    '<option value="' +
+                                    label +
+                                    '">' +
+                                    label +
+                                    "</option>"
+                                );
+                            });
                         });
             },
         })),
