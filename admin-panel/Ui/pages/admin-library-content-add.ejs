@@ -38,6 +38,49 @@
                                 placeholder="Brief summary for the library grid view..."><%= content ? content.summary : '' %></textarea>
                         </div>
 
+                        <!-- SEO & Meta Tags -->
+                        <div class="mb-4 pt-2 border-top">
+                            <h6 class="mb-3">SEO & Meta Tags</h6>
+                            <div class="mb-3">
+                                <label class="form-label" for="meta_title">Meta Title</label>
+                                <input type="text" class="form-control seo-strength-title" id="meta_title"
+                                    name="meta_title" placeholder="SEO Title"
+                                    value="<%= content ? content.meta_title : '' %>">
+                                <div class="seo-meter mt-1">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Strength: <span
+                                                class="strength-label">Check...</span></small>
+                                        <small class="text-muted"><span class="char-count">0</span> / 60 chars</small>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="meta_description">Meta Description</label>
+                                <textarea class="form-control seo-strength-desc" id="meta_description"
+                                    name="meta_description" rows="3"
+                                    placeholder="SEO Description"><%= content ? content.meta_description : '' %></textarea>
+                                <div class="seo-meter mt-1">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Strength: <span
+                                                class="strength-label">Check...</span></small>
+                                        <small class="text-muted"><span class="char-count">0</span> / 160 chars</small>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="meta_keywords">Meta Keywords</label>
+                                <input type="text" class="form-control" id="meta_keywords" name="meta_keywords"
+                                    placeholder="keyword1, keyword2"
+                                    value="<%= content ? content.meta_keywords : '' %>">
+                            </div>
+                        </div>
+
                         <!-- Quill Editor -->
                         <div class="mb-3">
                             <label class="form-label">Main Content</label>
@@ -76,7 +119,7 @@
                         <div class="mb-3">
                             <label class="form-label">Author</label>
                             <input type="text" class="form-control" name="author"
-                                value="<%= content ? content.author : 'Jay Subhdra Team' %>">
+                                value="<%= content ? content.author : 'Jagannathapuri Team' %>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Status</label>
@@ -162,6 +205,53 @@
                     quill.insertEmbed(range.index, 'image', data.url);
                 }
             };
+        }
+
+        // SEO Strength Meter Logic
+        function updateSeoMeter(input, max, ideal_min, ideal_max) {
+            const meter = input.nextElementSibling;
+            if (!meter || !meter.classList.contains('seo-meter')) return;
+
+            const label = meter.querySelector('.strength-label');
+            const countDisplay = meter.querySelector('.char-count');
+            const bar = meter.querySelector('.progress-bar');
+
+            const count = input.value.length;
+            countDisplay.textContent = count;
+
+            let percent = (count / max) * 100;
+            if (percent > 100) percent = 100;
+            bar.style.width = percent + '%';
+
+            if (count === 0) {
+                label.textContent = 'Empty';
+                label.className = 'strength-label text-muted';
+                bar.className = 'progress-bar bg-secondary';
+            } else if (count < ideal_min) {
+                label.textContent = 'Weak';
+                label.className = 'strength-label text-danger';
+                bar.className = 'progress-bar bg-danger';
+            } else if (count <= ideal_max) {
+                label.textContent = 'Best';
+                label.className = 'strength-label text-success';
+                bar.className = 'progress-bar bg-success';
+            } else {
+                label.textContent = 'Good (Too long)';
+                label.className = 'strength-label text-warning';
+                bar.className = 'progress-bar bg-warning';
+            }
+        }
+
+        const titleInputSeo = document.querySelector('.seo-strength-title');
+        const descInputSeo = document.querySelector('.seo-strength-desc');
+
+        if (titleInputSeo) {
+            titleInputSeo.addEventListener('input', () => updateSeoMeter(titleInputSeo, 100, 30, 60));
+            updateSeoMeter(titleInputSeo, 100, 30, 60);
+        }
+        if (descInputSeo) {
+            descInputSeo.addEventListener('input', () => updateSeoMeter(descInputSeo, 300, 120, 160));
+            updateSeoMeter(descInputSeo, 300, 120, 160);
         }
 
         // Slug Gen

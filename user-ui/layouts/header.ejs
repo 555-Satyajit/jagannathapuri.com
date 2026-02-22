@@ -18,148 +18,131 @@
             <ul class="flex items-center gap-x-[19px]">
               <li
                 class="relative group after:absolute after:h-7.5 after:w-px after:bg-primary-light after:right-0 after:top-1/2 after:-translate-y-1/2">
-                <a href="#"
-                  class="text-sm leading-[22px] text-white inline-flex items-center gap-x-2 pr-[19px] py-3.5"><span
-                    class="inline-flex items-center justify-center size-7 bg-primary-darker rounded-full"><i
-                      class="hgi hgi-stroke hgi-language-circle text-xl text-white"></i>
+                <!-- Custom Translation Dropdown -->
+                <a href="javascript:void(0)"
+                  class="text-sm leading-[22px] text-white inline-flex items-center gap-x-2 pr-[19px] py-3.5"
+                  id="current-lang-display">
+                  <span class="inline-flex items-center justify-center size-7 bg-primary-darker rounded-full">
+                    <i class="hgi hgi-stroke hgi-language-circle text-xl text-white"></i>
                   </span>
                   English
-                  <span class="inline-flex items-center justify-center"><i
-                      class="hgi hgi-stroke hgi-arrow-down-01 text-xl text-white"></i>
+                  <span class="inline-flex items-center justify-center">
+                    <i class="hgi hgi-stroke hgi-arrow-down-01 text-xl text-white"></i>
                   </span>
                 </a>
 
                 <ul
-                  class="absolute left-0 top-full py-2 z-50 w-[250px] max-w-[250px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                  class="absolute left-0 top-full py-2 z-50 w-[200px] max-w-[200px] bg-white rounded-lg shadow-dark-z-24 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
                   <li class="py-2 px-4 group/item">
-                    <a href="#"
-                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
-                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 inline-flex items-center justify-center rounded-full">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_33581_103320)">
-                            <path
-                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M7.65186 7.99999H15.9997C15.9997 7.27793 15.9034 6.57843 15.7241 5.91302H7.65186V7.99999Z"
-                              fill="#D80027" />
-                            <path
-                              d="M7.65186 3.82568H14.8255C14.3358 3.02655 13.7096 2.32021 12.9795 1.73871H7.65186V3.82568Z"
-                              fill="#D80027" />
-                            <path
-                              d="M7.99989 16C9.88268 16 11.6132 15.3492 12.9798 14.2609H3.02002C4.38658 15.3492 6.11711 16 7.99989 16Z"
-                              fill="#D80027" />
-                            <path
-                              d="M1.17398 12.1733H14.8256C15.2188 11.5317 15.5237 10.8305 15.7242 10.0863H0.275391C0.475922 10.8305 0.780828 11.5317 1.17398 12.1733Z"
-                              fill="#D80027" />
-                            <path
-                              d="M3.70575 1.24931H4.43478L3.75666 1.74197L4.01569 2.53912L3.33759 2.04647L2.6595 2.53912L2.88325 1.85047C2.28619 2.34781 1.76287 2.9305 1.33162 3.57975H1.56522L1.13356 3.89334C1.06631 4.00553 1.00181 4.1195 0.94 4.23516L1.14612 4.86956L0.761563 4.59016C0.665969 4.79269 0.578531 4.99978 0.499938 5.21119L0.727031 5.91019H1.56522L0.887094 6.40284L1.14612 7.2L0.468031 6.70734L0.0618437 7.00247C0.0211875 7.32928 0 7.66216 0 8H8C8 3.58175 8 3.06087 8 0C6.41963 0 4.94641 0.458438 3.70575 1.24931ZM4.01569 7.2L3.33759 6.70734L2.6595 7.2L2.91853 6.40284L2.24041 5.91019H3.07859L3.33759 5.11303L3.59659 5.91019H4.43478L3.75666 6.40284L4.01569 7.2ZM3.75666 4.07241L4.01569 4.86956L3.33759 4.37691L2.6595 4.86956L2.91853 4.07241L2.24041 3.57975H3.07859L3.33759 2.78259L3.59659 3.57975H4.43478L3.75666 4.07241ZM6.88525 7.2L6.20716 6.70734L5.52906 7.2L5.78809 6.40284L5.10997 5.91019H5.94816L6.20716 5.11303L6.46616 5.91019H7.30434L6.62622 6.40284L6.88525 7.2ZM6.62622 4.07241L6.88525 4.86956L6.20716 4.37691L5.52906 4.86956L5.78809 4.07241L5.10997 3.57975H5.94816L6.20716 2.78259L6.46616 3.57975H7.30434L6.62622 4.07241ZM6.62622 1.74197L6.88525 2.53912L6.20716 2.04647L5.52906 2.53912L5.78809 1.74197L5.10997 1.24931H5.94816L6.20716 0.452156L6.46616 1.24931H7.30434L6.62622 1.74197Z"
-                              fill="#0052B4" />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_33581_103320">
-                              <rect width="16" height="16" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg> </span>English
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="en">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      English
                     </a>
                   </li>
                   <li class="py-2 px-4 group/item">
-                    <a href="#"
-                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
-                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 inline-flex items-center justify-center rounded-full">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_33581_103328)">
-                            <path
-                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M1.65355 3.12866C1.02514 3.94626 0.551297 4.8886 0.275391 5.91232H4.4372L1.65355 3.12866Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M15.7243 5.91247C15.4483 4.88878 14.9745 3.94644 14.3461 3.12885L11.5625 5.91247H15.7243Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M0.275391 10.0869C0.551328 11.1105 1.02517 12.0529 1.65355 12.8704L4.43711 10.0869H0.275391Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M12.8701 1.65321C12.0525 1.02481 11.1101 0.550962 10.0864 0.275024V4.43681L12.8701 1.65321Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M3.12891 14.3451C3.9465 14.9736 4.88885 15.4474 5.91253 15.7233V11.5616L3.12891 14.3451Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M5.9125 0.275024C4.88881 0.550962 3.94647 1.02481 3.12891 1.65318L5.9125 4.43677V0.275024Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M10.0864 15.7233C11.1101 15.4474 12.0525 14.9736 12.87 14.3452L10.0864 11.5616V15.7233Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M11.5625 10.0869L14.3461 12.8705C14.9745 12.0529 15.4483 11.1105 15.7243 10.0869H11.5625Z"
-                              fill="#0052B4" />
-                            <path
-                              d="M15.9323 6.95653H9.04353H9.0435V0.0677188C8.70191 0.02325 8.35366 0 8 0C7.64628 0 7.29809 0.02325 6.95653 0.0677188V6.95647V6.9565H0.0677188C0.02325 7.29809 0 7.64634 0 8C0 8.35372 0.02325 8.70191 0.0677188 9.04347H6.95647H6.9565V15.9323C7.29809 15.9768 7.64628 16 8 16C8.35366 16 8.70191 15.9768 9.04347 15.9323V9.04353V9.0435H15.9323C15.9768 8.70191 16 8.35372 16 8C16 7.64634 15.9768 7.29809 15.9323 6.95653Z"
-                              fill="#D80027" />
-                            <path
-                              d="M10.0869 10.0875L13.6568 13.6574C13.821 13.4932 13.9776 13.3217 14.127 13.1438L11.0707 10.0875H10.0869V10.0875Z"
-                              fill="#D80027" />
-                            <path
-                              d="M5.91317 10.0875H5.91311L2.34326 13.6573C2.50739 13.8215 2.67898 13.9781 2.85686 14.1276L5.91317 11.0712V10.0875Z"
-                              fill="#D80027" />
-                            <path
-                              d="M5.91268 5.91274V5.91268L2.34281 2.34277C2.17862 2.5069 2.022 2.67849 1.87256 2.85637L4.9289 5.91271H5.91268V5.91274Z"
-                              fill="#D80027" />
-                            <path
-                              d="M10.0869 5.91345L13.6568 2.34351C13.4927 2.17932 13.3211 2.0227 13.1432 1.87329L10.0869 4.92964V5.91345Z"
-                              fill="#D80027" />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_33581_103328">
-                              <rect width="16" height="16" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg> </span>Germany
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="or">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Odia
                     </a>
                   </li>
                   <li class="py-2 px-4 group/item">
-                    <a href="#"
-                      class="flex items-center gap-x-2 relative text-light-primary-text group-hover/item:text-primary"><span
-                        class="w-8 h-8 bg-[#F0F0F0] group-hover/item:bg-[#00AB55]/8 transition-colors duration-300 inline-flex items-center justify-center rounded-full">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <g clip-path="url(#clip0_33581_103345)">
-                            <path
-                              d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
-                              fill="#F0F0F0" />
-                            <path d="M0 8.00003C0 3.58175 3.58175 0 8 0C12.4183 0 16 3.58175 16 8.00003"
-                              fill="#D80027" />
-                            <path
-                              d="M4.86918 4.17395C4.86918 3.00838 5.68834 2.0347 6.78221 1.79579C6.61409 1.7591 6.43968 1.7392 6.26046 1.7392C4.91575 1.7392 3.82568 2.82926 3.82568 4.17398C3.82568 5.5187 4.91575 6.60876 6.26046 6.60876C6.43962 6.60876 6.61406 6.58885 6.78221 6.55213C5.68834 6.31323 4.86918 5.33954 4.86918 4.17395Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M7.99951 1.91327L8.17219 2.44468H8.73098L8.27888 2.77315L8.45157 3.30455L7.99951 2.97615L7.54744 3.30455L7.72013 2.77315L7.26807 2.44468H7.82682L7.99951 1.91327Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M6.6441 2.95642L6.81675 3.48786H7.37553L6.92347 3.8163L7.09616 4.3477L6.6441 4.0193L6.19197 4.3477L6.36469 3.8163L5.9126 3.48786H6.47138L6.6441 2.95642Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M9.35497 2.95642L9.52769 3.48786H10.0864L9.63435 3.8163L9.80707 4.3477L9.35497 4.0193L8.90291 4.3477L9.0756 3.8163L8.62354 3.48786H9.18229L9.35497 2.95642Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M8.83349 4.52222L9.00617 5.05365H9.56492L9.11286 5.38209L9.28555 5.9135L8.83349 5.58509L8.38143 5.9135L8.55411 5.38209L8.10205 5.05365H8.66077L8.83349 4.52222Z"
-                              fill="#F0F0F0" />
-                            <path
-                              d="M7.16604 4.52222L7.33869 5.05365H7.89751L7.44541 5.38209L7.61813 5.9135L7.16604 5.58509L6.71394 5.9135L6.88663 5.38209L6.43457 5.05365H6.99335L7.16604 4.52222Z"
-                              fill="#F0F0F0" />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_33581_103345">
-                              <rect width="16" height="16" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg> </span>Singapore
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="hi">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Hindi
                     </a>
                   </li>
                 </ul>
+
+                <!-- Hidden Google Translate Element (Off-screen for better init) -->
+                <div id="google_translate_element" style="position: absolute; top: -9999px; left: -9999px;"></div>
+                <script type="text/javascript">
+                  function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: 'en,or,hi',
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                      autoDisplay: false
+                    }, 'google_translate_element');
+                  }
+
+                  // Bulletproof Cookie-based translation
+                  document.addEventListener('click', function (e) {
+                    const langBtn = e.target.closest('.lang-select');
+                    if (langBtn) {
+                      e.preventDefault();
+                      const lang = langBtn.getAttribute('data-lang');
+                      const cookieValue = '/en/' + lang;
+
+                      // Set cookie for the main domain and all subpaths
+                      document.cookie = "googtrans=" + cookieValue + "; path=/";
+                      document.cookie = "googtrans=" + cookieValue + "; path=/; domain=" + location.hostname;
+
+                      // Refresh the page to apply translation reliably
+                      location.reload();
+                    }
+                  });
+
+                  // Update UI Label based on cookie on page load
+                  window.addEventListener('DOMContentLoaded', () => {
+                    const getCookie = (name) => {
+                      const value = `; ${document.cookie}`;
+                      const parts = value.split(`; ${name}=`);
+                      if (parts.length === 2) return parts.pop().split(';').shift();
+                    };
+
+                    const googtrans = getCookie('googtrans');
+                    if (googtrans) {
+                      const lang = googtrans.split('/').pop();
+                      const labelMap = { 'en': 'English', 'or': 'Odia', 'hi': 'Hindi' };
+                      if (labelMap[lang]) {
+                        const display = document.getElementById('current-lang-display');
+                        if (display) {
+                          for (const node of display.childNodes) {
+                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 1) {
+                              node.textContent = ' ' + labelMap[lang];
+                              break;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  });
+                </script>
+                <script type="text/javascript"
+                  src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                <style>
+                  /* Clean up UI: Hide Google banners, toolbars and tooltips */
+                  .goog-te-banner-frame.skiptranslate,
+                  .goog-te-gadget,
+                  .goog-te-banner,
+                  #goog-gt-tt,
+                  .goog-tooltip,
+                  .goog-tooltip:hover {
+                    display: none !important;
+                  }
+
+                  body {
+                    top: 0px !important;
+                  }
+
+                  .goog-text-highlight {
+                    background-color: transparent !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                </style>
               </li>
               <li class="relative group">
                 <a href="#" class="text-sm leading-[22px] text-white flex items-center gap-x-2 py-3.5"><span
@@ -234,7 +217,7 @@
       <div class="xl:flex items-center hidden">
         <div>
           <a href='/'>
-            <img src="<%= siteConfig.header.logo %>" alt="Logo" style="max-height: 50px;" />
+            <img src="<%= siteConfig.header.logo %>" alt="Logo" style="max-height: 100px;" />
           </a>
         </div>
         <div class="flex items-center w-full justify-end gap-x-[54px]">
@@ -258,76 +241,8 @@
                 <p class="font-semibold text-light-primary-text">
                   Recent Search
                 </p>
-                <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
-                  Reset History
-                </button>
               </div>
-              <div class="flex items-center gap-x-2 recent-search-list mb-4">
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Vitamin D Supplement
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Pain Relief Spray
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Baby Thermometer
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="recommended-search-list-wrapper">
-                <p class="text-base font-semibold text-light-primary-text mb-4">
-                  Recommended
-                </p>
-                <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Immunity booster</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Hand Sanitizer 500ml</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/combat.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Heart health supplements</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Protein powder for women</a>
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <p class="text-sm text-gray-500">Type at least 2 characters to search...</p>
             </div>
           </div>
 
@@ -449,7 +364,7 @@
           </div>
           <div>
             <a href='/'>
-              <img src="/assets/images/logo.png" alt="Logo" class="w-[120px] md:w-[150px]" />
+              <img src="<%= siteConfig.header.logo %>" alt="Logo" class="w-[220px] md:w-[250px]" />
             </a>
           </div>
           <div class="xl:hidden flex items-center gap-x-4">
@@ -489,76 +404,8 @@
                 <p class="font-semibold text-light-primary-text">
                   Recent Search
                 </p>
-                <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
-                  Reset History
-                </button>
               </div>
-              <div class="flex flex-wrap items-center gap-2 recent-search-list mb-4">
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Vitamin D Supplement
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Pain Relief Spray
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-                <button
-                  class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-                  Baby Thermometer
-                  <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                    <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="recommended-search-list-wrapper">
-                <p class="text-base font-semibold text-light-primary-text mb-4">
-                  Recommended
-                </p>
-                <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Immunity booster</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Hand Sanitizer 500ml</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/combat.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Heart health supplements</a>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                    <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                      <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
-                    </div>
-                    <p
-                      class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                      <a href="index-4.html#">Protein powder for women</a>
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <p class="text-sm text-gray-500">Type at least 2 characters to search...</p>
             </div>
           </div>
         </div>

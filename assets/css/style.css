@@ -3,9 +3,9 @@
 @layer theme, base, components, utilities;
 
 /*!-----------------------------------------------------------------------------------
-  Theme Name: Sellzy - Multipurpose eCommerce HTML Template
-  Author: sellzy
-  Description: Sellzy - Multipurpose eCommerce HTML Template
+  Theme Name: jagannathapuri - Multipurpose eCommerce HTML Template
+  Author: jagannathapuri
+  Description: jagannathapuri - Multipurpose eCommerce HTML Template
   Version: 1.0.0
 -----------------------------------------------------------------------------------*/
 /*! ************ TABLE OF CONTENTS ***************
@@ -2672,7 +2672,7 @@ others css
   }
 
   .bg-\[url\(\'\.\.\/images\/product-details\/product-details-11\.jpg\'\)\] {
-    background-image: url('https://sellzy-preview.netlify.app/assets/images/product-details/product-details-11.jpg');
+    background-image: url('https://jagannathapuri-preview.netlify.app/assets/images/product-details/product-details-11.jpg');
   }
 
   .bg-\[url\(\'\.\.\/images\/product-details\/product-details-12\.jpg\'\)\] {
@@ -2772,11 +2772,11 @@ others css
   }
 
   .bg-\[url\(\/assets\/images\/home-4\/promo-card-2\.png\)\] {
-    background-image: url(https://sellzy-preview.netlify.app/assets/images/home-4/promo-card-2.png);
+    background-image: url(https://jagannathapuri-preview.netlify.app/assets/images/home-4/promo-card-2.png);
   }
 
   .bg-\[url\(\/assets\/images\/home-4\/promo-card-3\.png\)\] {
-    background-image: url(https://sellzy-preview.netlify.app/assets/images/home-4/promo-card-3.png);
+    background-image: url(https://jagannathapuri-preview.netlify.app/assets/images/home-4/promo-card-3.png);
   }
 
   .bg-cover {

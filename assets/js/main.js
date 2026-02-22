@@ -37,7 +37,7 @@
   }
 
   /*------ Preloader ----*/
-  $win.on("load.sellzy", function () {
+  $win.on("load.jagannathapuri", function () {
     $(".preloader").addClass("loaded");
   });
 
@@ -51,14 +51,14 @@
     if ($.fn && $.fn.niceSelect) $("select").niceSelect();
   });
 
-  $("select").on("change.sellzy", function () {
+  $("select").on("change.jagannathapuri", function () {
     $(this).siblings(".nice-select").addClass("changed");
   });
 
   /*------ Sticky Header ----*/
   const stickyHeader = $(".sticky-header");
   const win = $win;
-  win.on("scroll.sellzy", function () {
+  win.on("scroll.jagannathapuri", function () {
     if (win.scrollTop() > 200) {
       stickyHeader.addClass("sticky-top");
     } else {
@@ -78,7 +78,7 @@
     $tabPanes.hide();
 
     $(".tab-pane:nth-child(1)").addClass("active").show();
-    $(".home-one-product-filter button").on("click.sellzy", function () {
+    $(".home-one-product-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("btn-default outline shadow-none")
         .addClass("btn-primary")
@@ -97,7 +97,7 @@
   const sidebar = $("#sidebar");
   const sidebarMenuClose = $("#side-bar-menu-close");
   if (sidebarMenu.length) {
-    sidebarMenu.on("click.sellzy", function () {
+    sidebarMenu.on("click.jagannathapuri", function () {
       $(sidebar).attr("data-state", "open");
       $modalOverlay.attr("data-overlay-for", "#sidebar");
       $body.addClass("overflow-hidden");
@@ -106,7 +106,7 @@
   }
 
   if (sidebarMenuClose.length) {
-    sidebarMenuClose.on("click.sellzy", function () {
+    sidebarMenuClose.on("click.jagannathapuri", function () {
       $(sidebar).attr("data-state", "close");
       $body.removeClass("overflow-hidden");
       $modalOverlay.fadeOut();
@@ -114,7 +114,7 @@
   }
 
   if ($modalOverlay.length) {
-    $modalOverlay.on("click.sellzy", function () {
+    $modalOverlay.on("click.jagannathapuri", function () {
       const overlayFor = $(this).attr("data-overlay-for");
       if (overlayFor) {
         $(overlayFor).attr("data-state", "close");
@@ -129,7 +129,7 @@
   const cartSidebarBtn = $(".cart-sidebar-btn");
 
   if (cartSidebarBtn.length) {
-    cartSidebarBtn.on("click.sellzy", function () {
+    cartSidebarBtn.on("click.jagannathapuri", function () {
       isAnythingOpen();
       showSidebar(".cart-sidebar");
     });
@@ -138,7 +138,7 @@
   /*------ Register Page Button ------*/
   const registerPageBtn = $(".register-page-btn");
   if (registerPageBtn.length) {
-    registerPageBtn.on("click.sellzy", function (e) {
+    registerPageBtn.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".register-page-sidebar");
@@ -148,7 +148,7 @@
   /*------ Login Page Button ------*/
   const loginPageBtn = $(".login-page-btn");
   if (loginPageBtn.length) {
-    loginPageBtn.on("click.sellzy", function (e) {
+    loginPageBtn.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".login-page-sidebar");
@@ -158,7 +158,7 @@
   /*------ Forgot Password Page Button ------*/
   const forgotPasswordPageBtn = $(".forgot-password-page-btn");
   if (forgotPasswordPageBtn.length) {
-    forgotPasswordPageBtn.on("click.sellzy", function (e) {
+    forgotPasswordPageBtn.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".forgot-password-page-sidebar");
@@ -168,7 +168,7 @@
   /*------ Reset Password Page Button ------*/
   const resetPasswordPageBtn = $(".reset-password-page-btn");
   if (resetPasswordPageBtn.length) {
-    resetPasswordPageBtn.on("click.sellzy", function (e) {
+    resetPasswordPageBtn.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".reset-password-page-sidebar");
@@ -178,7 +178,7 @@
   /*------ OTP Verification Page Button ------*/
   const otpVerificationPageBtn = $(".otp-verification-page-btn");
   if (otpVerificationPageBtn.length) {
-    otpVerificationPageBtn.on("click.sellzy", function (e) {
+    otpVerificationPageBtn.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".otp-verification-page-sidebar");
@@ -188,7 +188,7 @@
   /*------ Close Sidebar ------*/
   const closeSidebarBtn = $(".close-sidebar-btn");
   if (closeSidebarBtn.length) {
-    closeSidebarBtn.on("click.sellzy", function () {
+    closeSidebarBtn.on("click.jagannathapuri", function () {
       const sidebarFor = $(this).attr("data-close-sidebar");
       isAnythingOpen();
       closeSidebar(sidebarFor);
@@ -200,7 +200,7 @@
   const menu = $("#dropdownMenu");
   const icon = $("#dropdownIcon");
 
-  btn.on("click.sellzy", function () {
+  btn.on("click.jagannathapuri", function () {
     const isOpen = $(this).attr("data-state") === "open";
     if (isOpen) {
       $(this).attr("data-state", "close");
@@ -213,7 +213,7 @@
     }
   });
 
-  $doc.on("click.sellzy", function (e) {
+  $doc.on("click.jagannathapuri", function (e) {
     if (!$(e.target).closest("#dropdownButton").length) {
       btn.attr("data-state", "close");
       menu.removeClass("active").addClass("hide");
@@ -239,13 +239,22 @@
     }
   });
 
-  /*------ Sellzy Countdown ----*/
-  const sellzyCountdown = $(".sellzy-countdown");
-  if (sellzyCountdown.length) {
+  /*------ jagannathapuri Countdown ----*/
+  const jagannathapuriCountdown = $(".jagannathapuri-countdown");
+  if (jagannathapuriCountdown.length) {
+    let countdownDate = jagannathapuriCountdown.data("countdown-date");
+
+    // Convert YYYY-MM-DDTHH:MM to MM/DD/YYYY HH:MM:SS for the plugin
+    if (countdownDate && countdownDate.includes('T')) {
+      const parts = countdownDate.split('T');
+      const dateParts = parts[0].split('-');
+      countdownDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]} ${parts[1]}:00`;
+    }
+
     safeInit(function () {
       if ($.fn && $.fn.countdown) {
-        sellzyCountdown.countdown({
-          date: "12/13/2026 00:00:00",
+        jagannathapuriCountdown.countdown({
+          date: countdownDate || "12/13/2026 00:00:00",
           offset: +6,
           day: "Day",
           days: "Days",
@@ -258,7 +267,7 @@
   /*------ Search Flow ----*/
   let searchTimer;
 
-  $(".header-search-input").on("input.sellzy", function () {
+  $(".header-search-input").on("input.jagannathapuri", function () {
     const $input = $(this);
     const $container = $input.closest(".search-input-container").find(".search-result-container");
     const query = $input.val().trim();
@@ -373,7 +382,7 @@
   };
 
   /*------ Accordion Section ----*/
-  $(".accordion-header").on("click.sellzy", function () {
+  $(".accordion-header").on("click.jagannathapuri", function () {
     if ($(this).hasClass("active")) {
       $(this).removeClass("active");
       $(this).siblings(".accordion-body").slideUp();
@@ -399,7 +408,7 @@
     $(".faq-tab-pane").hide();
     $(".faq-tab-pane:nth-child(1)").addClass("active").show();
 
-    faqFilterButton.on("click.sellzy", function () {
+    faqFilterButton.on("click.jagannathapuri", function () {
       $(this).addClass("active").siblings().removeClass("active");
       $(".faq-tab-pane").removeClass("active fade").hide();
       let activeTab = $(this).attr("data-tab");
@@ -415,7 +424,7 @@
       .parents(".mobile-menu ul li")
       .addClass("has-sub-item")
       .prepend('<span class="submenu-button"></span>'),
-      mobileMenu.find(".submenu-button").on("click.sellzy", function () {
+      mobileMenu.find(".submenu-button").on("click.jagannathapuri", function () {
         $(this).toggleClass("submenu-opened");
         $(this).siblings("ul").hasClass("open")
           ? $(this).siblings("ul").removeClass("open").slideUp("fast")
@@ -446,7 +455,7 @@
       .show();
   }
   if (paymentMethod.length) {
-    paymentMethod.on("change.sellzy", function () {
+    paymentMethod.on("change.jagannathapuri", function () {
 
       $(this).parents(".payment-method").siblings().removeClass("selected");
       $(this).parents(".payment-method").addClass("selected");
@@ -471,7 +480,7 @@
     $(".tab-pane").hide();
 
     $(".tab-pane:nth-child(1)").addClass("active").show();
-    $(".home-five-product-filter button").on("click.sellzy", function () {
+    $(".home-five-product-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("btn-default outline shadow-none")
         .addClass("btn-primary")
@@ -488,7 +497,7 @@
   /*------ Home Five Variation Color Buttons ------*/
   const homeFiveVariationColorButtons = $(".variation-color-item button");
   if (homeFiveVariationColorButtons.length) {
-    homeFiveVariationColorButtons.on("click.sellzy", function () {
+    homeFiveVariationColorButtons.on("click.jagannathapuri", function () {
       const color = $(this).data("color");
       $(this).parent().css("border-color", color);
       $(this).parent().siblings().css("border-color", "#dfe3e8");
@@ -636,20 +645,20 @@
   }
 
   /*------ Star Rating Widget ------*/
-  $(".widget-rating a").on("click.sellzy", function (e) {
+  $(".widget-rating a").on("click.jagannathapuri", function (e) {
     e.preventDefault();
     $(this).parent().siblings().find("a").removeClass("active");
     $(this).addClass("active");
   });
 
   /*------ Color Picker Widget ------*/
-  $(".widget-color-picker button").on("click.sellzy", function () {
+  $(".widget-color-picker button").on("click.jagannathapuri", function () {
     $(this).parent().siblings().find("button").removeClass("active");
     $(this).addClass("active");
   });
 
   /*------ Size Picker Widget ------*/
-  $(".widget-size-picker button").on("click.sellzy", function () {
+  $(".widget-size-picker button").on("click.jagannathapuri", function () {
     $(this).parent().siblings().find("button").removeClass("active");
     $(this).addClass("active");
   });
@@ -657,7 +666,7 @@
   /*------ Product Details Tabs Section ------*/
   const productDetailsTabs = $("#product-details-tabs button");
   if (productDetailsTabs.length) {
-    productDetailsTabs.on("click.sellzy", function () {
+    productDetailsTabs.on("click.jagannathapuri", function () {
       $(this)
         .addClass("active")
         .parent()
@@ -673,7 +682,7 @@
   /*------ Product Details Color Variation ------*/
   const productDetailsColorVariation = $(".color-variation-item button");
   if (productDetailsColorVariation.length) {
-    productDetailsColorVariation.on("click.sellzy", function () {
+    productDetailsColorVariation.on("click.jagannathapuri", function () {
       $(this).css("border-color", $(this).attr("data-color"));
       $(this).parent().siblings().find("button").css("border-color", "#dfe3e8");
       $(".color-variation-selected-color").text(
@@ -685,7 +694,7 @@
   /*------ Product Details Color Variation ------*/
   const productDetailsSizeVariation = $(".size-variation-item button");
   if (productDetailsSizeVariation.length) {
-    productDetailsSizeVariation.on("click.sellzy", function () {
+    productDetailsSizeVariation.on("click.jagannathapuri", function () {
       $(this).addClass("border-primary bg-primary hover:bg-primary text-white");
       $(this)
         .parent()
@@ -700,7 +709,7 @@
   /*------ Product Details Size Variation Modal ------*/
   const productDetailsSizeVariationModal = $(".variation-size-guide-btn");
   if (productDetailsSizeVariationModal.length) {
-    productDetailsSizeVariationModal.on("click.sellzy", function (e) {
+    productDetailsSizeVariationModal.on("click.jagannathapuri", function (e) {
       e.preventDefault();
       isAnythingOpen();
       showSidebar(".size-variation-modal");
@@ -785,7 +794,7 @@
     $("#deal-tab-content .tab-pane").hide();
 
     $("#deal-tab-content .tab-pane:nth-child(1)").addClass("active").show();
-    $(".home-four-product-filter button").on("click.sellzy", function () {
+    $(".home-four-product-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("bg-transparent")
         .addClass(
@@ -815,7 +824,7 @@
     $("#category-tab-content .tab-pane").hide();
 
     $("#category-tab-content .tab-pane:nth-child(1)").addClass("active").show();
-    $(".home-four-category-filter button").on("click.sellzy", function () {
+    $(".home-four-category-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("bg-transparent")
         .addClass("text-primary bg-transparent")
@@ -841,7 +850,7 @@
     $(".tab-pane").hide();
 
     $(".tab-pane:nth-child(1)").addClass("active").show();
-    $(".home-two-product-filter button").on("click.sellzy", function () {
+    $(".home-two-product-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("btn-default outline shadow-none")
         .addClass("btn-primary")
@@ -869,7 +878,7 @@
     $("#order-tab-content .tab-pane").hide();
 
     $("#order-tab-content .tab-pane:nth-child(1)").addClass("active").show();
-    $(".order-history-product-filter button").on("click.sellzy", function () {
+    $(".order-history-product-filter button").on("click.jagannathapuri", function () {
       $(this)
         .removeClass("text-light-primary-text")
         .addClass("bg-primary/8 text-primary")
@@ -886,7 +895,7 @@
   /*------ My Account Navigation Buttons ------*/
   const myAccountMenuButton = $(".my-account-menu button");
   if (myAccountMenuButton.length) {
-    myAccountMenuButton.on("click.sellzy", function () {
+    myAccountMenuButton.on("click.jagannathapuri", function () {
       if ($(this).data("tab") === "logout") {
         return false;
       }
@@ -906,44 +915,44 @@
     });
   }
 
-  $(".order-details-button").on("click.sellzy", function () {
+  $(".order-details-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#order-details").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".order-details-back-button").on("click.sellzy", function () {
+  $(".order-details-back-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#orders").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".add-new-address-button").on("click.sellzy", function () {
+  $(".add-new-address-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#add-address").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".add-new-address-back-button").on("click.sellzy", function () {
+  $(".add-new-address-back-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#address").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".edit-address-button").on("click.sellzy", function () {
+  $(".edit-address-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#edit-address").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".edit-address-back-button").on("click.sellzy", function () {
+  $(".edit-address-back-button").on("click.jagannathapuri", function () {
     $(".menu-tab-pane").removeClass("active fade").addClass("hidden");
     $("#address").removeClass("hidden").addClass("active fade").fadeIn();
   });
 
-  $(".logout-button").on("click.sellzy", function (e) {
+  $(".logout-button").on("click.jagannathapuri", function (e) {
     e.preventDefault();
     isAnythingOpen();
     showSidebar(".logout-modal");
   });
 
   /*------ Banner with Filter Button  ------*/
-  $(".filter-button").on("click.sellzy", function () {
+  $(".filter-button").on("click.jagannathapuri", function () {
     const parent = $(this).closest(".filter-dropdown");
     const menu = parent.find(".filter-dropdown-menu");
     const icon = parent.find(".filter-dropdown-icon");
@@ -994,14 +1003,14 @@
   const filterSidebarMenuClose = $("#filter-side-bar-menu-close");
 
   if (filterSidebarMenu.length) {
-    filterSidebarMenu.on("click.sellzy", function () {
+    filterSidebarMenu.on("click.jagannathapuri", function () {
       $(filterSidebar).attr("data-state", "open");
       $body.addClass("overflow-hidden");
     });
   }
 
   if (filterSidebarMenuClose.length) {
-    filterSidebarMenuClose.on("click.sellzy", function () {
+    filterSidebarMenuClose.on("click.jagannathapuri", function () {
       $(filterSidebar).attr("data-state", "close");
       $body.removeClass("overflow-hidden");
     });
@@ -1180,7 +1189,7 @@
   /*------ Common Slider ----*/
   safeInit(function () {
     if ($.fn && $.fn.slick) {
-      $(".sellzy-slider").slick({
+      $(".jagannathapuri-slider").slick({
         prevArrow:
           '<span class="slider-btn slider-prev size-12 rounded-full inline-flex items-center justify-center transition-colors duration-300 group/slider-btn cursor-pointer"><i class="hgi hgi-stroke hgi-arrow-left-01 text-[22px] text-light-primary-text transition-colors duration-300"></i></span>',
         nextArrow:
@@ -1189,7 +1198,7 @@
 
       addCleanup(function () {
         try {
-          const $slider = $(".sellzy-slider");
+          const $slider = $(".jagannathapuri-slider");
           if ($slider.hasClass("slick-initialized")) $slider.slick("unslick");
         } catch (e) { }
       });
@@ -1198,7 +1207,7 @@
 
   /*------ Scroll To Top Button ----*/
   const $scrollToTop = $(".scroll-to-top");
-  $win.on("scroll.sellzy", function () {
+  $win.on("scroll.jagannathapuri", function () {
     if ($win.scrollTop() > 300) {
       $scrollToTop.removeClass("hide").addClass("active");
     } else {
@@ -1206,7 +1215,7 @@
     }
   });
 
-  $scrollToTop.on("click.sellzy", function () {
+  $scrollToTop.on("click.jagannathapuri", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
     return false;
   });
@@ -1372,6 +1381,37 @@
     }
   };
 
+  const getSingleSkeletonHtml = (metadata = {}) => {
+    return `
+      <div class="cart-product-item flex flex-col sm:flex-row items-center sm:gap-x-4 gap-y-2 sm:gap-y-0 p-4 border border-gray-300 rounded-2xl opacity-60 animate-pulse">
+        <div class="sm:w-[102px] sm:h-[102px] rounded-xl bg-gray-200 overflow-hidden relative">
+          ${metadata.image ? `<img src="${metadata.image}" class="w-full h-full object-cover" />` : ''}
+        </div>
+        <div class="cart-product-item-content flex flex-col gap-y-2 flex-1 w-full">
+          <div class="flex items-center justify-between gap-x-2">
+            <h6 class="text-base font-semibold">${metadata.name || 'Loading...'}</h6>
+            <div class="flex items-center gap-x-2">
+              <div class="size-6 bg-gray-200 rounded-full"></div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400">${metadata.processing ? 'Processing...' : 'Fetching details...'}</p>
+          <div class="flex items-center justify-between gap-x-2">
+            <h6 class="text-base font-bold text-light-primary-text">₹${parseFloat(metadata.price || 0).toFixed(2)}</h6>
+            <div class="size-10 bg-gray-200 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const getCartSkeletonHtml = (count = 3) => {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      html += getSingleSkeletonHtml();
+    }
+    return html;
+  };
+
   // Helper for updating quantity in cart
   const updateCartQuantity = (productId, quantity) => {
     $.ajax({
@@ -1417,7 +1457,24 @@
     }
   });
 
-  const addToCart = (productId, quantity = 1) => {
+  const addToCart = (productId, quantity = 1, metadata = {}) => {
+    // Optimistic Update: Open sidebar and increment count
+    updateCartCountOptimistic(parseInt(quantity));
+    showSidebar(".cart-sidebar");
+
+    // Optimistic Item Rendering
+    const $cartList = $(".cart-products-content");
+    const skeletonId = `skeleton-${Date.now()}`;
+
+    // Remove "Your cart is empty" message if it exists
+    if ($cartList.find('.text-center').length) {
+      $cartList.empty();
+    }
+
+    const $optimisticItem = $(getSingleSkeletonHtml({ ...metadata, processing: true }));
+    $optimisticItem.attr('id', skeletonId);
+    $cartList.prepend($optimisticItem);
+
     $.ajax({
       url: "/cart/add",
       method: "POST",
@@ -1425,12 +1482,15 @@
       success: function (response) {
         if (response.success) {
           updateCartUI(response.cart);
-          showSidebar(".cart-sidebar");
         } else {
+          $(`#${skeletonId}`).remove();
+          updateCartCountOptimistic(-parseInt(quantity));
           alert(response.message || "Failed to add to cart");
         }
       },
       error: function () {
+        $(`#${skeletonId}`).remove();
+        updateCartCountOptimistic(-parseInt(quantity));
         alert("Something went wrong. Please try again.");
       }
     });
@@ -1443,6 +1503,20 @@
     // 1. Try data attribute first (most direct)
     let productId = $btn.data("product-id");
     let quantity = 1;
+
+    // Metadata extraction for optimistic UI
+    let name = "";
+    let price = 0;
+    let image = "";
+
+    // context finding
+    const $card = $btn.closest(".product-card-1, .product-details-content, .similar-product-item");
+
+    if ($card.length) {
+      name = $card.find("h3, h5, h6").first().text().trim();
+      price = $card.find(".current-price").first().text().replace(/[^0-9.]/g, '');
+      image = $card.find("img").first().attr("src");
+    }
 
     // 2. Fallback to closest form if data-product-id is missing
     if (!productId) {
@@ -1466,7 +1540,7 @@
     }
 
     if (productId) {
-      addToCart(productId, quantity);
+      addToCart(productId, quantity, { name, price, image });
     } else {
       console.error("Add to Cart failed: Product ID not found", $btn[0]);
       alert("Error: Product ID missing for this button.");
@@ -1474,6 +1548,11 @@
   });
 
   // Load cart on page load to sync count
+  const $initialCartList = $(".cart-products-content");
+  if ($initialCartList.length && $initialCartList.is(':empty')) {
+    $initialCartList.html(getCartSkeletonHtml(3));
+  }
+
   $.get("/cart/api", function (cart) {
     updateCartUI(cart);
   });
@@ -1797,12 +1876,12 @@
   function destroy() {
     try {
       // Remove all namespaced event listeners
-      $win.off(".sellzy");
-      $doc.off(".sellzy");
-      $body.off(".sellzy");
-      $("select").off(".sellzy");
-      $modalOverlay.off(".sellzy");
-      $scrollToTop.off(".sellzy");
+      $win.off(".jagannathapuri");
+      $doc.off(".jagannathapuri");
+      $body.off(".jagannathapuri");
+      $("select").off(".jagannathapuri");
+      $modalOverlay.off(".jagannathapuri");
+      $scrollToTop.off(".jagannathapuri");
 
       // Run additional cleanup tasks (observers, sliders, plugins)
       cleanupTasks.forEach(function (task) {
@@ -1814,5 +1893,6 @@
   }
 
   // Cleanup on page unload/navigation
-  $win.on("unload.sellzy", destroy);
+  $win.on("unload.jagannathapuri", destroy);
 })(jQuery);
+

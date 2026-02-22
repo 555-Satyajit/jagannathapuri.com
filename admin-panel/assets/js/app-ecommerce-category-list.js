@@ -256,6 +256,19 @@ $(function () {
         $('#ecommerce-category-title').val(rowData.categories);
         $('#ecommerce-category-slug').val(rowData.slug);
         $('#ecommerce-category-status').val(rowData.status).trigger('change');
+        // SEO Fields
+        $('#meta_title').val(rowData.meta_title || '');
+        $('#meta_description').val(rowData.meta_description || '');
+        $('#meta_keywords').val(rowData.meta_keywords || '');
+
+        // Initialize SEO meters
+        if (typeof updateSeoMeter === 'function') {
+            const titleInputSeo = document.getElementById('meta_title');
+            const descInputSeo = document.getElementById('meta_description');
+            if (titleInputSeo) updateSeoMeter(titleInputSeo, 100, 30, 60);
+            if (descInputSeo) updateSeoMeter(descInputSeo, 300, 120, 160);
+        }
+
         // Description
         if (commentEditor) commentEditor.querySelector('.ql-editor').innerHTML = rowData.category_detail;
     });
@@ -266,6 +279,51 @@ $(function () {
         $('.dataTables_filter .form-control').removeClass('form-control-sm');
         $('.dataTables_length .form-select').removeClass('form-select-sm');
     }, 300);
+
+    // SEO Strength Meter Logic
+    window.updateSeoMeter = function (input, max, ideal_min, ideal_max) {
+        const meter = input.nextElementSibling;
+        if (!meter || !meter.classList.contains('seo-meter')) return;
+
+        const label = meter.querySelector('.strength-label');
+        const countDisplay = meter.querySelector('.char-count');
+        const bar = meter.querySelector('.progress-bar');
+
+        const count = input.value.length;
+        countDisplay.textContent = count;
+
+        let percent = (count / max) * 100;
+        if (percent > 100) percent = 100;
+        bar.style.width = percent + '%';
+
+        if (count === 0) {
+            label.textContent = 'Empty';
+            label.className = 'strength-label text-muted';
+            bar.className = 'progress-bar bg-secondary';
+        } else if (count < ideal_min) {
+            label.textContent = 'Weak';
+            label.className = 'strength-label text-danger';
+            bar.className = 'progress-bar bg-danger';
+        } else if (count <= ideal_max) {
+            label.textContent = 'Best';
+            label.className = 'strength-label text-success';
+            bar.className = 'progress-bar bg-success';
+        } else {
+            label.textContent = 'Good (Too long)';
+            label.className = 'strength-label text-warning';
+            bar.className = 'progress-bar bg-warning';
+        }
+    };
+
+    const titleInputSeoCat = document.getElementById('meta_title');
+    const descInputSeoCat = document.getElementById('meta_description');
+
+    if (titleInputSeoCat) {
+        titleInputSeoCat.addEventListener('input', () => updateSeoMeter(titleInputSeoCat, 100, 30, 60));
+    }
+    if (descInputSeoCat) {
+        descInputSeoCat.addEventListener('input', () => updateSeoMeter(descInputSeoCat, 300, 120, 160));
+    }
 });
 
 // Form Validation

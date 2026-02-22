@@ -17,6 +17,9 @@ model Category {
   slug          String     @unique
   status        String     @default("Scheduled")
   updated_at    DateTime   @updatedAt
+  meta_title    String?
+  meta_description String?
+  meta_keywords String?
   parent        Category?  @relation("SubCategories", fields: [parentId], references: [id])
   subCategories Category[] @relation("SubCategories")
   homeTabs      HomeTab[]
@@ -24,47 +27,51 @@ model Category {
 }
 
 model Product {
-  id              Int            @id @default(autoincrement())
-  product_name    String
-  product_brand   String
-  sku             String         @unique
-  price           String
-  quantity        Int            @default(0)
-  category_id     Int
-  status          Int            @default(1)
-  is_cod          Boolean        @default(true)
-  images          String[]
-  product_type    String
-  specifications  Json           @default("[]")
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
-  description     String?
-  slug            String         @unique
-  is_featured     Boolean        @default(false)
-  show_in_explore Boolean        @default(false)
-  price_amount    Float          @default(0)
-  on_sale         Boolean        @default(false)
-  regular_price   Float?
-  sale_price      Float?
-  costPrice       Float          @default(0)
-  cartItems       CartItem[]
-  orderItems      OrderItem[]
-  category        Category       @relation(fields: [category_id], references: [id])
-  reviews         Review[]
-  wishlistedBy    WishlistItem[]
-  lowStockThreshold Int @default(10)
-  averageRating   Float          @default(0)
-  reviewCount     Int            @default(0)
+  id                Int            @id @default(autoincrement())
+  product_name      String
+  product_brand     String
+  sku               String         @unique
+  price             String
+  quantity          Int            @default(0)
+  category_id       Int
+  status            Int            @default(1)
+  is_cod            Boolean        @default(true)
+  images            String[]
+  product_type      String
+  specifications    Json           @default("[]")
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  description       String?
+  slug              String         @unique
+  is_featured       Boolean        @default(false)
+  show_in_explore   Boolean        @default(false)
+  price_amount      Float          @default(0)
+  on_sale           Boolean        @default(false)
+  regular_price     Float?
+  sale_price        Float?
+  costPrice         Float          @default(0)
+  lowStockThreshold Int            @default(10)
+  averageRating     Float          @default(0)
+  reviewCount       Int            @default(0)
+  meta_title        String?
+  meta_description  String?
+  meta_keywords     String?
+  image_alt         String?
+  cartItems         CartItem[]
+  orderItems        OrderItem[]
+  category          Category       @relation(fields: [category_id], references: [id])
+  reviews           Review[]
+  wishlistedBy      WishlistItem[]
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  type      String
-  message   String
-  link      String?
-  isRead    Boolean  @default(false)
-  isArchived Boolean @default(false)
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  type       String
+  message    String
+  link       String?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  isArchived Boolean  @default(false)
 }
 
 model Attribute {
@@ -85,6 +92,9 @@ model LibraryCategory {
   created_at   DateTime         @default(now())
   updated_at   DateTime         @updatedAt
   show_on_home Boolean          @default(false)
+  meta_title    String?
+  meta_description String?
+  meta_keywords String?
   contents     LibraryContent[]
 }
 
@@ -110,6 +120,9 @@ model LibraryContent {
   status     String          @default("Active")
   created_at DateTime        @default(now())
   updated_at DateTime        @updatedAt
+  meta_title    String?
+  meta_description String?
+  meta_keywords String?
   category   LibraryCategory @relation(fields: [categoryId], references: [id])
   tags       LibraryTag[]    @relation("LibraryContentTags")
 }
@@ -169,10 +182,10 @@ model Staff {
   created_at      DateTime        @default(now())
   updated_at      DateTime        @updatedAt
   roleId          Int?
+  auditLogs       AuditLog[]
   role            Role?           @relation(fields: [roleId], references: [id])
   assignedTickets Ticket[]
   ticketMessages  TicketMessage[]
-  auditLogs       AuditLog[]
 }
 
 model Customer {
@@ -191,6 +204,7 @@ model Customer {
   addresses      Address[]
   cart           Cart?
   couponUsages   CouponUsage[]
+  feedbacks      Feedback[]
   orders         Order[]
   reviews        Review[]
   tickets        Ticket[]
@@ -235,6 +249,17 @@ model Review {
   @@index([customerId])
 }
 
+model Feedback {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String
+  message    String
+  customerId Int?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  customer   Customer? @relation(fields: [customerId], references: [id])
+}
+
 model WishlistItem {
   id         Int      @id @default(autoincrement())
   customerId Int
@@ -247,22 +272,22 @@ model WishlistItem {
 }
 
 model Address {
-  id           Int      @id @default(autoincrement())
-  customer_id  Int
-  addressLine1 String
-  addressLine2 String?
-  city         String
-  state        String
-  zipCode      String
-  country      String
-  isDefault    Boolean  @default(false)
-  type         String   @default("Shipping")
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  phone        String?
-  customer     Customer @relation(fields: [customer_id], references: [id])
-  shippingOrders Order[] @relation("ShippingAddress")
-  billingOrders  Order[] @relation("BillingAddress")
+  id             Int      @id @default(autoincrement())
+  customer_id    Int
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  state          String
+  zipCode        String
+  country        String
+  isDefault      Boolean  @default(false)
+  type           String   @default("Shipping")
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  phone          String?
+  customer       Customer @relation(fields: [customer_id], references: [id])
+  billingOrders  Order[]  @relation("BillingAddress")
+  shippingOrders Order[]  @relation("ShippingAddress")
 }
 
 model Order {
@@ -282,9 +307,9 @@ model Order {
   subtotal          Float         @default(0)
   tax               Float         @default(0)
   totalAmount       Float         @default(0)
+  billingAddress    Address?      @relation("BillingAddress", fields: [billingAddressId], references: [id])
   customer          Customer      @relation(fields: [customer_id], references: [id])
   shippingAddress   Address?      @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
-  billingAddress    Address?      @relation("BillingAddress", fields: [billingAddressId], references: [id])
   items             OrderItem[]
   transactions      Transaction[]
 }
@@ -483,4 +508,21 @@ model Session {
   expire DateTime @map("expire")
 
   @@map("session")
+}
+
+model Popup {
+  id         Int      @id @default(autoincrement())
+  image      String
+  startTime  DateTime
+  endTime    DateTime
+  status     String   @default("Active")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  status    String   @default("Subscribed")
+  createdAt DateTime @default(now())
 }

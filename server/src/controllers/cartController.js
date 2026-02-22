@@ -143,10 +143,31 @@ exports.addItem = async (req, res) => {
                     }
                 });
             }
-            // Sync session cart just in case (optional, but keeps frontend generic behavior happy if it relies on session response)
-            // Actually, the frontend likely just reloads or updates UI.
-            // But let's keep session cart updated too or just return success.
-            // To strictly follow "Persistence", we relying on DB.
+            // Sync updated cart to response
+            const updatedDbCart = await prisma.cart.findUnique({
+                where: { id: cart.id },
+                include: { items: { include: { product: true } } }
+            });
+
+            if (updatedDbCart && updatedDbCart.items.length > 0) {
+                req.session.cart = updatedDbCart.items.map(item => {
+                    let image = '/assets/images/logo.png';
+                    if (item.product.images && item.product.images.length > 0) {
+                        const img = item.product.images[0].trim();
+                        image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+                    }
+                    return {
+                        productId: item.productId,
+                        name: item.product.product_name,
+                        price: parseFloat(item.product.price_amount || item.product.price),
+                        image: image,
+                        slug: item.product.slug,
+                        quantity: item.quantity
+                    };
+                });
+            } else {
+                req.session.cart = [];
+            }
         } else {
             // Guest Session Logic
             if (!req.session.cart) {
@@ -175,7 +196,7 @@ exports.addItem = async (req, res) => {
             }
         }
 
-        res.json({ success: true, cart: req.session.cart }); // Note: For logged in, this might return stale session cart if we don't sync. But usually reloading page fetches fresh from DB.
+        res.json({ success: true, cart: req.session.cart });
     } catch (error) {
         console.error('Add to cart error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });

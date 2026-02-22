@@ -136,13 +136,20 @@ exports.getHome = async (req, res) => {
         });
 
         // 5. Fetch Home Tabs
-        const homeTabs = await prisma.homeTab.findMany({
-            where: { status: 'Active' },
-            orderBy: { order: 'asc' },
-            include: {
-                category: true
-            }
-        });
+        const [homeTabs, homeSetting] = await Promise.all([
+            prisma.homeTab.findMany({
+                where: { status: 'Active' },
+                orderBy: { order: 'asc' },
+                include: { category: true }
+            }),
+            prisma.siteConfig.findUnique({ where: { key: 'home' } })
+        ]);
+
+        homeConfig.timer = homeSetting ? homeSetting.value : {
+            timer_title: 'Ends in :',
+            timer_end_date: '2026-12-13T00:00',
+            timer_status: true
+        };
 
         // For each tab, fetch 4 products from its category
         homeConfig.exploreTabs = await Promise.all(homeTabs.map(async (tab) => {
@@ -363,12 +370,24 @@ exports.getShop = async (req, res) => {
                 query: sanitizedQuery
             },
             wishlistIds
-        }, (err, html) => {
+        }, async (err, html) => {
             if (err) {
                 console.error('Error rendering shop:', err);
                 return res.status(500).send('Error rendering shop page');
             }
-            res.render('layouts/master', { body: html, wishlistIds });
+
+            let seoData = {};
+            if (category && category !== 'all') {
+                const catObj = await prisma.category.findUnique({ where: { slug: category } });
+                if (catObj) {
+                    seoData = {
+                        meta_title: catObj.meta_title,
+                        meta_description: catObj.meta_description,
+                        meta_keywords: catObj.meta_keywords
+                    };
+                }
+            }
+            res.render('layouts/master', { body: html, wishlistIds, seo: seoData });
         });
     } catch (error) {
         console.error('Error in getShop:', error);
@@ -464,12 +483,23 @@ exports.getLibrary = async (req, res) => {
                 pageSize,
                 query: req.query
             }
-        }, (err, html) => {
+        }, async (err, html) => {
             if (err) {
                 console.error('Error rendering library:', err);
                 return res.status(500).send('Error rendering library page');
             }
-            res.render('layouts/master', { body: html });
+            let seoData = {};
+            if (category) {
+                const catObj = await prisma.libraryCategory.findUnique({ where: { slug: category } });
+                if (catObj) {
+                    seoData = {
+                        meta_title: catObj.meta_title,
+                        meta_description: catObj.meta_description,
+                        meta_keywords: catObj.meta_keywords
+                    };
+                }
+            }
+            res.render('layouts/master', { body: html, seo: seoData });
         });
     } catch (error) {
         console.error('Error in getLibrary:', error);
@@ -501,7 +531,15 @@ exports.getLibraryDetails = async (req, res) => {
                 console.error('Error rendering library details:', err);
                 return res.status(500).send('Error rendering library details page');
             }
-            res.render('layouts/master', { body: html });
+            res.render('layouts/master', {
+                body: html,
+                seo: {
+                    meta_title: content.meta_title,
+                    meta_description: content.meta_description,
+                    meta_keywords: content.meta_keywords,
+                    og_image: content.image ? `/uploads/${content.image}` : undefined
+                }
+            });
         });
     } catch (error) {
         console.error('Error in getLibraryDetails:', error);
@@ -646,6 +684,16 @@ exports.getProductDetails = async (req, res) => {
             starPercentages[star] = reviewsCount > 0 ? Math.round((starCounts[star] / reviewsCount) * 100) : 0;
         });
 
+        // Track Recently Viewed
+        if (!req.session.recentlyViewed) {
+            req.session.recentlyViewed = [];
+        }
+        // Remove if already exists and add to front
+        req.session.recentlyViewed = req.session.recentlyViewed.filter(id => id !== product.id);
+        req.session.recentlyViewed.unshift(product.id);
+        // Keep only top 8
+        req.session.recentlyViewed = req.session.recentlyViewed.slice(0, 8);
+
         req.app.render('pages/product-details', {
             product: product,
             reviews,
@@ -660,7 +708,16 @@ exports.getProductDetails = async (req, res) => {
                 console.error('Error rendering product-details:', err);
                 return res.status(500).send('Error rendering product-details page');
             }
-            res.render('layouts/master', { body: html, wishlistIds });
+            res.render('layouts/master', {
+                body: html,
+                wishlistIds,
+                seo: {
+                    meta_title: product.meta_title,
+                    meta_description: product.meta_description,
+                    meta_keywords: product.meta_keywords,
+                    og_image: (product.images && product.images.length > 0) ? `/uploads/${product.images[0]}` : undefined
+                }
+            });
         });
     } catch (error) {
         console.error('Error in getProductDetails:', error);
@@ -915,7 +972,13 @@ exports.postCheckout = async (req, res) => {
         }
     }
 
+    console.log('[Debug] postCheckout - User:', req.session.customerId, 'Email:', email);
+    console.log('[Debug] postCheckout - Initial Cart items:', cart.length);
+
     if (cart.length === 0) {
+        if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            return res.status(400).json({ success: false, error: 'Cart is empty' });
+        }
         return res.status(400).send('Cart is empty');
     }
 
@@ -1069,11 +1132,17 @@ exports.postCheckout = async (req, res) => {
         // Clear cart
         req.session.cart = [];
 
-        // Redirect to success page
+        // Redirect or return JSON
+        if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            return res.json({ success: true, orderNumber: result.orderNumber });
+        }
         res.redirect(`/order-successful?orderNumber=${result.orderNumber}`);
 
     } catch (error) {
         console.error('Checkout error:', error);
+        if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            return res.status(500).json({ success: false, error: 'An error occurred during checkout' });
+        }
         res.status(500).send('An error occurred during checkout');
     }
 };
@@ -1111,7 +1180,35 @@ exports.getOrderSuccessful = async (req, res) => {
             wishlistIds = wishlist.map(item => item.productId);
         }
 
-        req.app.render('pages/order-successful', { order, wishlistIds }, (err, html) => {
+        // Fetch Recently Viewed products
+        let recentlyViewed = [];
+        if (req.session.recentlyViewed && req.session.recentlyViewed.length > 0) {
+            recentlyViewed = await prisma.product.findMany({
+                where: {
+                    id: { in: req.session.recentlyViewed },
+                    status: 1
+                },
+                select: {
+                    id: true,
+                    product_name: true,
+                    slug: true,
+                    price_amount: true,
+                    regular_price: true,
+                    sale_price: true,
+                    on_sale: true,
+                    images: true
+                }
+            });
+            // Sort to match session order
+            recentlyViewed.sort((a, b) => req.session.recentlyViewed.indexOf(a.id) - req.session.recentlyViewed.indexOf(b.id));
+        }
+
+        req.app.render('pages/order-successful', {
+            order,
+            wishlistIds,
+            recentlyViewed,
+            customer: order.customer // Use the order's customer info
+        }, (err, html) => {
             if (err) {
                 console.error('Error rendering order-successful:', err);
                 return res.status(500).send('Error rendering order-successful page');
@@ -1374,5 +1471,30 @@ exports.getUserAddresses = async (req, res) => {
     } catch (error) {
         console.error('Error fetching addresses:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+exports.submitFeedback = async (req, res) => {
+    const { name, email, message } = req.body;
+    const customerId = req.session.customerId || null;
+
+    if (!name || !email || !message) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    try {
+        await prisma.feedback.create({
+            data: {
+                name,
+                email,
+                message,
+                customerId
+            }
+        });
+
+        res.json({ success: true, message: 'Thank you for your feedback!' });
+    } catch (error) {
+        console.error('Error submitting feedback:', error);
+        res.status(500).json({ success: false, message: 'Failed to submit feedback' });
     }
 };

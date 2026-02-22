@@ -17,6 +17,14 @@ const defaultSettings = {
         contact_address: 'Grand Road, Puri, Odisha, 752001',
         contact_phone: '+91 6752 123456',
         contact_email: 'support@puristore.com'
+    },
+    seo: {
+        meta_title: 'Jagannathapuri - Authentic Puri Dham Specialties',
+        meta_description: 'Your one-stop shop for authentic Puri Dham specialties, from Mahaprasad to Handlooms.',
+        meta_keywords: 'Puri, Jagannath, Mahaprasad, Handloom, Odisha',
+        og_title: 'Jagannathapuri Store',
+        og_description: 'Authentic Puri Dham Specialties',
+        favicon: '/assets/images/favicon.png'
     }
 };
 

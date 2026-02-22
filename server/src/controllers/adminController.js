@@ -318,7 +318,10 @@ exports.getCategoryData = async (req, res) => {
             total_products: cat._count.products,
             total_earnings: "$0", // Placeholder for now
             status: cat.status,
-            slug: cat.slug
+            slug: cat.slug,
+            meta_title: cat.meta_title || '',
+            meta_description: cat.meta_description || '',
+            meta_keywords: cat.meta_keywords || ''
         }));
 
         res.json({ data: formattedData });
@@ -331,7 +334,7 @@ exports.getCategoryData = async (req, res) => {
 exports.saveCategory = async (req, res) => {
     try {
         console.log('Saving category. body:', req.body);
-        let { categoryTitle, slug, parentCategory, status, description } = req.body;
+        let { categoryTitle, slug, parentCategory, status, description, meta_title, meta_description, meta_keywords } = req.body;
         const image = req.file ? req.file.filename : null;
 
         if (Array.isArray(description)) {
@@ -349,7 +352,10 @@ exports.saveCategory = async (req, res) => {
                 description: description,
                 image: image,
                 status: status || 'Scheduled',
-                parentId: (parentCategory && parentCategory !== "") ? parseInt(parentCategory) : null
+                parentId: (parentCategory && parentCategory !== "") ? parseInt(parentCategory) : null,
+                meta_title,
+                meta_description,
+                meta_keywords
             }
         });
 
@@ -575,7 +581,7 @@ exports.saveProduct = async (req, res) => {
     try {
         console.log('--- SAVE PRODUCT DEBUG ---');
         console.log('Body specifications:', req.body.specifications);
-        let { product_name, product_brand, slug, sku, price, regular_price, sale_price, costPrice, on_sale, quantity, lowStockThreshold, category, status, product_type, specifications, description, is_cod, is_featured, show_in_explore, product_images } = req.body;
+        let { product_name, product_brand, slug, sku, price, regular_price, sale_price, costPrice, on_sale, quantity, lowStockThreshold, category, status, product_type, specifications, description, is_cod, is_featured, show_in_explore, product_images, meta_title, meta_description, meta_keywords, image_alt } = req.body;
 
         const uploadedFilenames = req.files ? req.files.map(f => f.filename) : [];
         let finalImages = uploadedFilenames;
@@ -621,7 +627,11 @@ exports.saveProduct = async (req, res) => {
                 show_in_explore: show_in_explore === true || show_in_explore === 'true' || show_in_explore === 'on',
                 product_type: product_type || 'Simple',
                 specifications: specifications || [],
-                images: Array.isArray(finalImages) ? finalImages : (finalImages ? [finalImages] : [])
+                images: Array.isArray(finalImages) ? finalImages : (finalImages ? [finalImages] : []),
+                meta_title,
+                meta_description,
+                meta_keywords,
+                image_alt
             }
         });
 
@@ -639,7 +649,7 @@ exports.updateProduct = async (req, res) => {
         console.log('--- UPDATE PRODUCT DEBUG ---');
         console.log('Product ID:', id);
         console.log('Body specifications:', req.body.specifications);
-        let { product_name, product_brand, slug, sku, price, regular_price, sale_price, costPrice, on_sale, quantity, lowStockThreshold, category, status, product_type, specifications, description, is_cod, is_featured, show_in_explore, product_images } = req.body;
+        let { product_name, product_brand, slug, sku, price, regular_price, sale_price, costPrice, on_sale, quantity, lowStockThreshold, category, status, product_type, specifications, description, is_cod, is_featured, show_in_explore, product_images, meta_title, meta_description, meta_keywords, image_alt } = req.body;
 
         const uploadedFilenames = req.files ? req.files.map(f => f.filename) : [];
 
@@ -692,7 +702,11 @@ exports.updateProduct = async (req, res) => {
                 show_in_explore: show_in_explore === true || show_in_explore === 'true' || show_in_explore === 'on',
                 product_type: product_type || 'Simple',
                 specifications: specifications || [],
-                images: Array.isArray(finalImages) ? finalImages : (finalImages ? [finalImages] : [])
+                images: Array.isArray(finalImages) ? finalImages : (finalImages ? [finalImages] : []),
+                meta_title,
+                meta_description,
+                meta_keywords,
+                image_alt
             }
         });
 
@@ -1130,8 +1144,9 @@ exports.downloadInvoice = async (req, res) => {
             return res.status(404).send('Order not found');
         }
 
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
         // Render the EJS template to a string
-        req.app.render('pages/invoice-print', { order }, async (err, html) => {
+        req.app.render('pages/invoice-print', { order, baseUrl }, async (err, html) => {
             if (err) {
                 console.error('Error rendering invoice template:', err);
                 return res.status(500).send('Error generating invoice');
@@ -2397,7 +2412,7 @@ exports.savePermission = async (req, res) => {
 exports.updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        let { categoryTitle, slug, parentCategory, status, description } = req.body;
+        let { categoryTitle, slug, parentCategory, status, description, meta_title, meta_description, meta_keywords } = req.body;
         const image = req.file ? req.file.filename : undefined;
 
         if (Array.isArray(description)) {
@@ -2409,7 +2424,10 @@ exports.updateCategory = async (req, res) => {
             slug: slug,
             description: description,
             status: status || 'Scheduled',
-            parentId: (parentCategory && parentCategory !== "") ? parseInt(parentCategory) : null
+            parentId: (parentCategory && parentCategory !== "") ? parseInt(parentCategory) : null,
+            meta_title,
+            meta_description,
+            meta_keywords
         };
 
         if (image) {
@@ -2854,14 +2872,14 @@ exports.getLibCategoryList = async (req, res) => {
 
 exports.saveLibCategory = async (req, res) => {
     try {
-        const { id, name, description, status, show_on_home } = req.body;
+        const { id, name, description, status, show_on_home, meta_title, meta_description, meta_keywords } = req.body;
         const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const imageData = req.file ? req.file.filename : undefined;
         const isShowOnHome = show_on_home === 'on' || show_on_home === true || show_on_home === 'true';
 
         if (id) {
             // Update
-            const updateData = { name, slug, description, status, show_on_home: isShowOnHome };
+            const updateData = { name, slug, description, status, show_on_home: isShowOnHome, meta_title, meta_description, meta_keywords };
             if (imageData) updateData.image = imageData;
             await prisma.libraryCategory.update({
                 where: { id: parseInt(id) },
@@ -2876,7 +2894,10 @@ exports.saveLibCategory = async (req, res) => {
                     description,
                     status: status || 'Active',
                     show_on_home: isShowOnHome,
-                    image: imageData
+                    image: imageData,
+                    meta_title,
+                    meta_description,
+                    meta_keywords
                 }
             });
         }
@@ -3017,7 +3038,7 @@ exports.getEditLibContent = async (req, res) => {
 
 exports.saveLibContent = async (req, res) => {
     try {
-        const { id, title, subtitle, summary, content, categoryId, status, author, tags } = req.body;
+        const { id, title, subtitle, summary, content, categoryId, status, author, tags, meta_title, meta_description, meta_keywords } = req.body;
         const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const image = req.file ? req.file.filename : undefined;
 
@@ -3071,6 +3092,9 @@ exports.saveLibContent = async (req, res) => {
             author: author || 'Jay Subhdra Team',
             status: status || 'Active',
             categoryId: parseInt(categoryId),
+            meta_title,
+            meta_description,
+            meta_keywords
         };
         if (image) libraryData.image = image;
 
@@ -3475,12 +3499,27 @@ exports.getGeneralSettings = async (req, res) => {
                 contact_address: 'Grand Road, Puri, Odisha, 752001',
                 contact_phone: '+91 6752 123456',
                 contact_email: 'support@puristore.com'
+            },
+            home: {
+                timer_title: 'Ends in :',
+                timer_end_date: '2026-12-13T00:00',
+                timer_status: true
+            },
+            seo: {
+                meta_title: 'Jagannathapuri - Authentic Puri Dham Specialties',
+                meta_description: 'Your one-stop shop for authentic Puri Dham specialties, from Mahaprasad to Handlooms.',
+                meta_keywords: 'Puri, Jagannath, Mahaprasad, Handloom, Odisha',
+                og_title: 'Jagannathapuri Store',
+                og_description: 'Authentic Puri Dham Specialties',
+                favicon: '/assets/images/favicon.png'
             }
         };
 
         const finalSettings = {
             header: { ...defaultSettings.header, ...(settings.header || {}) },
-            footer: { ...defaultSettings.footer, ...(settings.footer || {}) }
+            footer: { ...defaultSettings.footer, ...(settings.footer || {}) },
+            home: { ...defaultSettings.home, ...(settings.home || {}) },
+            seo: { ...defaultSettings.seo, ...(settings.seo || {}) }
         };
 
         req.app.render('pages/admin-general-settings', { settings: finalSettings }, (err, html) => {
@@ -3505,16 +3544,25 @@ exports.getGeneralSettings = async (req, res) => {
 
 exports.saveGeneralSettings = async (req, res) => {
     try {
-        const { header_json, footer_json } = req.body;
+        const { header_json, footer_json, home_json, seo_json } = req.body;
         const headerData = JSON.parse(header_json);
         const footerData = JSON.parse(footer_json);
+        const homeData = home_json ? JSON.parse(home_json) : null;
+        const seoData = seo_json ? JSON.parse(seo_json) : null;
 
-        // Handle logo upload if provided
-        if (req.file) {
-            headerData.logo = `/uploads/${req.file.filename}`;
+        // Handle file uploads
+        if (req.files) {
+            if (req.files['logo'] && req.files['logo'][0]) {
+                headerData.logo = `/uploads/${req.files['logo'][0].filename}`;
+            }
+            if (req.files['favicon'] && req.files['favicon'][0]) {
+                if (seoData) {
+                    seoData.favicon = `/uploads/${req.files['favicon'][0].filename}`;
+                }
+            }
         }
 
-        await prisma.$transaction([
+        const updates = [
             prisma.siteConfig.upsert({
                 where: { key: 'header' },
                 update: { value: headerData },
@@ -3525,7 +3573,25 @@ exports.saveGeneralSettings = async (req, res) => {
                 update: { value: footerData },
                 create: { key: 'footer', value: footerData }
             })
-        ]);
+        ];
+
+        if (homeData) {
+            updates.push(prisma.siteConfig.upsert({
+                where: { key: 'home' },
+                update: { value: homeData },
+                create: { key: 'home', value: homeData }
+            }));
+        }
+
+        if (seoData) {
+            updates.push(prisma.siteConfig.upsert({
+                where: { key: 'seo' },
+                update: { value: seoData },
+                create: { key: 'seo', value: seoData }
+            }));
+        }
+
+        await prisma.$transaction(updates);
 
         configStore.clearCache();
 
@@ -3654,7 +3720,134 @@ exports.deleteHomeTab = async (req, res) => {
         await prisma.homeTab.delete({ where: { id: parseInt(id) } });
         res.status(200).json({ success: true, message: 'Tab deleted successfully' });
     } catch (error) {
-        console.error('Error deleting home tab:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// Manage Popups
+exports.getPopupList = async (req, res) => {
+    try {
+        const popups = await prisma.popup.findMany({
+            orderBy: { created_at: 'desc' }
+        });
+
+        req.app.render('pages/admin-popup-list', { popups, moment }, (err, html) => {
+            if (err) {
+                console.error('Error rendering admin popup list:', err);
+                return res.status(500).send('Error rendering admin popup list');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Manage Popups',
+                styles: [
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
+                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
+                    '/admin-assets/vendor/libs/flatpickr/flatpickr.css'
+                ],
+                scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+                    '/admin-assets/vendor/libs/flatpickr/flatpickr.js'
+                ]
+            });
+        });
+    } catch (error) {
+        console.error('Error in getPopupList:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.savePopup = async (req, res) => {
+    try {
+        const { id, startTime, endTime, status } = req.body;
+        const image = req.file ? req.file.filename : req.body.existingImage;
+
+        if (!image) {
+            return res.status(400).json({ success: false, error: 'Image is required' });
+        }
+
+        const data = {
+            image,
+            startTime: new Date(startTime),
+            endTime: new Date(endTime),
+            status: status || 'Active'
+        };
+
+        if (id) {
+            await prisma.popup.update({ where: { id: parseInt(id) }, data });
+            res.status(200).json({ success: true, message: 'Popup updated successfully' });
+        } else {
+            await prisma.popup.create({ data });
+            res.status(200).json({ success: true, message: 'Popup added successfully' });
+        }
+    } catch (error) {
+        console.error('Error saving popup:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.deletePopup = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const popup = await prisma.popup.findUnique({ where: { id: parseInt(id) } });
+
+        if (popup && popup.image) {
+            const fs = require('fs');
+            const path = require('path');
+            const imagePath = path.join(__dirname, '../../../admin-panel/assets/uploads', popup.image);
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
+
+        await prisma.popup.delete({ where: { id: parseInt(id) } });
+        res.status(200).json({ success: true, message: 'Popup deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting popup:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.getNewsletterList = async (req, res) => {
+    try {
+        const subscribers = await prisma.newsletter.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+
+        req.app.render('pages/admin-newsletter-list', { subscribers, moment }, (err, html) => {
+            if (err) {
+                console.error('Error rendering admin newsletter list:', err);
+                return res.status(500).send('Error rendering admin newsletter list');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Newsletter Subscribers',
+                activeMenu: 'newsletter',
+                styles: [
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
+                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css'
+                ],
+                scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'
+                ]
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching newsletter list:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.deleteNewsletter = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.newsletter.delete({
+            where: { id: parseInt(id) }
+        });
+        res.json({ success: true, message: 'Subscriber deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting subscriber:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };

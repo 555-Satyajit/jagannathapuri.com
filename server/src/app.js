@@ -17,11 +17,13 @@ const sessionPool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     max: 5, // Increased from 2 to handle concurrent session requests better
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased from 2000 to 10000ms
 });
 
 // Diagnostic Middleware for Proxy/SSL
 app.use((req, res, next) => {
+    res.locals.protocol = req.protocol;
+    res.locals.host = req.get('host');
     if (process.env.NODE_ENV === 'production') {
         console.log(`[Debug] ${req.method} ${req.url} - Secure: ${req.secure}, Protocol: ${req.protocol}, X-Forwarded-Proto: ${req.get('x-forwarded-proto')}`);
     }
@@ -93,7 +95,32 @@ app.use(session({
 }));
 
 
-// Add user session to locals for all views
+// Middleware to fetch active popup for public site
+app.use(async (req, res, next) => {
+    // Only fetch for GET requests and skip assets/admin
+    if (req.method !== 'GET' || req.path.startsWith('/admin') || req.path.startsWith('/api')) {
+        return next();
+    }
+
+    try {
+        const now = new Date();
+        const activePopup = await prisma.popup.findFirst({
+            where: {
+                status: 'Active',
+                startTime: { lte: now },
+                endTime: { gte: now }
+            },
+            orderBy: { created_at: 'desc' }
+        });
+        res.locals.activePopup = activePopup;
+        next();
+    } catch (error) {
+        console.error('Error fetching active popup:', error);
+        res.locals.activePopup = null;
+        next();
+    }
+});
+
 // Add user session to locals for all views
 app.use(async (req, res, next) => {
     res.locals.user = req.session.customerId ? {
@@ -151,5 +178,22 @@ app.set('views', [
 ]);
 
 app.use('/', routes);
+app.use('/api', require('./routes/api'));
+
+// 404 Error Handler
+app.use((req, res, next) => {
+    let wishlistIds = [];
+    res.status(404).render('pages/404', {}, (err, html) => {
+        if (err) {
+            console.error('Error rendering 404 page content:', err);
+            return res.status(404).send('Page not found');
+        }
+        res.render('layouts/master', {
+            body: html,
+            wishlistIds,
+            title: '404 - Page Not Found'
+        });
+    });
+});
 
 module.exports = app;

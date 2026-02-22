@@ -169,6 +169,57 @@
                     </div>
                 </div>
                 <!-- /Specifications -->
+                <!-- SEO & Meta Tags -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">SEO & Meta Tags</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="meta_title">Meta Title</label>
+                            <input type="text" class="form-control seo-strength-title" id="meta_title" name="meta_title"
+                                placeholder="SEO Title" value="<%= product.meta_title || '' %>">
+                            <div class="seo-meter mt-1">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Strength: <span
+                                            class="strength-label">Check...</span></small>
+                                    <small class="text-muted"><span class="char-count">0</span> / 60 chars</small>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="meta_description">Meta Description</label>
+                            <textarea class="form-control seo-strength-desc" id="meta_description"
+                                name="meta_description" rows="3"
+                                placeholder="SEO Description"><%= product.meta_description || '' %></textarea>
+                            <div class="seo-meter mt-1">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Strength: <span
+                                            class="strength-label">Check...</span></small>
+                                    <small class="text-muted"><span class="char-count">0</span> / 160 chars</small>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="meta_keywords">Meta Keywords</label>
+                            <input type="text" class="form-control" id="meta_keywords" name="meta_keywords"
+                                placeholder="keyword1, keyword2" value="<%= product.meta_keywords || '' %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="image_alt">Image Alt Text</label>
+                            <input type="text" class="form-control" id="image_alt" name="image_alt"
+                                placeholder="Alt text for product images" value="<%= product.image_alt || '' %>">
+                            <div class="form-text">Used for accessibility and image search SEO.</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /SEO & Meta Tags -->
                 <!-- Inventory -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -516,7 +567,7 @@
                             <select id="vendor" class="select2 form-select" data-placeholder="Select Vendor"
                                 name="product_brand">
                                 <option value="">Select Vendor</option>
-                                <option value="Jay Subhdra">Jay Subhdra</option>
+                                <option value="Jagannathapuri">Jagannathapuri</option>
                                 <option value="Utkal Crafts">Utkal Crafts</option>
                                 <option value="Puri Handloom">Puri Handloom</option>
                             </select>
@@ -646,6 +697,53 @@
             });
         });
 
+        // SEO Strength Meter Logic
+        function updateSeoMeter(input, max, ideal_min, ideal_max) {
+            const meter = input.nextElementSibling;
+            if (!meter || !meter.classList.contains('seo-meter')) return;
+
+            const label = meter.querySelector('.strength-label');
+            const countDisplay = meter.querySelector('.char-count');
+            const bar = meter.querySelector('.progress-bar');
+
+            const count = input.value.length;
+            countDisplay.textContent = count;
+
+            let percent = (count / max) * 100;
+            if (percent > 100) percent = 100;
+            bar.style.width = percent + '%';
+
+            if (count === 0) {
+                label.textContent = 'Empty';
+                label.className = 'strength-label text-muted';
+                bar.className = 'progress-bar bg-secondary';
+            } else if (count < ideal_min) {
+                label.textContent = 'Weak';
+                label.className = 'strength-label text-danger';
+                bar.className = 'progress-bar bg-danger';
+            } else if (count <= ideal_max) {
+                label.textContent = 'Best';
+                label.className = 'strength-label text-success';
+                bar.className = 'progress-bar bg-success';
+            } else {
+                label.textContent = 'Good (Too long)';
+                label.className = 'strength-label text-warning';
+                bar.className = 'progress-bar bg-warning';
+            }
+        }
+
+        const titleInputSeo = document.querySelector('.seo-strength-title');
+        const descInputSeo = document.querySelector('.seo-strength-desc');
+
+        if (titleInputSeo) {
+            titleInputSeo.addEventListener('input', () => updateSeoMeter(titleInputSeo, 100, 30, 60));
+            updateSeoMeter(titleInputSeo, 100, 30, 60);
+        }
+        if (descInputSeo) {
+            descInputSeo.addEventListener('input', () => updateSeoMeter(descInputSeo, 300, 120, 160));
+            updateSeoMeter(descInputSeo, 300, 120, 160);
+        }
+
         // Removal logic for NEW images
         previewContainer.addEventListener('click', function (e) {
             if (e.target.closest('.remove-new-preview')) {
@@ -732,6 +830,12 @@
                 formData.set('is_cod', document.getElementById('price-allow-cod').checked);
                 formData.set('is_featured', document.getElementById('is_featured').checked);
                 formData.set('show_in_explore', document.getElementById('show_in_explore').checked);
+
+                // SEO Fields
+                formData.set('meta_title', document.getElementById('meta_title').value);
+                formData.set('meta_description', document.getElementById('meta_description').value);
+                formData.set('meta_keywords', document.getElementById('meta_keywords').value);
+                formData.set('image_alt', document.getElementById('image_alt').value);
 
                 const productId = window.location.pathname.split('/').pop();
 

@@ -58,7 +58,10 @@
                                         <div class="d-inline-block text-nowrap">
                                             <button class="btn btn-sm btn-icon edit-cat" data-id="<%= cat.id %>"
                                                 data-name="<%= cat.name %>" data-desc="<%= cat.description %>"
-                                                data-status="<%= cat.status %>" data-home="<%= cat.show_on_home %>">
+                                                data-status="<%= cat.status %>" data-home="<%= cat.show_on_home %>"
+                                                data-meta-title="<%= cat.meta_title %>"
+                                                data-meta-desc="<%= cat.meta_description %>"
+                                                data-meta-keys="<%= cat.meta_keywords %>">
                                                 <i class="bx bx-edit text-primary"></i>
                                             </button>
                                             <button class="btn btn-sm btn-icon delete-cat" data-id="<%= cat.id %>">
@@ -113,6 +116,45 @@
                         <label class="form-check-label">Show on Home Page</label>
                     </div>
                 </div>
+
+                <!-- SEO & Meta Tags -->
+                <div class="border-top pt-4 mt-4">
+                    <h6 class="mb-3">SEO & Meta Tags</h6>
+                    <div class="mb-3">
+                        <label class="form-label" for="meta_title">Meta Title</label>
+                        <input type="text" class="form-control seo-strength-title" id="meta_title" name="meta_title"
+                            placeholder="SEO Title">
+                        <div class="seo-meter mt-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Strength: <span class="strength-label">Check...</span></small>
+                                <small class="text-muted"><span class="char-count">0</span> / 60 chars</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="meta_description">Meta Description</label>
+                        <textarea class="form-control seo-strength-desc" id="meta_description" name="meta_description"
+                            rows="3" placeholder="SEO Description"></textarea>
+                        <div class="seo-meter mt-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Strength: <span class="strength-label">Check...</span></small>
+                                <small class="text-muted"><span class="char-count">0</span> / 160 chars</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="meta_keywords">Meta Keywords</label>
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords"
+                            placeholder="keyword1, keyword2">
+                    </div>
+                </div>
+                <!-- /SEO & Meta Tags -->
                 <button type="submit" class="btn btn-primary w-100">Save Category</button>
             </form>
         </div>
@@ -129,9 +171,66 @@
                 document.getElementById('cat-desc').value = this.dataset.desc;
                 document.getElementById('cat-status').value = this.dataset.status;
                 document.getElementById('cat-home').checked = this.dataset.home === 'true';
+
+                // SEO Fields
+                document.getElementById('meta_title').value = this.dataset.metaTitle || '';
+                document.getElementById('meta_description').value = this.dataset.metaDesc || '';
+                document.getElementById('meta_keywords').value = this.dataset.metaKeys || '';
+
+                // Initialize SEO meters
+                if (typeof updateSeoMeter === 'function') {
+                    updateSeoMeter(document.getElementById('meta_title'), 100, 30, 60);
+                    updateSeoMeter(document.getElementById('meta_description'), 300, 120, 160);
+                }
+
                 new bootstrap.Offcanvas(document.getElementById('offcanvasCategory')).show();
             };
         });
+
+        // SEO Strength Meter Logic
+        function updateSeoMeter(input, max, ideal_min, ideal_max) {
+            const meter = input.nextElementSibling;
+            if (!meter || !meter.classList.contains('seo-meter')) return;
+
+            const label = meter.querySelector('.strength-label');
+            const countDisplay = meter.querySelector('.char-count');
+            const bar = meter.querySelector('.progress-bar');
+
+            const count = input.value.length;
+            countDisplay.textContent = count;
+
+            let percent = (count / max) * 100;
+            if (percent > 100) percent = 100;
+            bar.style.width = percent + '%';
+
+            if (count === 0) {
+                label.textContent = 'Empty';
+                label.className = 'strength-label text-muted';
+                bar.className = 'progress-bar bg-secondary';
+            } else if (count < ideal_min) {
+                label.textContent = 'Weak';
+                label.className = 'strength-label text-danger';
+                bar.className = 'progress-bar bg-danger';
+            } else if (count <= ideal_max) {
+                label.textContent = 'Best';
+                label.className = 'strength-label text-success';
+                bar.className = 'progress-bar bg-success';
+            } else {
+                label.textContent = 'Good (Too long)';
+                label.className = 'strength-label text-warning';
+                bar.className = 'progress-bar bg-warning';
+            }
+        }
+
+        const titleInputSeo = document.getElementById('meta_title');
+        const descInputSeo = document.getElementById('meta_description');
+
+        if (titleInputSeo) {
+            titleInputSeo.addEventListener('input', () => updateSeoMeter(titleInputSeo, 100, 30, 60));
+        }
+        if (descInputSeo) {
+            descInputSeo.addEventListener('input', () => updateSeoMeter(descInputSeo, 300, 120, 160));
+        }
 
         // Delete
         document.querySelectorAll('.delete-cat').forEach(btn => {

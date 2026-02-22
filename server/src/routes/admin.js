@@ -89,7 +89,10 @@ router.post('/tickets/action', checkPermission('manage_customers'), upload.array
 
 // Settings
 router.get('/settings/general', adminController.getGeneralSettings);
-router.post('/settings/general', upload.single('logo'), adminController.saveGeneralSettings);
+router.post('/settings/general', upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'favicon', maxCount: 1 }
+]), adminController.saveGeneralSettings);
 router.get('/settings/shipping-payment', checkPermission('manage_settings'), adminController.getShippingPaymentSettings);
 router.post('/settings/shipping-payment', checkPermission('manage_settings'), adminController.saveShippingPaymentSettings);
 
@@ -164,10 +167,19 @@ router.get('/festivals', checkPermission('manage_settings'), adminController.get
 router.post('/festivals/save', checkPermission('manage_settings'), adminController.saveFestival);
 router.delete('/festivals/delete/:id', checkPermission('manage_settings'), adminController.deleteFestival);
 
+// Manage Popups
+router.get('/store/popup/list', checkPermission('manage_settings'), adminController.getPopupList);
+router.post('/store/popup/save', checkPermission('manage_settings'), upload.single('popupImage'), adminController.savePopup);
+router.delete('/store/popup/delete/:id', checkPermission('manage_settings'), adminController.deletePopup);
+
 // Quill Image Upload
 router.post('/library/content/upload-image', checkPermission('manage_settings'), upload.single('image'), adminController.uploadLibraryImage);
 
 // Tags API (for select2)
 router.get('/library/tags/search', checkPermission('manage_settings'), adminController.searchLibTags);
+
+// Newsletter Management
+router.get('/newsletter/list', checkPermission('manage_settings'), adminController.getNewsletterList);
+router.delete('/newsletter/delete/:id', checkPermission('manage_settings'), adminController.deleteNewsletter);
 
 module.exports = router;

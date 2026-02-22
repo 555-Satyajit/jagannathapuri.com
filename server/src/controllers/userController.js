@@ -225,8 +225,11 @@ exports.downloadInvoice = async (req, res) => {
         }
         order.shippingAddress = shippingAddress;
 
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        console.log(`[DEBUG] Rendering invoice-print for order ${orderId} with baseUrl ${baseUrl}`);
         // Render the EJS template to a string
-        req.app.render('pages/invoice-print', { order }, async (err, html) => {
+        req.app.render('pages/invoice-print', { order, baseUrl }, async (err, html) => {
+            console.log('[DEBUG] Template rendering finished. Error:', err ? err.message : 'None');
             if (err) {
                 console.error('Error rendering invoice template:', err);
                 return res.status(500).send('Error generating invoice');

@@ -4,7 +4,9 @@
   id="sidebar" data-state="close">
   <div>
     <div class="relative pb-6">
-      <img src="/assets/images/logo.png" alt="Logo" class="w-[100px]" />
+      <a href="/">
+        <img src="<%= siteConfig.header.logo %>" alt="Logo" class="w-[100px]" />
+      </a>
       <button
         class="size-7 inline-flex items-center justify-center absolute top-0 right-0 rounded-full bg-[rgba(145,158,171,0.08)]"
         id="side-bar-menu-close">
@@ -22,110 +24,60 @@
         </div>
         <div data-state="close"
           class="search-result-container p-4 absolute w-full top-[calc(100%+10px)] left-0 border border-gray-300 shadow-light-z-12 bg-white rounded-3xl z-9 transform data-[state=close]:translate-y-4 data-[state=close]:opacity-0 data-[state=close]:invisible transition-all duration-300 ease-[cubic-bezier(0.645,0.045,0.355,1)] data-[state=open]:translate-y-0 data-[state=open]:opacity-100 data-[state=open]:visible">
+          <!-- Search UI remains as is - managed by main.js search flow -->
           <div class="flex justify-between items-center mb-4">
             <p class="font-semibold text-light-primary-text">
               Recent Search
             </p>
-            <button class="text-primary text-base leading-[26px] font-semibold cursor-pointer">
-              Reset History
-            </button>
           </div>
-          <div class="flex flex-wrap items-center gap-2 recent-search-list mb-4">
-            <button
-              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-              Vitamin D Supplement
-              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-              </span>
-            </button>
-            <button
-              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-              Pain Relief Spray
-              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-              </span>
-            </button>
-            <button
-              class="recent-search-item btn text-sm leading-[22px] font-normal btn-default outline btn-medium pl-3 py-1.5 pr-1.5 rounded-[50px]">
-              Baby Thermometer
-              <span class="inline-flex items-center justify-center size-4 bg-[rgba(145,158,171,0.32)] rounded-full">
-                <i class="hgi hgi-stroke hgi-cancel-01 text-xs text-white"></i>
-              </span>
-            </button>
-          </div>
-          <div class="recommended-search-list-wrapper">
-            <p class="text-base font-semibold text-light-primary-text mb-4">
-              Recommended
-            </p>
-            <div class="recommended-search-list flex flex-col gap-y-2 divide-y divide-gray-300">
-              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                  <img src="/assets/images/vitamin-c.png" alt="recommended-search-1" />
-                </div>
-                <p
-                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                  <a href="index-4.html#">Immunity booster</a>
-                </p>
-              </div>
-              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                  <img src="/assets/images/hand-sanitizer-1.png" alt="recommended-search-1" />
-                </div>
-                <p
-                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                  <a href="index-4.html#">Hand Sanitizer 500ml</a>
-                </p>
-              </div>
-              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                  <img src="/assets/images/combat.png" alt="recommended-search-1" />
-                </div>
-                <p
-                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                  <a href="index-4.html#">Heart health supplements</a>
-                </p>
-              </div>
-              <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-                <div class="size-10 flex-none rounded-lg bg-[#F4F3F5]">
-                  <img src="/assets/images/vitamin-b12.png" alt="recommended-search-1" />
-                </div>
-                <p
-                  class="text-base font-semibold text-light-primary-text hover:text-primary transition-colors duration-300">
-                  <a href="index-4.html#">Protein powder for women</a>
-                </p>
-              </div>
-            </div>
-          </div>
+          <p class="text-sm text-gray-500">Type at least 2 characters to search...</p>
         </div>
       </div>
 
       <nav class="mobile-menu">
         <ul>
-          <li>
-            <a href="/">Home</a>
-          </li>
-          <li>
-            <a href='/about'>About Us</a>
-          </li>
-          <li>
-            <a href="/shop">Shop</a>
-          </li>
-          <li>
-            <a href="/service">Services</a>
-          </li>
-          <li>
-            <a href="blog-grid.html">Library</a>
-          </li>
-          <li>
-            <a href="#">Rituals</a>
-            <ul>
-              <li><a href="/daily-rituals">Daily Rituals</a></li>
-              <li><a href="/panchang">Panchang</a></li>
-            </ul>
-          </li>
-          <li><a href='/contact'>Contact</a></li>
+          <% (siteConfig.header.navbar_links || []).forEach(link=> { %>
+            <li>
+              <a href="<%= link.url %>">
+                <%= link.label %>
+              </a>
+              <% if (link.sub_links && link.sub_links.length> 0) { %>
+                <ul>
+                  <% link.sub_links.forEach(sub=> { %>
+                    <li><a href="<%= sub.url %>">
+                        <%= sub.label %>
+                      </a></li>
+                    <% }) %>
+                </ul>
+                <% } %>
+            </li>
+            <% }) %>
         </ul>
       </nav>
+
+      <!-- Language Toggle Start -->
+      <div class="border border-gray-500/24 p-5 rounded-2xl mt-2">
+        <h6 class="mb-3 text-sm font-semibold uppercase text-gray-500">Language</h6>
+        <div class="flex flex-wrap gap-2">
+          <a href="javascript:void(0)"
+            class="lang-select px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-full text-sm transition-colors duration-300"
+            data-lang="en">
+            English
+          </a>
+          <a href="javascript:void(0)"
+            class="lang-select px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-full text-sm transition-colors duration-300"
+            data-lang="or">
+            Odia
+          </a>
+          <a href="javascript:void(0)"
+            class="lang-select px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-full text-sm transition-colors duration-300"
+            data-lang="hi">
+            Hindi
+          </a>
+        </div>
+      </div>
+      <!-- Language Toggle End -->
+
       <div class="border border-gray-500/24 p-5 rounded-2xl">
         <div class="flex flex-col gap-y-3">
           <% if (!user) { %>
@@ -162,23 +114,28 @@
         <h4 class="mb-3">Follow us</h4>
         <ul class="flex items-center gap-x-4">
           <li>
-            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2"><span
-                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full"><i
-                  class="hgi hgi-stroke hgi-facebook-01 text-base text-white"></i></span></a>
+            <a href="<%= (siteConfig.footer && siteConfig.footer.social_links && siteConfig.footer.social_links.facebook) || '#' %>"
+              class="inline-flex items-center justify-center gap-x-2" target="_blank">
+              <span class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full"><i
+                  class="hgi hgi-stroke hgi-facebook-01 text-base text-white"></i></span>
+            </a>
           </li>
           <li>
-            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2">
+            <a href="<%= (siteConfig.footer && siteConfig.footer.social_links && siteConfig.footer.social_links.linkedin) || '#' %>"
+              class="inline-flex items-center justify-center gap-x-2" target="_blank">
               <span class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
                 <i class="hgi hgi-stroke hgi-linkedin-01 text-base text-white"></i> </span></a>
           </li>
           <li>
-            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2"><span
-                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
+            <a href="<%= (siteConfig.footer && siteConfig.footer.social_links && siteConfig.footer.social_links.instagram) || '#' %>"
+              class="inline-flex items-center justify-center gap-x-2" target="_blank">
+              <span class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
                 <i class="hgi hgi-stroke hgi-instagram text-base text-white"></i> </span></a>
           </li>
           <li>
-            <a href="index-4.html#" class="inline-flex items-center justify-center gap-x-2 hover:translate-y-3"><span
-                class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
+            <a href="<%= (siteConfig.footer && siteConfig.footer.social_links && siteConfig.footer.social_links.twitter) || '#' %>"
+              class="inline-flex items-center justify-center gap-x-2 hover:translate-y-3" target="_blank">
+              <span class="size-8 bg-primary-dark inline-flex items-center justify-center rounded-full">
                 <i class="hgi hgi-stroke hgi-twitter text-base text-white"></i> </span></a>
           </li>
         </ul>
