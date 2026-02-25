@@ -11267,12 +11267,35 @@ Others css
 
 /* Heart Pop Animation */
 @keyframes heartPop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
+
+/* Quill Editor Alignment Overrides */
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
 
 .heart-pop {
   animation: heartPop 0.3s ease-out;
-  display: inline-block; /* Ensure transform works */
+  display: inline-block;
+  /* Ensure transform works */
 }
