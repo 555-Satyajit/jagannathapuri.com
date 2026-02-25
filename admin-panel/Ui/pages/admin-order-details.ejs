@@ -1,8 +1,8 @@
 <% const paymentStatuses={ 1: { title: "Paid" , class: "bg-label-success" }, 2: { title: "Pending" ,
     class: "bg-label-warning" }, 3: { title: "Failed" , class: "bg-label-danger" }, 4: { title: "Cancelled" ,
-    class: "bg-label-secondary" } }; const orderStatuses={ 1: { title: "Dispatched" , class: "bg-label-warning" }, 2: {
-    title: "Delivered" , class: "bg-label-success" }, 3: { title: "Out for Delivery" , class: "bg-label-primary" }, 4: {
-    title: "Ready to Pickup" , class: "bg-label-info" } }; %>
+    class: "bg-label-secondary" } }; const orderStatuses={ 0: { title: "Cancelled" , class: "bg-label-danger" }, 1: {
+    title: "Pending" , class: "bg-label-warning" }, 2: { title: "Processing" , class: "bg-label-info" }, 3: {
+    title: "Shipped" , class: "bg-label-primary" }, 4: { title: "Delivered" , class: "bg-label-success" } }; %>
 
     <h4 class="py-3 breadcrumb-wrapper mb-4">
         <span class="text-muted fw-light">eCommerce /</span> Order Details

@@ -1,0 +1,99 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Policies /</span>
+        <%= pageTitle %>
+    </h4>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Edit <%= pageTitle %>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="policyForm" action="<%= saveUrl %>" method="POST">
+                        <input type="hidden" name="content" id="policyContent">
+
+                        <div class="mb-4">
+                            <label class="form-label">Page Content</label>
+                            <div class="form-control p-0 pt-1">
+                                <div class="message-editor-toolbar border-0 border-bottom">
+                                    <span class="ql-formats">
+                                        <select class="ql-font"></select>
+                                        <select class="ql-size"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-script" value="sub"></button>
+                                        <button class="ql-script" value="super"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-header" value="1"></button>
+                                        <button class="ql-header" value="2"></button>
+                                        <button class="ql-blockquote"></button>
+                                        <button class="ql-code-block"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                        <button class="ql-indent" value="-1"></button>
+                                        <button class="ql-indent" value="+1"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-direction" value="rtl"></button>
+                                        <select class="ql-align"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-link"></button>
+                                        <button class="ql-image"></button>
+                                        <button class="ql-video"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-clean"></button>
+                                    </span>
+                                </div>
+                                <div class="message-editor border-0 pb-1" id="snow-editor" style="min-height: 400px;">
+                                    <%- content %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Quill Editor
+        const snowEditor = new Quill('#snow-editor', {
+            bounds: '#snow-editor',
+            modules: {
+                formula: true,
+                toolbar: '.message-editor-toolbar'
+            },
+            theme: 'snow'
+        });
+
+        // Handle Form Submit
+        document.getElementById('policyForm').addEventListener('submit', function (e) {
+            // Get HTML content from Quill
+            const htmlContent = snowEditor.root.innerHTML;
+            document.getElementById('policyContent').value = htmlContent;
+        });
+    });
+</script>

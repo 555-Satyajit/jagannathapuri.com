@@ -787,6 +787,9 @@ exports.getCheckout = async (req, res) => {
                         quantity: item.quantity
                     };
                 });
+            } else if (dbCart) {
+                cart = [];
+                req.session.cart = [];
             }
         }
 
@@ -1314,14 +1317,34 @@ exports.removeFromWishlist = async (req, res) => {
     }
 };
 
-exports.getContact = (req, res) => {
-    req.app.render('pages/contact', (err, html) => {
-        if (err) {
-            console.error('Error rendering contact:', err);
-            return res.status(500).send('Error rendering contact page');
-        }
-        res.render('layouts/master', { body: html });
-    });
+exports.getContact = async (req, res) => {
+    try {
+        const config = await prisma.siteConfig.findUnique({ where: { key: 'contact' } });
+        const defaultSettings = {
+            email: 'support@jagannathapuri.com',
+            phone: '+91 6752 123456',
+            address: 'Grand Road, Puri, Odisha, 752001',
+            website: 'www.jagannathapuri.com',
+            faqs: [
+                {
+                    question: 'What payment methods do you accept?',
+                    answer: 'We accept all major credit cards, debit cards, and UPI.'
+                }
+            ]
+        };
+        const settings = config ? { ...defaultSettings, ...config.value } : defaultSettings;
+
+        req.app.render('pages/contact', { settings }, (err, html) => {
+            if (err) {
+                console.error('Error rendering contact:', err);
+                return res.status(500).send('Error rendering contact page');
+            }
+            res.render('layouts/master', { body: html });
+        });
+    } catch (error) {
+        console.error('Error fetching contact page data:', error);
+        res.status(500).send('Internal Server Error');
+    }
 };
 exports.getProductApi = async (req, res) => {
     try {
@@ -1497,4 +1520,64 @@ exports.submitFeedback = async (req, res) => {
         console.error('Error submitting feedback:', error);
         res.status(500).json({ success: false, message: 'Failed to submit feedback' });
     }
+};
+
+exports.searchApi = async (req, res) => {
+    try {
+        const query = req.query.q || '';
+        if (!query.trim()) {
+            return res.json({ success: true, products: [] });
+        }
+
+        const products = await prisma.product.findMany({
+            where: {
+                status: 1, // Only active products
+                OR: [
+                    { product_name: { contains: query, mode: 'insensitive' } },
+                    { sku: { contains: query, mode: 'insensitive' } },
+                    { product_brand: { contains: query, mode: 'insensitive' } },
+                    { category: { name: { contains: query, mode: 'insensitive' } } }
+                ]
+            },
+            take: 5, // Limit live search results to 5
+            include: { category: true }
+        });
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error('Error in searchApi:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// --- Policy Pages ---
+
+const renderPolicyPage = async (req, res, title, configKey) => {
+    try {
+        const config = await prisma.siteConfig.findUnique({ where: { key: configKey } });
+        const content = config && config.value ? config.value.content : `<p>The ${title} is currently not available. Please check back later.</p>`;
+
+        req.app.render('pages/policy-page', { title, content }, (err, html) => {
+            if (err) {
+                console.error(`Error rendering ${title} page:`, err);
+                return res.status(500).send('Error rendering page');
+            }
+            res.render('layouts/master', { body: html, title });
+        });
+    } catch (error) {
+        console.error(`Error fetching ${title} page:`, error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getPrivacyPolicyPage = (req, res) => {
+    renderPolicyPage(req, res, 'Privacy Policy', 'privacy_policy');
+};
+
+exports.getTermsConditionsPage = (req, res) => {
+    renderPolicyPage(req, res, 'Terms & Conditions', 'terms_conditions');
+};
+
+exports.getReturnPolicyPage = (req, res) => {
+    renderPolicyPage(req, res, 'Return Policy', 'return_policy');
 };

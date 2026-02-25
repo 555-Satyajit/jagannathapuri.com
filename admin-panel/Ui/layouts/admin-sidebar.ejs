@@ -219,6 +219,51 @@
           </a>
         </li>
 
+        <!-- Manage Contact -->
+        <li
+          class="menu-item <%= title.includes('Manage Contact') || title.includes('Contact Messages') ? 'active open' : '' %>">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <div data-i18n="Manage Contact">Manage Contact</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item <%= title.includes('Manage Contact') ? 'active' : '' %>">
+              <a href="/admin/store/contact" class="menu-link">
+                <div data-i18n="Contact Settings">Contact Settings</div>
+              </a>
+            </li>
+            <li class="menu-item <%= title.includes('Contact Messages') ? 'active' : '' %>">
+              <a href="/admin/store/contact/messages" class="menu-link">
+                <div data-i18n="Messages">Messages</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Manage Policies -->
+        <li
+          class="menu-item <%= title.includes('Privacy Policy') || title.includes('Terms & Conditions') || title.includes('Return Policy') ? 'active open' : '' %>">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <div data-i18n="Policies">Policies</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item <%= title.includes('Privacy Policy') ? 'active' : '' %>">
+              <a href="/admin/settings/policies/privacy" class="menu-link">
+                <div data-i18n="Privacy Policy">Privacy Policy</div>
+              </a>
+            </li>
+            <li class="menu-item <%= title.includes('Terms & Conditions') ? 'active' : '' %>">
+              <a href="/admin/settings/policies/terms" class="menu-link">
+                <div data-i18n="Terms & Conditions">Terms & Conditions</div>
+              </a>
+            </li>
+            <li class="menu-item <%= title.includes('Return Policy') ? 'active' : '' %>">
+              <a href="/admin/settings/policies/return" class="menu-link">
+                <div data-i18n="Return Policy">Return Policy</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+
         <li class="menu-item <%= title.includes('General') ? 'active' : '' %>">
           <a href="/admin/settings/general" class="menu-link">
             <div data-i18n="General">General</div>

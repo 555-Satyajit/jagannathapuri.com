@@ -1547,6 +1547,65 @@
     }
   });
 
+  $body.on("click", ".buy-now-btn", function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+
+    let productId = $btn.data("product-id");
+    let quantity = 1;
+
+    // Look for form wrapper if id is missing
+    if (!productId) {
+      const $form = $btn.closest("form");
+      if ($form.length) {
+        productId = $form.find("input[name='productId']").val();
+        quantity = $form.find("input[name='quantity']").val() || 1;
+      }
+    }
+
+    // Fallback search
+    if (!productId) {
+      productId = $btn.closest("[data-product-id]").data("product-id");
+    }
+
+    // Capture quantity input if nearby
+    const $qtyInput = $btn.closest("td, .product-add-to-cart-btn-section, .product-details-content").find(".quantity-input");
+    if ($qtyInput.length) {
+      quantity = $qtyInput.val() || 1;
+    }
+
+    if (!productId) {
+      console.error("Buy Now failed: Product ID not found", $btn[0]);
+      alert("Error: Product ID missing for this button.");
+      return;
+    }
+
+    const originalText = $btn.html();
+    $btn.prop('disabled', true).html('<i class="bx bx-loader-alt animate-spin mr-2"></i>Processing...');
+
+    $.ajax({
+      url: "/cart/add",
+      method: "POST",
+      data: { productId, quantity },
+      success: function (response) {
+        if (response.success) {
+          window.location.href = '/checkout';
+        } else {
+          $btn.prop('disabled', false).html(originalText);
+          alert(response.error || "Failed to process Buy Now.");
+        }
+      },
+      error: function (xhr) {
+        if (xhr.status === 401) {
+          window.location.href = '/login?redirect=/checkout';
+        } else {
+          $btn.prop('disabled', false).html(originalText);
+          alert("Something went wrong. Please try again.");
+        }
+      }
+    });
+  });
+
   // Load cart on page load to sync count
   const $initialCartList = $(".cart-products-content");
   if ($initialCartList.length && $initialCartList.is(':empty')) {
@@ -1869,6 +1928,191 @@
       alert("Something went wrong. Please try again.");
     } finally {
       $submitBtn.prop('disabled', false).text(originalBtnText);
+    }
+  });
+
+  /*------ Live Product Search ------*/
+  let searchTimeout = null;
+  $body.on('input', '.header-search-input', function () {
+    const $input = $(this);
+    const query = $input.val().trim();
+    const $container = $input.closest('.search-input-container').find('.search-result-container');
+
+    clearTimeout(searchTimeout);
+
+    if (query.length < 2) {
+      $container.attr('data-state', 'close');
+      return;
+    }
+
+    // Show loading state optionally
+    $container.attr('data-state', 'open');
+    if ($container.find('.search-loading').length === 0) {
+      $container.html('<div class="flex justify-between items-center mb-4"><p class="font-semibold text-light-primary-text">Search Results</p></div><p class="text-sm text-gray-500 search-loading"><i class="bx bx-loader-alt animate-spin mr-1"></i> Searching...</p>');
+    }
+
+    searchTimeout = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data.success && data.products.length > 0) {
+          let html = '<div class="flex justify-between items-center mb-4"><p class="font-semibold text-light-primary-text">Search Results</p></div>';
+          html += '<div class="flex flex-col gap-y-4">';
+          data.products.forEach(p => {
+            let img = '/assets/images/logo.png';
+            if (p.images && p.images.length > 0) {
+              const dbImg = p.images[0].trim();
+              img = (dbImg.startsWith('http') || dbImg.startsWith('/')) ? dbImg : '/uploads/' + dbImg;
+            }
+            html += `
+              <a href="/product-details/${p.slug}" class="flex items-center gap-x-4 p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                <div class="size-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                  <img src="${img}" class="w-full h-full object-cover" />
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <h6 class="text-sm font-semibold truncate text-light-primary-text mb-1">${p.product_name}</h6>
+                  <div class="flex items-center gap-x-2">
+                    <span class="text-primary text-sm font-bold leading-5">₹${p.sale_price || p.regular_price || p.price_amount}</span>
+                    ${p.on_sale && p.regular_price ? `<span class="text-xs text-light-disabled-text line-through">₹${p.regular_price}</span>` : ''}
+                  </div>
+                </div>
+              </a>
+            `;
+          });
+          html += '</div>';
+
+          $container.html(html);
+        } else {
+          $container.html('<div class="flex justify-between items-center mb-4"><p class="font-semibold text-light-primary-text">Search Results</p></div><p class="text-sm text-gray-500">No products found for "' + query + '"</p>');
+        }
+      } catch (err) {
+        console.error('Search error:', err);
+        $container.html('<div class="flex justify-between items-center mb-4"><p class="font-semibold text-light-primary-text">Search Results</p></div><p class="text-sm text-error">An error occurred.</p>');
+      }
+    }, 400);
+  });
+
+  // Handle enter key submit
+  $body.on('keypress', '.header-search-input', function (e) {
+    if (e.which == 13) {
+      e.preventDefault();
+      const q = $(this).val().trim();
+      if (q.length > 0) window.location.href = '/shop?search=' + encodeURIComponent(q);
+    }
+  });
+
+  // Close search when clicking outside
+  $doc.on('click.jagannathapuri', function (e) {
+    if (!$(e.target).closest('.search-input-container').length) {
+      $('.search-result-container').attr('data-state', 'close');
+    }
+  });
+
+  /*------ Wishlist Bulk Add To Cart Logic ----*/
+
+  // Select All functionality
+  $body.on('change', '#wishlist-select-all', function () {
+    const isChecked = $(this).prop('checked');
+    $('.wishlist-item-checkbox').prop('checked', isChecked);
+    updateWishlistSelectedCount();
+  });
+
+  // Individual item selection functionality
+  $body.on('change', '.wishlist-item-checkbox', function () {
+    const totalCheckboxes = $('.wishlist-item-checkbox').length;
+    const checkedCheckboxes = $('.wishlist-item-checkbox:checked').length;
+
+    // Update Select All checkbox state
+    if (totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes) {
+      $('#wishlist-select-all').prop('checked', true);
+    } else {
+      $('#wishlist-select-all').prop('checked', false);
+    }
+
+    updateWishlistSelectedCount();
+  });
+
+  // Update selected count display
+  function updateWishlistSelectedCount() {
+    const count = $('.wishlist-item-checkbox:checked').length;
+    const $counter = $('#wishlist-selected-count');
+    if ($counter.length) {
+      $counter.text(`${count} item${count !== 1 ? 's' : ''} selected`);
+    }
+  }
+
+  // Handle Bulk Add to Cart button click
+  $body.on('click', '#wishlist-bulk-add-btn', async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const checkedItems = $('.wishlist-item-checkbox:checked');
+
+    if (checkedItems.length === 0) {
+      alert("Please select at least one item to add to your cart.");
+      return;
+    }
+
+    const itemsToAdd = [];
+    checkedItems.each(function () {
+      itemsToAdd.push({
+        productId: $(this).val(),
+        quantity: 1 // Default quantity to 1 for bulk additions
+      });
+    });
+
+    const originalHtml = $btn.html();
+    $btn.html('<span class="inline-flex items-center justify-center"><i class="bx bx-loader-alt animate-spin text-2xl leading-6"></i></span> Adding...');
+    $btn.prop('disabled', true);
+
+    try {
+      const response = await fetch("/cart/add-bulk", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: JSON.stringify({ items: itemsToAdd })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Optimistically trigger cart UI refresh with new data
+        updateCartUI(data.cart);
+
+        // Uncheck all boxes
+        $('.wishlist-item-checkbox').prop('checked', false);
+        $('#wishlist-select-all').prop('checked', false);
+        updateWishlistSelectedCount();
+
+        // Show success animation or alert
+        $btn.html('<span class="inline-flex items-center justify-center"><i class="hgi hgi-stroke hgi-tick-02 text-2xl leading-6"></i></span> Added!');
+        setTimeout(() => {
+          $btn.html(originalHtml);
+          $btn.prop('disabled', false);
+
+          // Optionally redirect user
+          if (confirm("Cart updated successfully. Would you like to view your cart?")) {
+            window.location.href = "/cart";
+          }
+        }, 1500);
+      } else {
+        alert(data.message || "Failed to add items to cart.");
+        $btn.html(originalHtml);
+        $btn.prop('disabled', false);
+      }
+    } catch (error) {
+      console.error("Bulk add error:", error);
+      alert("Something went wrong. Please try again.");
+      $btn.html(originalHtml);
+      $btn.prop('disabled', false);
+    }
+  });
+
+  // Initialize count on page load
+  $(document).ready(function () {
+    if ($('#wishlist-selected-count').length) {
+      updateWishlistSelectedCount();
     }
   });
 

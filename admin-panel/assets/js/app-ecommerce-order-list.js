@@ -13,10 +13,11 @@ $(function () {
     var e,
         n = $(".datatables-order"),
         r = {
-            1: { title: "Dispatched", class: "bg-label-warning" },
-            2: { title: "Delivered", class: "bg-label-success" },
-            3: { title: "Out for Delivery", class: "bg-label-primary" },
-            4: { title: "Ready to Pickup", class: "bg-label-info" },
+            1: { title: "Pending", class: "bg-label-warning" },
+            2: { title: "Processing", class: "bg-label-info" },
+            3: { title: "Shipped", class: "bg-label-primary" },
+            4: { title: "Delivered", class: "bg-label-success" },
+            0: { title: "Cancelled", class: "bg-label-danger" },
         },
         o = {
             1: { title: "Paid", class: "text-success" },

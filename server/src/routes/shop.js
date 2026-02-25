@@ -24,6 +24,9 @@ router.post('/api/submit-review', isAuth, shopController.reviewUpload, shopContr
 router.post('/api/apply-coupon', shopController.applyCoupon);
 router.post('/api/remove-coupon', shopController.removeCoupon);
 router.post('/api/submit-feedback', shopController.submitFeedback);
+router.get('/privacy-policy', shopController.getPrivacyPolicyPage);
+router.get('/terms-conditions', shopController.getTermsConditionsPage);
+router.get('/return-policy', shopController.getReturnPolicyPage);
 router.get('/api/user/addresses', isAuth, shopController.getUserAddresses);
 router.get('/contact', shopController.getContact);
 

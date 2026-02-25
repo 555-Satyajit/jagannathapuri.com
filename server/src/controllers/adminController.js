@@ -210,10 +210,10 @@ exports.getDashboard = async (req, res) => {
 
         let completed = 0, active = 0;
         orderStatusCounts.forEach(stat => {
-            if (stat.status === 2) {
+            if (stat.status === 4) {
                 completed += stat._count.status; // Delivered
             } else {
-                active += stat._count.status; // 1, 3, 4 are active states
+                active += stat._count.status; // 0, 1, 2, 3 are active/cancelled states
             }
         });
 
@@ -3850,4 +3850,184 @@ exports.deleteNewsletter = async (req, res) => {
         console.error('Error deleting subscriber:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
+};
+
+// --- Manage Contact ---
+exports.getContactSettings = async (req, res) => {
+    try {
+        const config = await prisma.siteConfig.findUnique({ where: { key: 'contact' } });
+        const defaultSettings = {
+            email: 'support@jagannathapuri.com',
+            phone: '+91 6752 123456',
+            address: 'Grand Road, Puri, Odisha, 752001',
+            website: 'www.jagannathapuri.com',
+            faqs: [
+                {
+                    question: 'What payment methods do you accept?',
+                    answer: 'We accept all major credit cards, debit cards, and UPI.'
+                },
+                {
+                    question: 'How can I track my order?',
+                    answer: 'You can track your order in the My Account section after logging in.'
+                }
+            ]
+        };
+        const settings = config ? { ...defaultSettings, ...config.value } : defaultSettings;
+
+        req.app.render('pages/admin-contact', { settings }, (err, html) => {
+            if (err) {
+                console.error('Error rendering contact settings:', err);
+                return res.status(500).send('Error rendering page');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Manage Contact - Jay Subhdra Admin',
+                styles: [],
+                scripts: [
+                    '/admin-assets/vendor/libs/jquery-repeater/jquery-repeater.js'
+                ]
+            });
+        });
+    } catch (error) {
+        console.error('Error in getContactSettings:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.saveContactSettings = async (req, res) => {
+    try {
+        const { contact_json } = req.body;
+        const contactData = JSON.parse(contact_json);
+
+        await prisma.siteConfig.upsert({
+            where: { key: 'contact' },
+            update: { value: contactData },
+            create: { key: 'contact', value: contactData }
+        });
+
+        configStore.clearCache();
+        res.redirect('/admin/store/contact');
+    } catch (error) {
+        console.error('Error saving contact settings:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getContactMessages = async (req, res) => {
+    try {
+        const messages = await prisma.feedback.findMany({
+            orderBy: { created_at: 'desc' }
+        });
+
+        req.app.render('pages/admin-feedback-list', { messages, moment }, (err, html) => {
+            if (err) {
+                console.error('Error rendering feedback list:', err);
+                return res.status(500).send('Error rendering page');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Contact Messages - Jay Subhdra Admin',
+                styles: [
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
+                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css'
+                ],
+                scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js'
+                ]
+            });
+        });
+    } catch (error) {
+        console.error('Error in getContactMessages:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.deleteContactMessage = async (req, res) => {
+    try {
+        await prisma.feedback.delete({
+            where: { id: parseInt(req.params.id) }
+        });
+        res.json({ success: true, message: 'Message deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting contact message:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};
+
+// --- Manage Policies ---
+
+const renderPolicyEdit = (req, res, title, configKey, saveUrl, activeMenu) => {
+    prisma.siteConfig.findUnique({ where: { key: configKey } })
+        .then(config => {
+            const content = config ? config.value.content : '';
+            req.app.render('pages/admin-policy-edit', { pageTitle: title, content, saveUrl }, (err, html) => {
+                if (err) {
+                    console.error(`Error rendering ${configKey} policy:`, err);
+                    return res.status(500).send('Error rendering page');
+                }
+                res.render('layouts/admin-master', {
+                    body: html,
+                    title: `${title} - Jay Subhdra Admin`,
+                    activeMenu: activeMenu,
+                    styles: [
+                        '/admin-assets/vendor/libs/quill/typography.css',
+                        '/admin-assets/vendor/libs/quill/katex.css',
+                        '/admin-assets/vendor/libs/quill/editor.css'
+                    ],
+                    scripts: [
+                        '/admin-assets/vendor/libs/quill/katex.js',
+                        '/admin-assets/vendor/libs/quill/quill.js'
+                    ]
+                });
+            });
+        })
+        .catch(error => {
+            console.error(`Error fetching ${configKey}:`, error);
+            res.status(500).send('Internal Server Error');
+        });
+};
+
+const savePolicy = async (req, res, configKey, redirectUrl) => {
+    try {
+        const { content } = req.body;
+
+        await prisma.siteConfig.upsert({
+            where: { key: configKey },
+            update: { value: { content } },
+            create: { key: configKey, value: { content } }
+        });
+
+        configStore.clearCache();
+        res.redirect(redirectUrl);
+    } catch (error) {
+        console.error(`Error saving ${configKey}:`, error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+// Privacy Policy
+exports.getPrivacyPolicy = (req, res) => {
+    renderPolicyEdit(req, res, 'Privacy Policy', 'privacy_policy', '/admin/settings/policies/privacy/save', 'privacy_policy');
+};
+exports.savePrivacyPolicy = (req, res) => {
+    savePolicy(req, res, 'privacy_policy', '/admin/settings/policies/privacy');
+};
+
+// Terms & Conditions
+exports.getTermsConditions = (req, res) => {
+    renderPolicyEdit(req, res, 'Terms & Conditions', 'terms_conditions', '/admin/settings/policies/terms/save', 'terms_conditions');
+};
+exports.saveTermsConditions = (req, res) => {
+    savePolicy(req, res, 'terms_conditions', '/admin/settings/policies/terms');
+};
+
+// Return Policy
+exports.getReturnPolicy = (req, res) => {
+    renderPolicyEdit(req, res, 'Return Policy', 'return_policy', '/admin/settings/policies/return/save', 'return_policy');
+};
+exports.saveReturnPolicy = (req, res) => {
+    savePolicy(req, res, 'return_policy', '/admin/settings/policies/return');
 };

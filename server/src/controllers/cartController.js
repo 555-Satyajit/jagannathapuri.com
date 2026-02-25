@@ -39,6 +39,9 @@ exports.getCart = async (req, res) => {
                         quantity: item.quantity
                     };
                 });
+            } else if (dbCart) {
+                cart = [];
+                req.session.cart = [];
             }
         }
 
@@ -81,6 +84,9 @@ exports.getCartApi = async (req, res) => {
                         quantity: item.quantity
                     };
                 });
+            } else if (dbCart) {
+                cart = [];
+                req.session.cart = [];
             }
         } catch (error) {
             console.error('Error fetching cart API:', error);
@@ -203,6 +209,130 @@ exports.addItem = async (req, res) => {
     }
 };
 
+exports.addBulkItems = async (req, res) => {
+    const { items } = req.body; // Expecting { items: [{ productId, quantity }, ...] }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ success: false, message: 'Invalid items payload' });
+    }
+
+    try {
+        if (req.session.customerId) {
+            // DB Cart Logic for Logged-in User
+            let cart = await prisma.cart.findUnique({
+                where: { customerId: req.session.customerId }
+            });
+
+            if (!cart) {
+                cart = await prisma.cart.create({
+                    data: { customerId: req.session.customerId }
+                });
+            }
+
+            for (const item of items) {
+                const pId = parseInt(item.productId);
+                const qty = parseInt(item.quantity) || 1;
+
+                if (isNaN(pId)) continue;
+
+                const existingItem = await prisma.cartItem.findUnique({
+                    where: {
+                        cartId_productId: {
+                            cartId: cart.id,
+                            productId: pId
+                        }
+                    }
+                });
+
+                if (existingItem) {
+                    await prisma.cartItem.update({
+                        where: { id: existingItem.id },
+                        data: { quantity: existingItem.quantity + qty }
+                    });
+                } else {
+                    await prisma.cartItem.create({
+                        data: {
+                            cartId: cart.id,
+                            productId: pId,
+                            quantity: qty
+                        }
+                    });
+                }
+            }
+
+            // Sync updated cart to response
+            const updatedDbCart = await prisma.cart.findUnique({
+                where: { id: cart.id },
+                include: { items: { include: { product: true } } }
+            });
+
+            if (updatedDbCart && updatedDbCart.items.length > 0) {
+                req.session.cart = updatedDbCart.items.map(item => {
+                    let image = '/assets/images/logo.png';
+                    if (item.product.images && item.product.images.length > 0) {
+                        const img = item.product.images[0].trim();
+                        image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+                    }
+                    return {
+                        productId: item.productId,
+                        name: item.product.product_name,
+                        price: parseFloat(item.product.price_amount || item.product.price),
+                        image: image,
+                        slug: item.product.slug,
+                        quantity: item.quantity
+                    };
+                });
+            } else {
+                req.session.cart = [];
+            }
+        } else {
+            // Guest Session Logic
+            if (!req.session.cart) {
+                req.session.cart = [];
+            }
+
+            for (const item of items) {
+                const pId = parseInt(item.productId);
+                const qty = parseInt(item.quantity) || 1;
+
+                if (isNaN(pId)) continue;
+
+                const product = await prisma.product.findUnique({
+                    where: { id: pId }
+                });
+
+                if (!product) continue;
+
+                const existingItem = req.session.cart.find(i => i.productId === product.id);
+
+                if (existingItem) {
+                    existingItem.quantity += qty;
+                } else {
+                    let image = '/assets/images/logo.png';
+                    if (product.images && product.images.length > 0) {
+                        const img = product.images[0].trim();
+                        image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+                    }
+
+                    req.session.cart.push({
+                        productId: product.id,
+                        name: product.product_name,
+                        price: parseFloat(product.price_amount || product.price),
+                        image: image,
+                        slug: product.slug,
+                        quantity: qty
+                    });
+                }
+            }
+        }
+
+        res.json({ success: true, cart: req.session.cart });
+    } catch (error) {
+        console.error('Add bulk error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 exports.updateQuantity = async (req, res) => {
     const { productId, quantity } = req.body;
     const pId = parseInt(productId);
@@ -272,6 +402,7 @@ exports.updateQuantity = async (req, res) => {
             } else {
                 responseCart = [];
             }
+            req.session.cart = responseCart;
 
         } else {
             // Session Logic
@@ -347,6 +478,7 @@ exports.removeItem = async (req, res) => {
             } else {
                 responseCart = [];
             }
+            req.session.cart = responseCart;
         } else {
             if (req.session.cart) {
                 req.session.cart = req.session.cart.filter(i => i.productId !== pId);

@@ -140,6 +140,20 @@ router.get('/library/content/edit/:id', checkPermission('manage_settings'), admi
 router.post('/library/content/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveLibContent);
 router.delete('/library/content/delete/:id', checkPermission('manage_settings'), adminController.deleteLibContent);
 
+// Manage Contact
+router.get('/store/contact', checkPermission('manage_settings'), adminController.getContactSettings);
+router.post('/store/contact/save', checkPermission('manage_settings'), adminController.saveContactSettings);
+router.get('/store/contact/messages', checkPermission('manage_settings'), adminController.getContactMessages);
+router.delete('/store/contact/messages/delete/:id', checkPermission('manage_settings'), adminController.deleteContactMessage);
+
+// Manage Policies
+router.get('/settings/policies/privacy', checkPermission('manage_settings'), adminController.getPrivacyPolicy);
+router.post('/settings/policies/privacy/save', checkPermission('manage_settings'), adminController.savePrivacyPolicy);
+router.get('/settings/policies/terms', checkPermission('manage_settings'), adminController.getTermsConditions);
+router.post('/settings/policies/terms/save', checkPermission('manage_settings'), adminController.saveTermsConditions);
+router.get('/settings/policies/return', checkPermission('manage_settings'), adminController.getReturnPolicy);
+router.post('/settings/policies/return/save', checkPermission('manage_settings'), adminController.saveReturnPolicy);
+
 // Manage Daily Rituals
 router.get('/daily-rituals', checkPermission('manage_settings'), adminController.getDailyRitualsAdmin);
 

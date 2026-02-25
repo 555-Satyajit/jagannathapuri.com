@@ -12,6 +12,47 @@
   const colorList = Array.isArray(colorSpec) ? colorSpec : (colorSpec ? [colorSpec] : []);
   const sizeList = Array.isArray(sizeSpec) ? sizeSpec : (sizeSpec ? [sizeSpec] : []);
   %>
+  <!-- SEO JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "<%- product.product_name.replace(/"/g, '\\"') %>",
+    "image": [
+      <% if (product.images && product.images.length > 0) { %>
+        <% product.images.forEach((img, index) => {
+             let cleanImg = img.trim();
+             let imgSrc = (cleanImg.startsWith('http') || cleanImg.startsWith('/')) ? cleanImg : '/uploads/' + cleanImg;
+        %>
+          "<%= imgSrc %>"<%= index < product.images.length - 1 ? ',' : '' %>
+        <% }) %>
+      <% } else { %>
+        "/assets/images/logo.png"
+      <% } %>
+    ],
+    "description": "<%- (product.description || '').replace(/(<([^>]+)>)/gi, '').replace(/"/g, '\\"').substring(0, 300) %>",
+    "sku": "<%- product.sku %>",
+    "brand": {
+      "@type": "Brand",
+      "name": "<%- product.product_brand ? product.product_brand.replace(/"/g, '\\"') : 'Jagannathapuri' %>"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": "https://jagannathapuri.com/product-details/<%- product.slug %>",
+      "priceCurrency": "INR",
+      "price": "<%- product.sale_price || product.regular_price || product.price_amount %>",
+      "availability": "https://schema.org/<%- product.quantity > 0 || product.status === 1 ? 'InStock' : 'OutOfStock' %>",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+    <% if (typeof averageRating !== 'undefined' && averageRating > 0 && typeof reviewsCount !== 'undefined' && reviewsCount > 0) { %>,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "<%- averageRating %>",
+      "reviewCount": "<%- reviewsCount %>"
+    }
+    <% } %>
+  }
+  </script>
   <!-- ========== Breadcrumb Section Start ========== -->
   <div class="py-12">
     <div class="container">
@@ -214,7 +255,8 @@
                                   <i class="hgi hgi-stroke hgi-plus-sign text-xl leading-5"></i>
                                 </button>
                               </div>
-                              <button class="btn btn-warning btn-large rounded-[80px] flex-1">
+                              <button class="btn btn-warning btn-large rounded-[80px] flex-1 buy-now-btn"
+                                data-product-id="<%= product.id %>">
                                 Buy Now
                               </button>
                               <button class="btn btn-primary btn-large rounded-[80px] flex-1 add-to-cart-btn"

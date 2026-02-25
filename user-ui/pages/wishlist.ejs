@@ -20,15 +20,15 @@
         <h3>Product Wishlist</h3>
       </div>
       <div class="flex items-center justify-between w-full md:w-auto md:justify-start md:gap-x-12">
-        <p class="font-semibold text-light-primary-text">
-          2 items is selected
+        <p class="font-semibold text-light-primary-text" id="wishlist-selected-count">
+          0 items selected
         </p>
-        <a class='btn btn-primary btn-large py-[11px] px-6 rounded-[80px]' href='cart-single-vendor.html'>
+        <button id="wishlist-bulk-add-btn" class="btn btn-primary btn-large py-[11px] px-6 rounded-[80px]">
           <span class="inline-flex items-center justify-center">
             <i class="hgi hgi-stroke hgi-shopping-cart-02 text-2xl leading-6"></i>
           </span>
           Add to Cart
-        </a>
+        </button>
       </div>
     </div>
 
@@ -38,8 +38,18 @@
           <table class="w-full wishlist-table">
             <thead class="bg-gray-200">
               <tr>
-                <th class="pl-4 py-2.5 product-checkbox">
-                  &nbsp;
+                <th class="pl-4 py-2.5 product-checkbox w-[50px]">
+                  <div
+                    class="flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                    <label class="relative inline-flex w-5 h-5 cursor-pointer items-center justify-center">
+                      <input type="checkbox" id="wishlist-select-all"
+                        class="peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all" />
+                      <span
+                        class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                        <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                      </span>
+                    </label>
+                  </div>
                 </th>
                 <th class="text-left font-semibold product">
                   <p class="product-name">Product</p>
@@ -65,8 +75,19 @@
               <% if (wishlistItems && wishlistItems.length> 0) { %>
                 <% wishlistItems.forEach(item=> { %>
                   <tr class="py-4 border-b border-gray-100 last:border-0" id="wishlist-item-<%= item.product.id %>">
-                    <td class="py-4 pl-4 hidden lg:table-cell product-checkbox">
-                      &nbsp;
+                    <td class="py-4 pl-4 hidden lg:table-cell product-checkbox w-[50px]">
+                      <div
+                        class="flex items-center justify-center w-10 h-10 bg-transparent rounded-full hover:bg-[#919EAB]/8 transition-colors duration-300 ease-in-out">
+                        <label class="relative inline-flex w-5 h-5 cursor-pointer items-center justify-center">
+                          <input type="checkbox"
+                            class="wishlist-item-checkbox peer appearance-none w-full h-full border-2 focus:outline-none checked:border-none border-gray-300 rounded-sm bg-white checked:bg-primary transition-all"
+                            value="<%= item.product.id %>" />
+                          <span
+                            class="absolute inset-0 inline-flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-all">
+                            <i class="hgi hgi-stroke hgi-tick-02 text-[18px] leading-[18px]"></i>
+                          </span>
+                        </label>
+                      </div>
                     </td>
 
                     <td data-title="Product" class="py-4 px-3 lg:px-0 product">

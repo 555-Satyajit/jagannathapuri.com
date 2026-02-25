@@ -716,9 +716,14 @@
                                 class="text-sm leading-[22px] font-normal text-light-secondary-text cart-item-quantity">
                                 <%= item.quantity %> x ₹<%= item.price.toFixed(2) %>
                               </p>
-                              <div class="flex items-center gap-x-1.5">
+                              <div class="flex items-center gap-x-2">
                                 <span class="text-primary font-semibold product-offer-price">₹<%= (item.price *
                                     item.quantity).toFixed(2) %></span>
+                                <button type="button"
+                                  class="remove-checkout-item inline-flex items-center justify-center text-error hover:text-error-dark transition-colors"
+                                  data-product-id="<%= item.productId %>" aria-label="Remove item">
+                                  <i class="hgi hgi-stroke hgi-delete-01 text-lg"></i>
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -842,6 +847,46 @@
                 couponMsg.className = 'text-xs mt-2 block ' + colorClass;
               }
 
+              // Checkout Remove Item Logic
+              const removeCheckoutBtns = document.querySelectorAll('.remove-checkout-item');
+              removeCheckoutBtns.forEach(btn => {
+                btn.addEventListener('click', async function (e) {
+                  e.preventDefault();
+                  const productId = this.getAttribute('data-product-id');
+
+                  if (confirm('Are you sure you want to remove this item from your cart?')) {
+                    try {
+                      const originalHtml = this.innerHTML;
+                      this.innerHTML = '<i class="bx bx-loader-alt animate-spin text-lg"></i>';
+                      this.disabled = true;
+
+                      const response = await fetch('/cart/remove', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ productId })
+                      });
+
+                      const data = await response.json();
+                      if (data.success) {
+                        // Reload to recalculate all totals securely from the server
+                        window.location.reload();
+                      } else {
+                        alert(data.error || 'Failed to remove item. Please try again.');
+                        this.innerHTML = originalHtml;
+                        this.disabled = false;
+                      }
+                    } catch (error) {
+                      console.error('Checkout remove error:', error);
+                      alert('Something went wrong. Please try again.');
+                      this.innerHTML = originalHtml;
+                      this.disabled = false;
+                    }
+                  }
+                });
+              });
             </script>
           </div>
         </div>

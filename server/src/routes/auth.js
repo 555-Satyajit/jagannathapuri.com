@@ -14,6 +14,7 @@ router.post('/verify-otp', authController.postVerifyOTP);
 router.post('/change-password', authController.postChangePassword);
 
 router.get('/logout', authController.logout);
+router.post('/logout', authController.logout);
 
 router.get('/auth/callback', authController.getGoogleCallback);
 router.post('/auth/session/verify', authController.postSessionVerify);
