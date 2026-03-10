@@ -1011,9 +1011,9 @@ exports.postCheckout = async (req, res) => {
                 });
             }
 
-            // 2. Create address
-            const address = await tx.address.create({
-                data: {
+            // 2. Find or create address
+            let address = await tx.address.findFirst({
+                where: {
                     customer_id: customer.id,
                     addressLine1,
                     city,
@@ -1023,6 +1023,20 @@ exports.postCheckout = async (req, res) => {
                     type: 'Shipping'
                 }
             });
+
+            if (!address) {
+                address = await tx.address.create({
+                    data: {
+                        customer_id: customer.id,
+                        addressLine1,
+                        city,
+                        state,
+                        zipCode,
+                        country,
+                        type: 'Shipping'
+                    }
+                });
+            }
 
             // 3. Create order
             const order = await tx.order.create({
