@@ -10,15 +10,11 @@ exports.generateInvoicePdf = async (htmlContent) => {
     try {
         console.log('[DEBUG] Launching Puppeteer...');
         browser = await puppeteer.launch({
-            headless: 'new',
+            headless: true, // v22+ requires true instead of 'new'
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--single-process', // Can sometimes help in very restricted environments
                 '--disable-gpu'
             ]
         });
