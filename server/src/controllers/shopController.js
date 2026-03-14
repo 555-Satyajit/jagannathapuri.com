@@ -1380,50 +1380,51 @@ exports.getProductApi = async (req, res) => {
 };
 
 exports.searchApi = async (req, res) => {
-    const { q } = req.query;
-    if (!q || q.trim().length < 2) {
-        return res.json({ success: true, results: { products: [], services: [], library: [] } });
-    }
-
-    const query = q.trim();
-
     try {
+        const query = req.query.q || '';
+        if (!query.trim() || query.trim().length < 2) {
+            return res.json({ success: true, results: { products: [], services: [], library: [] } });
+        }
+
+        const searchTerm = query.trim();
+
         const [products, services, library] = await Promise.all([
             prisma.product.findMany({
                 where: {
+                    status: 1, // Only active products
                     OR: [
-                        { product_name: { contains: query, mode: 'insensitive' } },
-                        { product_brand: { contains: query, mode: 'insensitive' } },
-                        { description: { contains: query, mode: 'insensitive' } }
-                    ],
-                    status: 1
+                        { product_name: { contains: searchTerm, mode: 'insensitive' } },
+                        { sku: { contains: searchTerm, mode: 'insensitive' } },
+                        { product_brand: { contains: searchTerm, mode: 'insensitive' } },
+                        { category: { name: { contains: searchTerm, mode: 'insensitive' } } },
+                        { description: { contains: searchTerm, mode: 'insensitive' } }
+                    ]
                 },
                 take: 5,
-                select: { product_name: true, slug: true, price_amount: true, images: true }
+                include: { category: true }
             }),
             prisma.service.findMany({
                 where: {
+                    status: 'Active',
                     OR: [
-                        { title: { contains: query, mode: 'insensitive' } },
-                        { subtitle: { contains: query, mode: 'insensitive' } },
-                        { description: { contains: query, mode: 'insensitive' } }
-                    ],
-                    status: 'Active'
+                        { title: { contains: searchTerm, mode: 'insensitive' } },
+                        { subtitle: { contains: searchTerm, mode: 'insensitive' } },
+                        { description: { contains: searchTerm, mode: 'insensitive' } }
+                    ]
                 },
-                take: 5,
-                select: { title: true, slug: true, image: true, icon: true }
+                take: 5
             }),
             prisma.libraryContent.findMany({
                 where: {
+                    status: 'Active',
                     OR: [
-                        { title: { contains: query, mode: 'insensitive' } },
-                        { subtitle: { contains: query, mode: 'insensitive' } },
-                        { summary: { contains: query, mode: 'insensitive' } }
-                    ],
-                    status: 'Active'
+                        { title: { contains: searchTerm, mode: 'insensitive' } },
+                        { subtitle: { contains: searchTerm, mode: 'insensitive' } },
+                        { summary: { contains: searchTerm, mode: 'insensitive' } },
+                        { meta_keywords: { contains: searchTerm, mode: 'insensitive' } }
+                    ]
                 },
-                take: 5,
-                select: { title: true, slug: true, image: true }
+                take: 5
             })
         ]);
 
@@ -1433,11 +1434,13 @@ exports.searchApi = async (req, res) => {
                 products,
                 services,
                 library
-            }
+            },
+            // Legacy support for older frontend calls that expect 'products' at root
+            products
         });
     } catch (error) {
         console.error('Search API error:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({ success: true, results: { products: [], services: [], library: [] } });
     }
 };
 
@@ -1533,34 +1536,6 @@ exports.submitFeedback = async (req, res) => {
     } catch (error) {
         console.error('Error submitting feedback:', error);
         res.status(500).json({ success: false, message: 'Failed to submit feedback' });
-    }
-};
-
-exports.searchApi = async (req, res) => {
-    try {
-        const query = req.query.q || '';
-        if (!query.trim()) {
-            return res.json({ success: true, products: [] });
-        }
-
-        const products = await prisma.product.findMany({
-            where: {
-                status: 1, // Only active products
-                OR: [
-                    { product_name: { contains: query, mode: 'insensitive' } },
-                    { sku: { contains: query, mode: 'insensitive' } },
-                    { product_brand: { contains: query, mode: 'insensitive' } },
-                    { category: { name: { contains: query, mode: 'insensitive' } } }
-                ]
-            },
-            take: 5, // Limit live search results to 5
-            include: { category: true }
-        });
-
-        res.json({ success: true, products });
-    } catch (error) {
-        console.error('Error in searchApi:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 
