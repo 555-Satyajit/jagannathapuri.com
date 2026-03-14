@@ -116,10 +116,10 @@ $(function () {
                             '</div>' +
                             '</div>' +
                             '<div class="d-flex flex-column justify-content-center">' +
-                            '<span class="text-body text-wrap fw-medium">' +
+                            '<span class="text-body text-wrap-force fw-medium">' +
                             $name +
                             '</span>' +
-                            '<span class="text-muted text-truncate mb-0 d-none d-sm-block"><small>' +
+                            '<span class="text-muted line-clamp-2 mb-0 d-none d-sm-block"><small>' +
                             ($category_detail || '') +
                             '</small></span>' +
                             '</div>' +
