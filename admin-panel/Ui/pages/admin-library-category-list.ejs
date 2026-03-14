@@ -4,17 +4,13 @@
     </h4>
 
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Library Categories</h5>
-            <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCategory">
-                <i class="bx bx-plus me-1"></i> Add Category
-            </button>
-        </div>
         <div class="card-body">
             <div class="table-responsive text-nowrap">
-                <table class="table table-hover">
+                <table class="table table-hover library-category-list-table">
                     <thead>
                         <tr>
+                            <th></th>
+                            <th></th>
                             <th>Image</th>
                             <th>Name</th>
                             <th>Slug</th>
@@ -24,59 +20,6 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
-                        <% if (categories && categories.length> 0) { %>
-                            <% categories.forEach(cat=> { %>
-                                <tr>
-                                    <td>
-                                        <% if (cat.image) { %>
-                                            <img src="/uploads/<%= cat.image %>" alt="Cat" class="rounded"
-                                                style="width: 40px; height: 40px; object-fit: cover;">
-                                            <% } else { %>
-                                                <span class="badge bg-label-secondary">No Img</span>
-                                                <% } %>
-                                    </td>
-                                    <td><strong>
-                                            <%= cat.name %>
-                                        </strong></td>
-                                    <td><code><%= cat.slug %></code></td>
-                                    <td><span class="badge bg-label-info">
-                                            <%= cat._count.contents %> Items
-                                        </span></td>
-                                    <td>
-                                        <span class="badge bg-label-<%= cat.show_on_home ? 'primary' : 'secondary' %>">
-                                            <%= cat.show_on_home ? 'Yes' : 'No' %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span
-                                            class="badge bg-label-<%= cat.status === 'Active' ? 'success' : 'warning' %>">
-                                            <%= cat.status %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-block text-nowrap">
-                                            <button class="btn btn-sm btn-icon edit-cat" data-id="<%= cat.id %>"
-                                                data-name="<%= cat.name %>" data-desc="<%= cat.description %>"
-                                                data-status="<%= cat.status %>" data-home="<%= cat.show_on_home %>"
-                                                data-meta-title="<%= cat.meta_title %>"
-                                                data-meta-desc="<%= cat.meta_description %>"
-                                                data-meta-keys="<%= cat.meta_keywords %>">
-                                                <i class="bx bx-edit text-primary"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-icon delete-cat" data-id="<%= cat.id %>">
-                                                <i class="bx bx-trash text-danger"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td colspan="6" class="text-center">No categories found.</td>
-                                        </tr>
-                                        <% } %>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -162,66 +105,43 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Edit
-        document.querySelectorAll('.edit-cat').forEach(btn => {
-            btn.onclick = function () {
-                document.getElementById('cat-id').value = this.dataset.id;
-                document.getElementById('cat-name').value = this.dataset.name;
-                document.getElementById('cat-desc').value = this.dataset.desc;
-                document.getElementById('cat-status').value = this.dataset.status;
-                document.getElementById('cat-home').checked = this.dataset.home === 'true';
+    // SEO Strength Meter Logic (Shared with other pages possibly, but keeping here for now)
+    function updateSeoMeter(input, max, ideal_min, ideal_max) {
+        if (!input) return;
+        const meter = input.nextElementSibling;
+        if (!meter || !meter.classList.contains('seo-meter')) return;
 
-                // SEO Fields
-                document.getElementById('meta_title').value = this.dataset.metaTitle || '';
-                document.getElementById('meta_description').value = this.dataset.metaDesc || '';
-                document.getElementById('meta_keywords').value = this.dataset.metaKeys || '';
+        const label = meter.querySelector('.strength-label');
+        const countDisplay = meter.querySelector('.char-count');
+        const bar = meter.querySelector('.progress-bar');
 
-                // Initialize SEO meters
-                if (typeof updateSeoMeter === 'function') {
-                    updateSeoMeter(document.getElementById('meta_title'), 100, 30, 60);
-                    updateSeoMeter(document.getElementById('meta_description'), 300, 120, 160);
-                }
+        const count = input.value.length;
+        countDisplay.textContent = count;
 
-                new bootstrap.Offcanvas(document.getElementById('offcanvasCategory')).show();
-            };
-        });
+        let percent = (count / max) * 100;
+        if (percent > 100) percent = 100;
+        bar.style.width = percent + '%';
 
-        // SEO Strength Meter Logic
-        function updateSeoMeter(input, max, ideal_min, ideal_max) {
-            const meter = input.nextElementSibling;
-            if (!meter || !meter.classList.contains('seo-meter')) return;
-
-            const label = meter.querySelector('.strength-label');
-            const countDisplay = meter.querySelector('.char-count');
-            const bar = meter.querySelector('.progress-bar');
-
-            const count = input.value.length;
-            countDisplay.textContent = count;
-
-            let percent = (count / max) * 100;
-            if (percent > 100) percent = 100;
-            bar.style.width = percent + '%';
-
-            if (count === 0) {
-                label.textContent = 'Empty';
-                label.className = 'strength-label text-muted';
-                bar.className = 'progress-bar bg-secondary';
-            } else if (count < ideal_min) {
-                label.textContent = 'Weak';
-                label.className = 'strength-label text-danger';
-                bar.className = 'progress-bar bg-danger';
-            } else if (count <= ideal_max) {
-                label.textContent = 'Best';
-                label.className = 'strength-label text-success';
-                bar.className = 'progress-bar bg-success';
-            } else {
-                label.textContent = 'Good (Too long)';
-                label.className = 'strength-label text-warning';
-                bar.className = 'progress-bar bg-warning';
-            }
+        if (count === 0) {
+            label.textContent = 'Empty';
+            label.className = 'strength-label text-muted';
+            bar.className = 'progress-bar bg-secondary';
+        } else if (count < ideal_min) {
+            label.textContent = 'Weak';
+            label.className = 'strength-label text-danger';
+            bar.className = 'progress-bar bg-danger';
+        } else if (count <= ideal_max) {
+            label.textContent = 'Best';
+            label.className = 'strength-label text-success';
+            bar.className = 'progress-bar bg-success';
+        } else {
+            label.textContent = 'Good (Too long)';
+            label.className = 'strength-label text-warning';
+            bar.className = 'progress-bar bg-warning';
         }
+    }
 
+    document.addEventListener('DOMContentLoaded', function () {
         const titleInputSeo = document.getElementById('meta_title');
         const descInputSeo = document.getElementById('meta_description');
 
@@ -236,94 +156,49 @@
         const categoryForm = document.getElementById('libraryCategoryForm');
         const saveCategoryBtn = document.getElementById('saveCategoryBtn');
 
-        categoryForm.onsubmit = async function (e) {
-            e.preventDefault();
+        if (categoryForm) {
+            categoryForm.onsubmit = async function (e) {
+                e.preventDefault();
 
-            // Show loading state
-            const originalBtnText = saveCategoryBtn.innerHTML;
-            saveCategoryBtn.disabled = true;
-            saveCategoryBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+                // Show loading state
+                const originalBtnText = saveCategoryBtn.innerHTML;
+                saveCategoryBtn.disabled = true;
+                saveCategoryBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
 
-            try {
-                const formData = new FormData(categoryForm);
-                const res = await fetch('/admin/library/categories/save', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
+                try {
+                    const formData = new FormData(categoryForm);
+                    const res = await fetch('/admin/library/categories/save', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
 
-                if (data.success) {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Category saved successfully.',
+                            confirmButtonClass: 'btn btn-primary',
+                            buttonsStyling: false
+                        }).then(() => {
+                            location.reload(); // Or refresh DataTable if possible, but reload is safer for now
+                        });
+                    } else {
+                        throw new Error(data.error || 'Failed to save category');
+                    }
+                } catch (error) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Category saved successfully.',
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message,
                         confirmButtonClass: 'btn btn-primary',
                         buttonsStyling: false
-                    }).then(() => {
-                        location.reload();
                     });
-                } else {
-                    throw new Error(data.error || 'Failed to save category');
+                } finally {
+                    saveCategoryBtn.disabled = false;
+                    saveCategoryBtn.innerHTML = originalBtnText;
                 }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message,
-                    confirmButtonClass: 'btn btn-primary',
-                    buttonsStyling: false
-                });
-            } finally {
-                saveCategoryBtn.disabled = false;
-                saveCategoryBtn.innerHTML = originalBtnText;
-            }
-        };
-
-        // Delete
-        document.querySelectorAll('.delete-cat').forEach(btn => {
-            btn.onclick = function () {
-                const catId = this.dataset.id;
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will fail if category has contents.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    customClass: {
-                        confirmButton: 'btn btn-primary me-3',
-                        cancelButton: 'btn btn-label-secondary'
-                    },
-                    buttonsStyling: false
-                }).then(function (result) {
-                    if (result.value) {
-                        fetch(`/admin/library/categories/delete/${catId}`, { method: 'DELETE' })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Deleted!',
-                                        text: 'Category has been deleted.',
-                                        customClass: {
-                                            confirmButton: 'btn btn-success'
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: 'Error',
-                                        text: data.error || 'Failed to delete category',
-                                        icon: 'error',
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary'
-                                        }
-                                    });
-                                }
-                            });
-                    }
-                });
             };
-        });
+        }
     });
-</script>
+</script>

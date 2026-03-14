@@ -132,11 +132,13 @@ router.delete('/store/home/tabs/delete/:id', checkPermission('manage_settings'),
 // Manage Library
 // Categories
 router.get('/library/categories', checkPermission('manage_settings'), adminController.getLibCategoryList);
+router.get('/library/categories/data', checkPermission('manage_settings'), adminController.getLibCategoryData);
 router.post('/library/categories/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveLibCategory);
 router.delete('/library/categories/delete/:id', checkPermission('manage_settings'), adminController.deleteLibCategory);
 
 // Content
 router.get('/library/content', checkPermission('manage_settings'), adminController.getLibContentList);
+router.get('/library/content/data', checkPermission('manage_settings'), adminController.getLibContentData);
 router.get('/library/content/add', checkPermission('manage_settings'), adminController.getAddLibContent);
 router.get('/library/content/edit/:id', checkPermission('manage_settings'), adminController.getEditLibContent);
 router.post('/library/content/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveLibContent);

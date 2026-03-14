@@ -3023,14 +3023,29 @@ exports.getLibCategoryList = async (req, res) => {
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
                 ],
                 scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
                     '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
+                    '/admin-assets/js/app-library-category-list.js'
                 ]
             });
         });
     } catch (error) {
         console.error('Error fetching library categories:', error);
         res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getLibCategoryData = async (req, res) => {
+    try {
+        const categories = await prisma.libraryCategory.findMany({
+            include: { _count: { select: { contents: true } } },
+            orderBy: { created_at: 'desc' }
+        });
+        res.json({ data: categories });
+    } catch (error) {
+        console.error('Error fetching library category data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
@@ -3102,12 +3117,12 @@ exports.searchLibTags = async (req, res) => {
 
 exports.getLibContentList = async (req, res) => {
     try {
-        const contents = await prisma.libraryContent.findMany({
-            orderBy: { created_at: 'desc' },
-            include: { category: true, tags: true }
+        const categories = await prisma.libraryCategory.findMany({
+            where: { status: 'Active' },
+            orderBy: { name: 'asc' }
         });
 
-        req.app.render('pages/admin-library-content-list', { contents }, (err, html) => {
+        req.app.render('pages/admin-library-content-list', { categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');
@@ -3120,16 +3135,42 @@ exports.getLibContentList = async (req, res) => {
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
+                    '/admin-assets/vendor/libs/select2/select2.css',
+                    '/admin-assets/vendor/libs/spinkit/spinkit.css'
                 ],
                 scripts: [
+                    '/admin-assets/vendor/libs/moment/moment.js',
                     '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
+                    '/admin-assets/vendor/libs/select2/select2.js',
+                    '/admin-assets/vendor/libs/block-ui/block-ui.js',
+                    '/admin-assets/js/app-library-content-list.js'
                 ]
             });
         });
     } catch (error) {
         console.error('Error fetching library contents:', error);
         res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getLibContentData = async (req, res) => {
+    try {
+        const { categoryId } = req.query;
+        let where = {};
+        if (categoryId && categoryId !== '') {
+            where.categoryId = parseInt(categoryId);
+        }
+
+        const contents = await prisma.libraryContent.findMany({
+            where,
+            include: { category: true, tags: true },
+            orderBy: { created_at: 'desc' }
+        });
+        res.json({ data: contents });
+    } catch (error) {
+        console.error('Error fetching library content data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 

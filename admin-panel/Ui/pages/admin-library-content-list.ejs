@@ -3,18 +3,18 @@
         <span class="text-muted fw-light">Manage Library / </span> Content
     </h4>
 
+    <script id="categories-data" type="application/json">
+        <%- JSON.stringify(categories || []) %>
+    </script>
+
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Library Content Entries</h5>
-            <a href="/admin/library/content/add" class="btn btn-primary">
-                <i class="bx bx-plus me-1"></i> Add New Content
-            </a>
-        </div>
         <div class="card-body">
             <div class="table-responsive text-nowrap">
-                <table class="table table-hover">
+                <table class="table table-hover library-content-list-table">
                     <thead>
                         <tr>
+                            <th></th>
+                            <th></th>
                             <th>Banner</th>
                             <th>Title</th>
                             <th>Category</th>
@@ -24,111 +24,9 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
-                        <% if (contents && contents.length> 0) { %>
-                            <% contents.forEach(item=> { %>
-                                <tr>
-                                    <td>
-                                        <% if (item.image) { %>
-                                            <img src="/uploads/<%= item.image %>" alt="Banner" class="rounded"
-                                                style="width: 60px; height: 35px; object-fit: cover;">
-                                            <% } else { %>
-                                                <span class="badge bg-label-secondary">No Banner</span>
-                                                <% } %>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <strong>
-                                                <%= item.title %>
-                                            </strong>
-                                            <small class="text-muted">Slug: <%= item.slug %></small>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-label-info">
-                                            <%= item.category.name %>
-                                        </span></td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1" style="max-width: 150px;">
-                                            <% item.tags.forEach(tag=> { %>
-                                                <span class="badge bg-label-primary badge-xs">
-                                                    <%= tag.name %>
-                                                </span>
-                                                <% }); %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <%= item.author %>
-                                    </td>
-                                    <td>
-                                        <span
-                                            class="badge bg-label-<%= item.status === 'Active' ? 'success' : 'warning' %>">
-                                            <%= item.status %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-block text-nowrap">
-                                            <a href="/admin/library/content/edit/<%= item.id %>"
-                                                class="btn btn-sm btn-icon">
-                                                <i class="bx bx-edit text-primary"></i>
-                                            </a>
-                                            <button class="btn btn-sm btn-icon delete-content" data-id="<%= item.id %>">
-                                                <i class="bx bx-trash text-danger"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td colspan="7" class="text-center">No content entries found.</td>
-                                        </tr>
-                                        <% } %>
-                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.delete-content').forEach(btn => {
-            btn.onclick = function () {
-                const contentId = this.dataset.id;
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to delete this content entry?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    customClass: {
-                        confirmButton: 'btn btn-primary me-3',
-                        cancelButton: 'btn btn-label-secondary'
-                    },
-                    buttonsStyling: false
-                }).then(function (result) {
-                    if (result.value) {
-                        fetch(`/admin/library/content/delete/${contentId}`, { method: 'DELETE' })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Deleted!',
-                                        text: 'Content has been deleted.',
-                                        customClass: {
-                                            confirmButton: 'btn btn-success'
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                } else {
-                                    alert(data.error || 'Failed to delete content');
-                                }
-                            });
-                    }
-                });
-            };
-        });
-    });
-</script>
+<!-- Content List Scripts are in app-library-content-list.js -->
