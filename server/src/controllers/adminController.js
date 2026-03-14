@@ -279,6 +279,7 @@ exports.getCategoryList = async (req, res) => {
                     '/admin-assets/vendor/libs/quill/typography.css',
                     '/admin-assets/vendor/libs/quill/katex.css',
                     '/admin-assets/vendor/libs/quill/editor.css',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
                     '/admin-assets/vendor/css/pages/app-ecommerce.css'
                 ],
                 scripts: [
@@ -290,6 +291,7 @@ exports.getCategoryList = async (req, res) => {
                     '/admin-assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js',
                     '/admin-assets/vendor/libs/quill/katex.js',
                     '/admin-assets/vendor/libs/quill/quill.js',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
                     '/admin-assets/js/app-ecommerce-category-list.js'
                 ]
             });
@@ -362,14 +364,41 @@ exports.saveCategory = async (req, res) => {
         res.json({ success: true, category: newCategory });
     } catch (error) {
         console.error('Error saving category:', error);
-        res.status(500).json({ success: false, error: error.message, stack: error.stack });
+        if (error.code === 'P2002') {
+            return res.status(400).json({ success: false, error: 'A category with this name or slug already exists.' });
+        }
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
 exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const category = await prisma.category.findUnique({ where: { id: parseInt(id) } });
+        const categoryId = parseInt(id);
+
+        if (isNaN(categoryId)) {
+            return res.status(400).json({ success: false, error: 'Invalid category ID' });
+        }
+
+        // Check for related products
+        const productsCount = await prisma.product.count({ where: { category_id: categoryId } });
+        if (productsCount > 0) {
+            return res.json({ success: false, error: `Cannot delete category. It has ${productsCount} associated product(s). Please reassign or delete the products first.` });
+        }
+
+        // Check for subcategories
+        const subCategoriesCount = await prisma.category.count({ where: { parentId: categoryId } });
+        if (subCategoriesCount > 0) {
+            return res.json({ success: false, error: `Cannot delete category. It has ${subCategoriesCount} subcategory(ies). Please delete or reassign them first.` });
+        }
+
+        // Check for home tabs
+        const homeTabsCount = await prisma.homeTab.count({ where: { categoryId: categoryId } });
+        if (homeTabsCount > 0) {
+            return res.json({ success: false, error: `Cannot delete category. It is associated with ${homeTabsCount} home tab(s). Please remove them first.` });
+        }
+
+        const category = await prisma.category.findUnique({ where: { id: categoryId } });
 
         if (category && category.image) {
             const fs = require('fs');
@@ -380,10 +409,65 @@ exports.deleteCategory = async (req, res) => {
             }
         }
 
-        await prisma.category.delete({ where: { id: parseInt(id) } });
+        await prisma.category.delete({ where: { id: categoryId } });
         res.json({ success: true });
     } catch (error) {
         console.error('Error deleting category:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.bulkDeleteCategories = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ success: false, error: 'No category IDs provided for deletion.' });
+        }
+
+        let deletedCount = 0;
+        let skippedCategories = [];
+
+        for (const id of ids) {
+            const categoryId = parseInt(id);
+            if (isNaN(categoryId)) continue;
+
+            const category = await prisma.category.findUnique({ where: { id: categoryId } });
+            if (!category) continue;
+
+            // Check relations
+            const productsCount = await prisma.product.count({ where: { category_id: categoryId } });
+            const subCategoriesCount = await prisma.category.count({ where: { parentId: categoryId } });
+            const homeTabsCount = await prisma.homeTab.count({ where: { categoryId: categoryId } });
+
+            if (productsCount > 0 || subCategoriesCount > 0 || homeTabsCount > 0) {
+                skippedCategories.push(category.name);
+                continue;
+            }
+
+            if (category.image) {
+                const fs = require('fs');
+                const path = require('path');
+                const imagePath = path.join(__dirname, '../../../admin-panel/assets/img/ecommerce-images', category.image);
+                if (fs.existsSync(imagePath)) {
+                    try { fs.unlinkSync(imagePath); } catch (e) { console.error('Error deleting image:', e); }
+                }
+            }
+
+            await prisma.category.delete({ where: { id: categoryId } });
+            deletedCount++;
+        }
+
+        if (skippedCategories.length > 0) {
+            return res.json({ 
+                success: true, 
+                message: `Successfully deleted ${deletedCount} category(ies). Skipped the following categories because they are in use: ${skippedCategories.join(', ')}.` 
+            });
+        }
+
+        res.json({ success: true, message: `Successfully deleted ${deletedCount} category(ies).` });
+
+    } catch (error) {
+        console.error('Error bulk deleting categories:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
@@ -416,12 +500,14 @@ exports.getProductList = async (req, res) => {
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css',
-                    '/admin-assets/vendor/libs/select2/select2.css'
+                    '/admin-assets/vendor/libs/select2/select2.css',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css'
                 ],
                 scripts: [
                     '/admin-assets/vendor/libs/moment/moment.js',
                     '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
                     '/admin-assets/vendor/libs/select2/select2.js',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
                     '/admin-assets/js/app-ecommerce-product-list.js'
                 ]
             });
@@ -768,19 +854,90 @@ exports.markNotificationRead = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await prisma.product.findUnique({ where: { id: parseInt(id) } }); // Fetch before delete to get name
+        const productId = parseInt(id);
+
+        if (isNaN(productId)) {
+            return res.status(400).json({ success: false, error: 'Invalid product ID' });
+        }
+
+        // Check for related order items (purchased products)
+        const orderItemsCount = await prisma.orderItem.count({ where: { productId: productId } });
+        if (orderItemsCount > 0) {
+            return res.json({ success: false, error: `Cannot delete product. It is part of ${orderItemsCount} order(s). Please remove from orders or suspend the product instead.` });
+        }
+
+        // Check for related cart items
+        const cartItemsCount = await prisma.cartItem.count({ where: { productId: productId } });
+        if (cartItemsCount > 0) {
+            return res.json({ success: false, error: `Cannot delete product. It is in ${cartItemsCount} customer cart(s).` });
+        }
+
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+
+        // Optional: Delete related reviews and wishlist items before deleting the product
+        await prisma.review.deleteMany({ where: { productId: productId } });
+        await prisma.wishlistItem.deleteMany({ where: { productId: productId } });
 
         await prisma.product.delete({
-            where: { id: parseInt(id) }
+            where: { id: productId }
         });
 
         if (product) {
             await logAction(req, 'DELETE_PRODUCT', 'Product', product.id, `Deleted product: ${product.product_name}`);
         }
 
-        res.redirect('/admin/ecommerce/products');
+        res.json({ success: true, message: 'Product deleted successfully.' });
     } catch (error) {
         console.error('Error deleting product:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.bulkDeleteProducts = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ success: false, error: 'No product IDs provided for deletion.' });
+        }
+
+        let deletedCount = 0;
+        let skippedProducts = [];
+
+        for (const id of ids) {
+            const productId = parseInt(id);
+            if (isNaN(productId)) continue;
+
+            const product = await prisma.product.findUnique({ where: { id: productId } });
+            if (!product) continue;
+
+            const orderItemsCount = await prisma.orderItem.count({ where: { productId: productId } });
+            const cartItemsCount = await prisma.cartItem.count({ where: { productId: productId } });
+
+            if (orderItemsCount > 0 || cartItemsCount > 0) {
+                skippedProducts.push(product.product_name || `ID ${productId}`);
+                continue;
+            }
+
+            await prisma.review.deleteMany({ where: { productId: productId } });
+            await prisma.wishlistItem.deleteMany({ where: { productId: productId } });
+
+            await prisma.product.delete({ where: { id: productId } });
+            deletedCount++;
+
+            await logAction(req, 'DELETE_PRODUCT', 'Product', product.id, `Bulk deleted product: ${product.product_name}`);
+        }
+
+        if (skippedProducts.length > 0) {
+            return res.json({ 
+                success: true, 
+                message: `Successfully deleted ${deletedCount} product(s). Skipped the following because they are in orders or carts: ${skippedProducts.join(', ')}.` 
+            });
+        }
+
+        res.json({ success: true, message: `Successfully deleted ${deletedCount} product(s).` });
+
+    } catch (error) {
+        console.error('Error bulk deleting products:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
@@ -1720,6 +1877,10 @@ exports.postLogin = async (req, res) => {
                 // Thin session: We only store ID. Middleware fetches the rest.
             };
 
+            // Set Admin Session to expire after 6 hours
+            req.session.cookie.maxAge = 6 * 60 * 60 * 1000; 
+
+
             await logAction(req, 'LOGIN', 'Staff', user.id, `Admin logged in: ${user.username}`);
 
             // Force session save before redirect to prevent race conditions on fast redirects
@@ -2451,7 +2612,10 @@ exports.updateCategory = async (req, res) => {
         res.json({ success: true, category: updatedCategory });
     } catch (error) {
         console.error('Error updating category:', error);
-        res.status(500).json({ success: false, error: error.message, stack: error.stack });
+        if (error.code === 'P2002') {
+            return res.status(400).json({ success: false, error: 'A category with this name or slug already exists.' });
+        }
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 

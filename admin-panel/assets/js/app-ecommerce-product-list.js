@@ -118,22 +118,25 @@ $(function () {
                     responsivePriority: 5,
                     render: function (t, e, s, a) {
                         var cat = s.category;
+                        var categoryIcons = {
+                            Sweets:
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-2"><i class="bx bx-bowl-hot"></i></span>',
+                            Handloom:
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-success me-2"><i class="bx bx-closet"></i></span>',
+                            Handicrafts:
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-primary me-2"><i class="bx bx-shape-square"></i></span>',
+                            Art:
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-info me-2"><i class="bx bx-palette"></i></span>',
+                            "Shell Crafts":
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-secondary me-2"><i class="bx bx-water"></i></span>',
+                            "Holy Offerings":
+                                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-dark me-2"><i class="bx bx-sun"></i></span>',
+                        };
+                        var icon = categoryIcons[cat] || '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-secondary me-2"><i class="bx bx-folder"></i></span>';
+                        
                         return (
                             "<span class='text-truncate d-flex align-items-center'>" +
-                            {
-                                Sweets:
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-2"><i class="bx bx-bowl-hot"></i></span>',
-                                Handloom:
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-success me-2"><i class="bx bx-closet"></i></span>',
-                                Handicrafts:
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-primary me-2"><i class="bx bx-shape-square"></i></span>',
-                                Art:
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-info me-2"><i class="bx bx-palette"></i></span>',
-                                "Shell Crafts":
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-secondary me-2"><i class="bx bx-water"></i></span>',
-                                "Holy Offerings":
-                                    '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-dark me-2"><i class="bx bx-sun"></i></span>',
-                            }[cat] +
+                            icon +
                             cat +
                             "</span>"
                         );
@@ -370,6 +373,87 @@ $(function () {
                     ],
                 },
                 {
+                    text: '<i class="bx bx-trash me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Bulk Delete</span>',
+                    className: "btn btn-danger mx-3",
+                    action: function (e, dt, node, config) {
+                        var selectedIds = [];
+                        $(".dt-checkboxes:checked").each(function () {
+                            var rowData = dt.row($(this).closest("tr")).data();
+                            if (rowData && rowData.id) {
+                                selectedIds.push(rowData.id);
+                            }
+                        });
+
+                        if (selectedIds.length === 0) {
+                            Swal.fire({
+                                title: "No Products Selected",
+                                text: "Please select at least one product to delete.",
+                                icon: "warning",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                },
+                                buttonsStyling: false,
+                            });
+                            return;
+                        }
+
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, delete them!",
+                            cancelButtonText: "Cancel",
+                            customClass: {
+                                confirmButton: "btn btn-danger me-3",
+                                cancelButton: "btn btn-label-secondary",
+                            },
+                            buttonsStyling: false,
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: "/admin/ecommerce/products/bulk-delete",
+                                    type: "POST",
+                                    data: JSON.stringify({ ids: selectedIds }),
+                                    contentType: "application/json",
+                                    success: function (res) {
+                                        if (res.success) {
+                                            Swal.fire({
+                                                icon: "success",
+                                                title: "Deleted!",
+                                                text: res.message,
+                                                customClass: {
+                                                    confirmButton: "btn btn-success",
+                                                },
+                                            });
+                                            dt.ajax.reload();
+                                        } else {
+                                            Swal.fire({
+                                                title: "Error",
+                                                text: res.error,
+                                                icon: "error",
+                                                customClass: {
+                                                    confirmButton: "btn btn-primary",
+                                                },
+                                            });
+                                        }
+                                    },
+                                    error: function (err) {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "An error occurred during bulk deletion.",
+                                            icon: "error",
+                                            customClass: {
+                                                confirmButton: "btn btn-primary",
+                                            },
+                                        });
+                                    },
+                                });
+                            }
+                        });
+                    },
+                },
+                {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add Product</span>',
                     className: "add-new btn btn-primary",
                     action: function () {
@@ -484,22 +568,66 @@ $(function () {
         $(".dataTables_length").addClass("mt-0 mt-md-3 me-3"),
         $(".dt-buttons").addClass("d-flex flex-wrap");
 
-    // Fix listener for delete record
-    $(".datatables-products tbody").on("click", ".delete-record", function () {
+    // Broaden listener for delete record (handles responsive modals)
+    $(document).on("click", ".delete-record", function () {
         var id = $(this).data("id");
-        if (confirm("Are you sure you want to delete this product?")) {
-            $.ajax({
-                url: "/admin/ecommerce/products/delete/" + id,
-                type: "DELETE",
-                success: function (res) {
-                    if (res.success) {
-                        t.ajax.reload();
-                    } else {
-                        alert("Error: " + res.error);
-                    }
-                }
-            });
-        }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            customClass: {
+                confirmButton: "btn btn-danger me-3",
+                cancelButton: "btn btn-label-secondary",
+            },
+            buttonsStyling: false,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/admin/ecommerce/products/delete/" + id,
+                    type: "DELETE",
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Deleted!",
+                                text: "The product has been deleted.",
+                                customClass: {
+                                    confirmButton: "btn btn-success",
+                                },
+                            });
+                            // Using the DataTable instance to reload
+                            if (t) {
+                                t.ajax.reload();
+                            } else {
+                                $('.datatables-products').DataTable().ajax.reload();
+                            }
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: res.error,
+                                icon: "error",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                },
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            title: "Error",
+                            text: "An error occurred while deleting the product.",
+                            icon: "error",
+                            customClass: {
+                                confirmButton: "btn btn-primary",
+                              },
+                        });
+                    },
+                });
+            }
+        });
     });
 
     setTimeout(() => {

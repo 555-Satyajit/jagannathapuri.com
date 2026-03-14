@@ -50,12 +50,12 @@ $(function () {
             ajax: '/admin/ecommerce/categories/data', // Changed to our new API endpoint
             columns: [
                 // columns according to JSON
-                { data: '' },
+                { data: null, defaultContent: '' },
                 { data: 'id' },
                 { data: 'categories' },
                 { data: 'total_products' },
                 { data: 'total_earnings' },
-                { data: '' }
+                { data: null, defaultContent: '' }
             ],
             columnDefs: [
                 {
@@ -63,7 +63,7 @@ $(function () {
                     className: 'control',
                     searchable: false,
                     orderable: false,
-                    responsivePriority: 1,
+                    responsivePriority: 20,
                     targets: 0,
                     render: function (data, type, full, meta) {
                         return '';
@@ -85,7 +85,7 @@ $(function () {
                 {
                     // Categories and Category Detail
                     targets: 2,
-                    responsivePriority: 2,
+                    responsivePriority: 1,
                     render: function (data, type, full, meta) {
                         var $name = full['categories'],
                             $category_detail = full['category_detail'],
@@ -105,6 +105,8 @@ $(function () {
                             $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
                             $output = '<span class="avatar-initial rounded-2 bg-label-' + $state + '">' + $initials + '</span>';
                         }
+                        // Fallback name
+                        $name = $name || 'Unnamed';
                         // Creates full output for Categories
                         var $row_output =
                             '<div class="d-flex align-items-center">' +
@@ -118,7 +120,7 @@ $(function () {
                             $name +
                             '</span>' +
                             '<span class="text-muted text-truncate mb-0 d-none d-sm-block"><small>' +
-                            $category_detail +
+                            ($category_detail || '') +
                             '</small></span>' +
                             '</div>' +
                             '</div>';
@@ -140,7 +142,7 @@ $(function () {
                     orderable: false,
                     render: function (data, type, full, meta) {
                         var $total_earnings = full['total_earnings'];
-                        return "<div class='fw-medium text-sm-end'>" + $total_earnings + "</div";
+                        return '<div class="fw-medium text-sm-end">' + $total_earnings + '</div>';
                     }
                 },
                 {
@@ -149,6 +151,7 @@ $(function () {
                     title: 'Actions',
                     searchable: false,
                     orderable: false,
+                    responsivePriority: 1,
                     render: function (data, type, full, meta) {
                         return (
                             '<div class="d-flex align-items-sm-center justify-content-sm-center">' +
@@ -162,6 +165,44 @@ $(function () {
             order: [2, 'desc'], //set any default order
             dom:
                 '<"card-header d-flex flex-wrap"<f><"d-flex justify-content-center justify-content-md-end align-items-baseline"<"dt-action-buttons d-flex justify-content-center flex-md-row mb-3 mb-md-0 ps-1 ms-1 align-items-baseline gap-2"lB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+            autoWidth: false,
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.modal({
+                        header: function (row) {
+                            var data = row.data();
+                            return 'Details of ' + (data ? data['categories'] : 'Category');
+                        }
+                    }),
+                    type: 'column',
+                    renderer: function (api, rowIdx, columns) {
+                        var data = $.map(columns, function (col, i) {
+                            return col.title !== '' // ? Do not show for first column
+                                ? '<tr data-dt-row="' +
+                                col.rowIndex +
+                                '" data-dt-column="' +
+                                col.columnIndex +
+                                '">' +
+                                '<td> ' +
+                                col.title +
+                                ':' +
+                                '</td> ' +
+                                '<td class="ps-0">' +
+                                (col.data || '') +
+                                '</td>' +
+                                '</tr>'
+                                : '';
+                        }).join('');
+
+                        return data ? $('<table class="table"/><tbody />').append(data) : false;
+                    }
+                },
+            },
+            initComplete: function() {
+                setTimeout(() => {
+                    this.api().columns.adjust().responsive.recalc();
+                }, 500);
+            },
             lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
             language: {
                 sLengthMenu: '_MENU_',
@@ -171,8 +212,89 @@ $(function () {
             // Button for offcanvas
             buttons: [
                 {
+                    text: '<i class="bx bx-trash me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Bulk Delete</span>',
+                    className: 'btn btn-danger mx-3',
+                    action: function (e, dt, node, config) {
+                        var selectedIds = [];
+                        $('.dt-checkboxes:checked').each(function() {
+                            var rowData = dt.row($(this).closest('tr')).data();
+                            if (rowData && rowData.id) {
+                                selectedIds.push(rowData.id);
+                            }
+                        });
+
+                        if (selectedIds.length === 0) {
+                            Swal.fire({
+                                title: "No Categories Selected",
+                                text: "Please select at least one category to delete.",
+                                icon: "warning",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                },
+                                buttonsStyling: false,
+                            });
+                            return;
+                        }
+
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, delete them!",
+                            cancelButtonText: "Cancel",
+                            customClass: {
+                                confirmButton: "btn btn-danger me-3",
+                                cancelButton: "btn btn-label-secondary",
+                            },
+                            buttonsStyling: false,
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '/admin/ecommerce/categories/bulk-delete',
+                                    type: 'POST',
+                                    data: JSON.stringify({ ids: selectedIds }),
+                                    contentType: 'application/json',
+                                    success: function (res) {
+                                        if (res.success) {
+                                            Swal.fire({
+                                                icon: "success",
+                                                title: "Deleted!",
+                                                text: res.message,
+                                                customClass: {
+                                                    confirmButton: "btn btn-success",
+                                                },
+                                            });
+                                            dt.ajax.reload();
+                                        } else {
+                                            Swal.fire({
+                                                title: "Error",
+                                                text: res.error,
+                                                icon: "error",
+                                                customClass: {
+                                                    confirmButton: "btn btn-primary",
+                                                },
+                                            });
+                                        }
+                                    },
+                                    error: function (err) {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "An error occurred during bulk deletion.",
+                                            icon: "error",
+                                            customClass: {
+                                                confirmButton: "btn btn-primary",
+                                            },
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                },
+                {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add Category</span>',
-                    className: 'add-new btn btn-primary ms-2',
+                    className: 'add-new btn btn-primary',
                     attr: {
                         'data-bs-toggle': 'offcanvas',
                         'data-bs-target': '#offcanvasEcommerceCategoryList'
@@ -225,28 +347,78 @@ $(function () {
         $('.dataTables_filter').addClass('me-3 ps-0');
     }
 
-    // Delete Record
-    $('.datatables-category-list tbody').on('click', '.delete-record', function () {
+    // Broaden listener for delete record (handles responsive modals)
+    $(document).on('click', '.delete-record', function () {
         var id = $(this).data('id');
-        if (confirm('Are you sure you want to delete this category?')) {
-            $.ajax({
-                url: '/admin/ecommerce/categories/delete/' + id,
-                type: 'DELETE',
-                success: function (res) {
-                    if (res.success) {
-                        dt_category.ajax.reload();
-                    } else {
-                        alert('Error: ' + res.error);
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            customClass: {
+                confirmButton: "btn btn-danger me-3",
+                cancelButton: "btn btn-label-secondary",
+            },
+            buttonsStyling: false,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/ecommerce/categories/delete/' + id,
+                    type: 'DELETE',
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Deleted!",
+                                text: "The category has been deleted.",
+                                customClass: {
+                                    confirmButton: "btn btn-success",
+                                },
+                            });
+                            dt_category.ajax.reload();
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: res.error,
+                                icon: "error",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                },
+                            });
+                        }
+                    },
+                    error: function(err) {
+                        Swal.fire({
+                            title: "Error",
+                            text: "An error occurred while deleting the category.",
+                            icon: "error",
+                            customClass: {
+                                confirmButton: "btn btn-primary",
+                            },
+                        });
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     });
 
-    // Edit Record
-    $('.datatables-category-list tbody').on('click', '.edit-record', function () {
+    // Edit Record (Broaden listener for responsive modals)
+    $(document).on('click', '.edit-record', function () {
         var id = $(this).data('id');
-        var rowData = dt_category.row($(this).parents('tr')).data();
+        // Handle both main table and responsive child rows/modals
+        var row = $(this).closest('tr');
+        if (row.hasClass('child')) {
+            row = row.prev();
+        }
+        var rowData = dt_category.row(row).data();
+        
+        if (!rowData) {
+            // Fallback for modal which might not have the tr in parent hierarchy
+            // We search the data by ID
+            rowData = dt_category.rows().data().toArray().find(r => r.id == id);
+        }
 
         $('#offcanvasEcommerceCategoryListLabel').html('Edit Category');
         $('.data-submit').html('Update');
@@ -324,6 +496,25 @@ $(function () {
     if (descInputSeoCat) {
         descInputSeoCat.addEventListener('input', () => updateSeoMeter(descInputSeoCat, 300, 120, 160));
     }
+
+    // Auto-slug generation
+    const titleInput = document.getElementById('ecommerce-category-title');
+    const slugInput = document.getElementById('ecommerce-category-slug');
+
+    if (titleInput && slugInput) {
+        titleInput.addEventListener('input', function () {
+            // Only auto-generate if the slug field is currently empty or matches a slugified version of the title
+            // This allows users to manually override the slug if they want.
+            const slug = titleInput.value
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '') // Remove special chars
+                .replace(/[\s_-]+/g, '-') // Replace spaces/underscores/hyphens with a single hyphen
+                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+
+            slugInput.value = slug;
+        });
+    }
 });
 
 // Form Validation
@@ -373,6 +564,11 @@ $(function () {
         var id = $('#eCommerceCategoryListForm').attr('data-id');
         var url = id ? '/admin/ecommerce/categories/update/' + id : '/admin/ecommerce/categories/save';
 
+        // Loader implementation
+        const submitBtn = $('.data-submit');
+        const originalBtnText = submitBtn.html();
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...').prop('disabled', true);
+
         $.ajax({
             url: url,
             type: 'POST',
@@ -388,9 +584,31 @@ $(function () {
 
                     // Reload table
                     $('.datatables-category-list').DataTable().ajax.reload();
+                    
+                    // Reset button
+                    submitBtn.html(originalBtnText).prop('disabled', false);
                 } else {
-                    alert('Error: ' + res.error);
+                    Swal.fire({
+                        title: "Error",
+                        text: res.error,
+                        icon: "error",
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                        },
+                    });
+                    submitBtn.html(originalBtnText).prop('disabled', false);
                 }
+            },
+            error: function (err) {
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred while saving the category.",
+                    icon: "error",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    },
+                });
+                submitBtn.html(originalBtnText).prop('disabled', false);
             }
         });
     });

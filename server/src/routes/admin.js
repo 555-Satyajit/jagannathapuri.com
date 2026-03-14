@@ -28,6 +28,7 @@ router.get('/ecommerce/categories/data', checkPermission('manage_products'), adm
 router.post('/ecommerce/categories/save', checkPermission('manage_products'), upload.single('categoryImage'), adminController.saveCategory);
 router.post('/ecommerce/categories/update/:id', checkPermission('manage_products'), upload.single('categoryImage'), adminController.updateCategory);
 router.delete('/ecommerce/categories/delete/:id', checkPermission('manage_products'), adminController.deleteCategory);
+router.post('/ecommerce/categories/bulk-delete', checkPermission('manage_products'), adminController.bulkDeleteCategories);
 router.get('/ecommerce/attributes', checkPermission('manage_products'), adminController.getAttributeList);
 router.post('/ecommerce/attributes', checkPermission('manage_products'), adminController.saveAttribute);
 router.post('/ecommerce/attributes/edit/:id', checkPermission('manage_products'), adminController.updateAttribute);
@@ -40,6 +41,7 @@ router.post('/ecommerce/products/add', checkPermission('manage_products'), uploa
 router.get('/ecommerce/products/edit/:id', checkPermission('manage_products'), adminController.editProduct);
 router.post('/ecommerce/products/edit/:id', checkPermission('manage_products'), upload.array('product_images', 10), adminController.updateProduct);
 router.delete('/ecommerce/products/delete/:id', checkPermission('manage_products'), adminController.deleteProduct);
+router.post('/ecommerce/products/bulk-delete', checkPermission('manage_products'), adminController.bulkDeleteProducts);
 router.get('/ecommerce/products/view/:id', checkPermission('manage_products'), adminController.viewProduct);
 router.get('/ecommerce/products/debug/:id', checkPermission('manage_products'), adminController.debugProduct);
 
