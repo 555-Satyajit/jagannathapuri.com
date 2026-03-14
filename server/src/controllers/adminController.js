@@ -3065,10 +3065,10 @@ exports.saveLibCategory = async (req, res) => {
                 }
             });
         }
-        res.redirect('/admin/library/categories');
+        res.json({ success: true });
     } catch (error) {
         console.error('Error saving library category:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
 
@@ -3150,11 +3150,13 @@ exports.getAddLibContent = async (req, res) => {
                     '/admin-assets/vendor/libs/quill/editor.css',
                     '/admin-assets/vendor/libs/select2/select2.css',
                     '/admin-assets/vendor/libs/tagify/tagify.css',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
                 ],
                 scripts: [
                     '/admin-assets/vendor/libs/quill/quill.js',
                     '/admin-assets/vendor/libs/select2/select2.js',
                     '/admin-assets/vendor/libs/tagify/tagify.js',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
                 ]
             });
         });
@@ -3187,11 +3189,13 @@ exports.getEditLibContent = async (req, res) => {
                     '/admin-assets/vendor/libs/quill/editor.css',
                     '/admin-assets/vendor/libs/select2/select2.css',
                     '/admin-assets/vendor/libs/tagify/tagify.css',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
                 ],
                 scripts: [
                     '/admin-assets/vendor/libs/quill/quill.js',
                     '/admin-assets/vendor/libs/select2/select2.js',
                     '/admin-assets/vendor/libs/tagify/tagify.js',
+                    '/admin-assets/vendor/libs/sweetalert2/sweetalert2.js',
                 ]
             });
         });
@@ -3283,10 +3287,10 @@ exports.saveLibContent = async (req, res) => {
                 }
             });
         }
-        res.redirect('/admin/library/content');
+        res.json({ success: true });
     } catch (error) {
         console.error('Error saving library content:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
 

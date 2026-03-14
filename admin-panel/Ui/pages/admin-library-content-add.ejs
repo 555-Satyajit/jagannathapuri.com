@@ -150,7 +150,7 @@
 
                 <div class="d-flex justify-content-end gap-2">
                     <a href="/admin/library/content" class="btn btn-label-secondary text-nowrap">Discard</a>
-                    <button type="submit" class="btn btn-primary w-100">Publish Content</button>
+                    <button type="submit" id="saveContentBtn" class="btn btn-primary w-100">Publish Content</button>
                 </div>
             </div>
         </div>
@@ -264,22 +264,62 @@
 
         // Submit
         const form = document.getElementById('libraryContentForm');
+        const saveContentBtn = document.getElementById('saveContentBtn');
+
         form.onsubmit = async function (e) {
             e.preventDefault();
             document.getElementById('quill-content').value = quill.root.innerHTML;
 
-            const formData = new FormData(form);
-            const res = await fetch('/admin/library/content/save', {
-                method: 'POST',
-                body: formData
-            });
+            // Loading state
+            const originalBtnText = saveContentBtn.innerHTML;
+            saveContentBtn.disabled = true;
+            saveContentBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Publishing...';
 
-            if (res.redirected) {
-                window.location.href = res.url;
-            } else {
+            try {
+                const formData = new FormData(form);
+                const res = await fetch('/admin/library/content/save', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.redirected) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Content saved successfully.',
+                        confirmButtonClass: 'btn btn-primary',
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.href = res.url;
+                    });
+                    return;
+                }
+
                 const data = await res.json();
-                if (data.success) window.location.href = '/admin/library/content';
-                else alert('Error saving content');
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Content saved successfully.',
+                        confirmButtonClass: 'btn btn-primary',
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.href = '/admin/library/content';
+                    });
+                } else {
+                    throw new Error(data.error || 'Failed to save content');
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
+            } finally {
+                saveContentBtn.disabled = false;
+                saveContentBtn.innerHTML = originalBtnText;
             }
         };
     });

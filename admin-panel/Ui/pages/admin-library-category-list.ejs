@@ -89,7 +89,7 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <form action="/admin/library/categories/save" method="POST" enctype="multipart/form-data">
+            <form id="libraryCategoryForm" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="cat-id">
                 <div class="mb-3">
                     <label class="form-label">Name</label>
@@ -155,7 +155,7 @@
                     </div>
                 </div>
                 <!-- /SEO & Meta Tags -->
-                <button type="submit" class="btn btn-primary w-100">Save Category</button>
+                <button type="submit" id="saveCategoryBtn" class="btn btn-primary w-100">Save Category</button>
             </form>
         </div>
     </div>
@@ -232,18 +232,98 @@
             descInputSeo.addEventListener('input', () => updateSeoMeter(descInputSeo, 300, 120, 160));
         }
 
+        // Submit Category Form
+        const categoryForm = document.getElementById('libraryCategoryForm');
+        const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+
+        categoryForm.onsubmit = async function (e) {
+            e.preventDefault();
+
+            // Show loading state
+            const originalBtnText = saveCategoryBtn.innerHTML;
+            saveCategoryBtn.disabled = true;
+            saveCategoryBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+
+            try {
+                const formData = new FormData(categoryForm);
+                const res = await fetch('/admin/library/categories/save', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Category saved successfully.',
+                        confirmButtonClass: 'btn btn-primary',
+                        buttonsStyling: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    throw new Error(data.error || 'Failed to save category');
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
+            } finally {
+                saveCategoryBtn.disabled = false;
+                saveCategoryBtn.innerHTML = originalBtnText;
+            }
+        };
+
         // Delete
         document.querySelectorAll('.delete-cat').forEach(btn => {
             btn.onclick = function () {
-                if (confirm('Are you sure? This will fail if category has contents.')) {
-                    fetch(`/admin/library/categories/delete/${this.dataset.id}`, { method: 'DELETE' })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) location.reload();
-                            else alert(data.error || 'Failed to delete');
-                        });
-                }
+                const catId = this.dataset.id;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will fail if category has contents.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3',
+                        cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        fetch(`/admin/library/categories/delete/${catId}`, { method: 'DELETE' })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deleted!',
+                                        text: 'Category has been deleted.',
+                                        customClass: {
+                                            confirmButton: 'btn btn-success'
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: data.error || 'Failed to delete category',
+                                        icon: 'error',
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary'
+                                        }
+                                    });
+                                }
+                            });
+                    }
+                });
             };
         });
     });
-</script>
+</script>
