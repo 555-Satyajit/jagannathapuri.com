@@ -337,17 +337,23 @@
         <div class="mb-4">
           <p class="text-xs font-bold uppercase text-light-disabled-text mb-2 px-2">Services</p>
           <div class="flex flex-col gap-y-2">
-            ${services.map(s => `
-              <a href="/service" class="flex items-center gap-x-3 p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                <div class="size-10 bg-[#F4F3F5] rounded-lg overflow-hidden flex-none flex items-center justify-center">
-                  ${s.image ? `<img src="${s.image}" class="w-full h-full object-cover">` : `<i class="${s.icon || 'hgi hgi-stroke hgi-service'} text-xl text-primary"></i>`}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-light-primary-text truncate">${s.title}</p>
-                  <p class="text-xs text-light-disabled-text">Mandir Service</p>
-                </div>
-              </a>
-            `).join('')}
+            ${services.map(s => {
+        let image = s.image;
+        if (image) {
+          image = (image.startsWith('http') || image.startsWith('/')) ? image : '/uploads/' + image;
+        }
+        return `
+                <a href="/service" class="flex items-center gap-x-3 p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                  <div class="size-10 bg-[#F4F3F5] rounded-lg overflow-hidden flex-none flex items-center justify-center">
+                    ${image ? `<img src="${image}" class="w-full h-full object-cover">` : `<i class="${s.icon || 'hgi hgi-stroke hgi-service'} text-xl text-primary"></i>`}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-light-primary-text truncate">${s.title}</p>
+                    <p class="text-xs text-light-disabled-text">Mandir Service</p>
+                  </div>
+                </a>
+              `;
+      }).join('')}
           </div>
         </div>
       `;
@@ -359,7 +365,11 @@
           <p class="text-xs font-bold uppercase text-light-disabled-text mb-2 px-2">Library</p>
           <div class="flex flex-col gap-y-2">
             ${library.map(l => {
-        let image = l.image || '/assets/images/logo.png';
+        let image = '/assets/images/logo.png';
+        if (l.image) {
+          const img = l.image.trim();
+          image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+        }
         return `
                 <a href="/library/${l.slug}" class="flex items-center gap-x-3 p-2 hover:bg-gray-100 rounded-xl transition-colors">
                   <div class="size-10 bg-[#F4F3F5] rounded-lg overflow-hidden flex-none">
