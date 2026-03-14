@@ -458,9 +458,9 @@ exports.bulkDeleteCategories = async (req, res) => {
         }
 
         if (skippedCategories.length > 0) {
-            return res.json({ 
-                success: true, 
-                message: `Successfully deleted ${deletedCount} category(ies). Skipped the following categories because they are in use: ${skippedCategories.join(', ')}.` 
+            return res.json({
+                success: true,
+                message: `Successfully deleted ${deletedCount} category(ies). Skipped the following categories because they are in use: ${skippedCategories.join(', ')}.`
             });
         }
 
@@ -928,9 +928,9 @@ exports.bulkDeleteProducts = async (req, res) => {
         }
 
         if (skippedProducts.length > 0) {
-            return res.json({ 
-                success: true, 
-                message: `Successfully deleted ${deletedCount} product(s). Skipped the following because they are in orders or carts: ${skippedProducts.join(', ')}.` 
+            return res.json({
+                success: true,
+                message: `Successfully deleted ${deletedCount} product(s). Skipped the following because they are in orders or carts: ${skippedProducts.join(', ')}.`
             });
         }
 
@@ -1673,7 +1673,7 @@ exports.getStaffList = async (req, res) => {
 
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Our Staff - Jay Subhdra Admin',
+                title: 'Our Staff - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -1719,7 +1719,7 @@ exports.getStaffView = async (req, res) => {
 
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Staff View - Jay Subhdra Admin',
+                title: 'Staff View - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -1841,7 +1841,7 @@ exports.updateStaff = async (req, res) => {
 
 exports.getLogin = (req, res) => {
     res.render('pages/admin-login', {
-        title: 'Login - Jay Subhdra Admin',
+        title: 'Login - Jagannatha-puri Admin',
         error: req.query.error
     });
 };
@@ -1878,7 +1878,7 @@ exports.postLogin = async (req, res) => {
             };
 
             // Set Admin Session to expire after 6 hours
-            req.session.cookie.maxAge = 6 * 60 * 60 * 1000; 
+            req.session.cookie.maxAge = 6 * 60 * 60 * 1000;
 
 
             await logAction(req, 'LOGIN', 'Staff', user.id, `Admin logged in: ${user.username}`);
@@ -1945,7 +1945,7 @@ exports.getTicketList = async (req, res) => {
 
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Tickets - Jay Subhdra Admin',
+                title: 'Tickets - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -2038,7 +2038,7 @@ exports.getTicketView = async (req, res) => {
 
             res.render('layouts/admin-master', {
                 body: html,
-                title: `Ticket ${ticket.ticketId} - Jay Subhdra Admin`,
+                title: `Ticket ${ticket.ticketId} - Jagannatha-puri Admin`,
                 styles: [
                     '/admin-assets/vendor/libs/select2/select2.css'
                 ],
@@ -2385,7 +2385,7 @@ exports.getShippingPaymentSettings = (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Shipping & Payment Configuration - Jay Subhdra Admin',
+                title: 'Shipping & Payment Configuration - Jagannatha-puri Admin',
                 styles: [],
                 scripts: []
             });
@@ -2427,7 +2427,7 @@ exports.getRoleList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Roles List - Jay Subhdra Admin',
+                title: 'Roles List - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -2461,7 +2461,7 @@ exports.getPermissionList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Permissions List - Jay Subhdra Admin',
+                title: 'Permissions List - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -2637,7 +2637,7 @@ exports.getServiceList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Services - Jay Subhdra Admin',
+                title: 'Manage Services - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css'
                 ],
@@ -2660,7 +2660,7 @@ exports.getAddService = (req, res) => {
         }
         res.render('layouts/admin-master', {
             body: html,
-            title: 'Add Service - Jay Subhdra Admin',
+            title: 'Add Service - Jagannatha-puri Admin',
             styles: [
                 '/admin-assets/vendor/libs/select2/select2.css'
             ],
@@ -2685,7 +2685,7 @@ exports.getEditService = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Edit Service - Jay Subhdra Admin',
+                title: 'Edit Service - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/select2/select2.css'
                 ],
@@ -2761,7 +2761,7 @@ exports.getHeroList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Hero Section - Jay Subhdra Admin',
+                title: 'Manage Hero Section - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css'
                 ],
@@ -2784,7 +2784,7 @@ exports.getAddHero = (req, res) => {
         }
         res.render('layouts/admin-master', {
             body: html,
-            title: 'Add Hero Section - Jay Subhdra Admin',
+            title: 'Add Hero Section - Jagannatha-puri Admin',
             styles: [
                 '/admin-assets/vendor/libs/quill/typography.css',
                 '/admin-assets/vendor/libs/quill/katex.css',
@@ -2814,7 +2814,7 @@ exports.getEditHero = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Edit Hero Section - Jay Subhdra Admin',
+                title: 'Edit Hero Section - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/quill/typography.css',
                     '/admin-assets/vendor/libs/quill/katex.css',
@@ -2890,7 +2890,7 @@ exports.getPromoList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Promo Banners - Jay Subhdra Admin',
+                title: 'Manage Promo Banners - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css'
                 ],
@@ -2913,7 +2913,7 @@ exports.getAddPromo = (req, res) => {
         }
         res.render('layouts/admin-master', {
             body: html,
-            title: 'Add Promo Banner - Jay Subhdra Admin',
+            title: 'Add Promo Banner - Jagannatha-puri Admin',
             styles: [
                 '/admin-assets/vendor/libs/quill/typography.css',
                 '/admin-assets/vendor/libs/quill/katex.css',
@@ -2941,7 +2941,7 @@ exports.getEditPromo = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Edit Promo Banner - Jay Subhdra Admin',
+                title: 'Edit Promo Banner - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/quill/typography.css',
                     '/admin-assets/vendor/libs/quill/katex.css',
@@ -3015,7 +3015,7 @@ exports.getLibCategoryList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Library Categories - Jay Subhdra Admin',
+                title: 'Library Categories - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -3114,7 +3114,7 @@ exports.getLibContentList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Library Content - Jay Subhdra Admin',
+                title: 'Library Content - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -3144,7 +3144,7 @@ exports.getAddLibContent = async (req, res) => {
             if (err) return res.status(500).send('Error rendering page');
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Add Library Content - Jay Subhdra Admin',
+                title: 'Add Library Content - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/quill/typography.css',
                     '/admin-assets/vendor/libs/quill/editor.css',
@@ -3183,7 +3183,7 @@ exports.getEditLibContent = async (req, res) => {
             if (err) return res.status(500).send('Error rendering page');
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Edit Library Content - Jay Subhdra Admin',
+                title: 'Edit Library Content - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/quill/typography.css',
                     '/admin-assets/vendor/libs/quill/editor.css',
@@ -3328,7 +3328,7 @@ exports.getDailyRitualsAdmin = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Daily Rituals - Jay Subhdra Admin',
+                title: 'Manage Daily Rituals - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
@@ -3444,7 +3444,7 @@ exports.getPanchangList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Panchang - Jay Subhdra Admin',
+                title: 'Manage Panchang - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
@@ -3469,7 +3469,7 @@ exports.getAddPanchang = (req, res) => {
         }
         res.render('layouts/admin-master', {
             body: html,
-            title: 'Add Panchang - Jay Subhdra Admin',
+            title: 'Add Panchang - Jagannatha-puri Admin',
             styles: [
                 '/admin-assets/vendor/libs/flatpickr/flatpickr.css'
             ],
@@ -3495,7 +3495,7 @@ exports.getEditPanchang = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Edit Panchang - Jay Subhdra Admin',
+                title: 'Edit Panchang - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/flatpickr/flatpickr.css'
                 ],
@@ -3565,7 +3565,7 @@ exports.getFestivalList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Festivals - Jay Subhdra Admin',
+                title: 'Manage Festivals - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/sweetalert2/sweetalert2.css',
@@ -3697,7 +3697,7 @@ exports.getGeneralSettings = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'General Settings - Jay Subhdra Admin',
+                title: 'General Settings - Jagannatha-puri Admin',
                 styles: [],
                 scripts: [
                     '/admin-assets/vendor/libs/jquery-repeater/jquery-repeater.js'
@@ -3785,7 +3785,7 @@ exports.getShippingPaymentSettings = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Shipping & Payment Settings - Jay Subhdra Admin'
+                title: 'Shipping & Payment Settings - Jagannatha-puri Admin'
             });
         });
     } catch (error) {
@@ -3820,7 +3820,7 @@ exports.getHomeTabList = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Home Tabs - Jay Subhdra Admin',
+                title: 'Home Tabs - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -4049,7 +4049,7 @@ exports.getContactSettings = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Manage Contact - Jay Subhdra Admin',
+                title: 'Manage Contact - Jagannatha-puri Admin',
                 styles: [],
                 scripts: [
                     '/admin-assets/vendor/libs/jquery-repeater/jquery-repeater.js'
@@ -4094,7 +4094,7 @@ exports.getContactMessages = async (req, res) => {
             }
             res.render('layouts/admin-master', {
                 body: html,
-                title: 'Contact Messages - Jay Subhdra Admin',
+                title: 'Contact Messages - Jagannatha-puri Admin',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
                     '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
@@ -4138,7 +4138,7 @@ const renderPolicyEdit = (req, res, title, configKey, saveUrl, activeMenu) => {
                 }
                 res.render('layouts/admin-master', {
                     body: html,
-                    title: `${title} - Jay Subhdra Admin`,
+                    title: `${title} - Jagannatha-puri Admin`,
                     activeMenu: activeMenu,
                     styles: [
                         '/admin-assets/vendor/libs/quill/typography.css',
