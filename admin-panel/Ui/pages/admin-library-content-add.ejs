@@ -101,13 +101,14 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select class="form-select select2" name="categoryId" required>
+                            <label class="form-label">Categories</label>
+                            <select class="form-select select2" name="categoryId" multiple required>
                                 <% categories.forEach(cat=> { %>
-                                    <option value="<%= cat.id %>" <%=content && content.categoryId===cat.id ? 'selected'
-                                        : '' %>><%= cat.name %>
+                                    <option value="<%= cat.id %>" 
+                                        <%= content && content.categories && content.categories.some(c => c.id === cat.id) ? 'selected' : '' %>>
+                                        <%= cat.name %>
                                     </option>
-                                    <% }); %>
+                                <% }); %>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -162,6 +163,17 @@
         // Init Tagify
         const tagInput = document.querySelector('#lib-tags');
         new Tagify(tagInput);
+
+        // Init Select2
+        if ($.fn.select2) {
+            $('.select2').each(function () {
+                var $this = $(this);
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Select Categories',
+                    dropdownParent: $this.parent()
+                });
+            });
+        }
 
         // Init Quill
         const quill = new Quill('#full-editor', {

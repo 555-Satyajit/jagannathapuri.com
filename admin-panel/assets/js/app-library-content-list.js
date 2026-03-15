@@ -81,11 +81,16 @@ $(function () {
           }
         },
         {
-          // Category
+          // Categories
           targets: 4,
           render: function (data, type, full, meta) {
-            var $category = full['category'] ? full['category'].name : 'N/A';
-            return '<span class="badge bg-label-info">' + $category + '</span>';
+            var $categories = full['categories'] || [];
+            var $output = '<div class="d-flex flex-wrap gap-1" style="max-width: 150px;">';
+            $categories.forEach(function (cat) {
+              $output += '<span class="badge bg-label-info badge-xs">' + cat.name + '</span>';
+            });
+            $output += '</div>';
+            return $output;
           }
         },
         {

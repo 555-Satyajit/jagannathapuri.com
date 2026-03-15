@@ -3159,12 +3159,16 @@ exports.getLibContentData = async (req, res) => {
         const { categoryId } = req.query;
         let where = {};
         if (categoryId && categoryId !== '') {
-            where.categoryId = parseInt(categoryId);
+            where.categories = {
+                some: {
+                    id: parseInt(categoryId)
+                }
+            };
         }
 
         const contents = await prisma.libraryContent.findMany({
             where,
-            include: { category: true, tags: true },
+            include: { categories: true, tags: true },
             orderBy: { created_at: 'desc' }
         });
         res.json({ data: contents });
@@ -3212,7 +3216,7 @@ exports.getEditLibContent = async (req, res) => {
         const [content, categories, tags] = await Promise.all([
             prisma.libraryContent.findUnique({
                 where: { id: id },
-                include: { tags: true }
+                include: { tags: true, categories: true }
             }),
             prisma.libraryCategory.findMany({ where: { status: 'Active' } }),
             prisma.libraryTag.findMany()
@@ -3247,16 +3251,22 @@ exports.getEditLibContent = async (req, res) => {
 
 exports.saveLibContent = async (req, res) => {
     try {
-        const { id, title, subtitle, summary, content, categoryId, status, author, tags, meta_title, meta_description, meta_keywords } = req.body;
+        let { id, title, subtitle, summary, content, categoryId, status, author, tags, meta_title, meta_description, meta_keywords } = req.body;
         const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const image = req.file ? req.file.filename : undefined;
+
+        // Handle Categories (could be single ID or array)
+        let categoryData = [];
+        if (categoryId) {
+            const categoryIds = Array.isArray(categoryId) ? categoryId : [categoryId];
+            categoryData = categoryIds.map(cid => ({ id: parseInt(cid) }));
+        }
 
         // Handle Tags (Support both raw string and Tagify JSON)
         let tagData = [];
         if (tags) {
             let tagArray = [];
             try {
-                // Try parsing as JSON (Tagify format)
                 const parsed = JSON.parse(tags);
                 if (Array.isArray(parsed)) {
                     tagArray = parsed.map(t => t.value);
@@ -3264,28 +3274,19 @@ exports.saveLibContent = async (req, res) => {
                     tagArray = [tags];
                 }
             } catch (e) {
-                // Not JSON, handle as comma-separated or array
                 tagArray = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',') : [tags]);
             }
 
-            for (let tagEntry of tagArray) {
-                const tagRaw = typeof tagEntry === 'string' ? tagEntry.trim() : (tagEntry.value ? tagEntry.value.trim() : '');
-                if (!tagRaw) continue;
-
-                // If tag is an ID (integer string), use it directly
+            for (const tagRaw of tagArray) {
+                if (tagRaw.trim() === '') continue;
                 if (/^\d+$/.test(tagRaw)) {
                     tagData.push({ id: parseInt(tagRaw) });
                 } else {
                     const tagSlug = tagRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-                    // Upsert by name to prevent name collisions, updating slug if name found
                     const existingTag = await prisma.libraryTag.upsert({
                         where: { name: tagRaw },
                         update: { slug: tagSlug },
-                        create: {
-                            name: tagRaw,
-                            slug: tagSlug
-                        }
+                        create: { name: tagRaw, slug: tagSlug }
                     });
                     tagData.push({ id: existingTag.id });
                 }
@@ -3298,33 +3299,30 @@ exports.saveLibContent = async (req, res) => {
             subtitle,
             summary,
             content,
-            author: author || 'Jay Subhdra Team',
-            status: status || 'Active',
-            categoryId: parseInt(categoryId),
+            status,
+            author,
             meta_title,
             meta_description,
             meta_keywords
         };
+
         if (image) libraryData.image = image;
 
-        if (id) {
+        if (id && id !== '') {
             await prisma.libraryContent.update({
                 where: { id: parseInt(id) },
                 data: {
                     ...libraryData,
-                    tags: {
-                        set: [], // Clear existing tags for update
-                        connect: tagData
-                    }
+                    categories: { set: categoryData },
+                    tags: { set: tagData }
                 }
             });
         } else {
             await prisma.libraryContent.create({
                 data: {
                     ...libraryData,
-                    tags: {
-                        connect: tagData
-                    }
+                    categories: { connect: categoryData },
+                    tags: { connect: tagData }
                 }
             });
         }

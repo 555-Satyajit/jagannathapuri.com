@@ -34,9 +34,13 @@
         <div class="blog-details-title-and-meta grid grid-cols-12 md:-translate-y-1/2 py-6">
             <div
                 class="lg:col-span-10 lg:col-start-2 lg:col-end-12 col-span-12 text-center md:pt-6 md:px-6 md:pb-4 p-4 rounded-3xl bg-[#FFEB69]">
-                <h6 class="text-primary category-name">
-                    <%= content.category.name %>
-                </h6>
+                <div class="flex flex-wrap justify-center gap-2 mb-4">
+                    <% content.categories.forEach(cat => { %>
+                        <h6 class="text-primary category-name bg-white/20 px-3 py-1 rounded-full text-sm">
+                            <%= cat.name %>
+                        </h6>
+                    <% }); %>
+                </div>
                 <h3 class="my-4 blog-details-title">
                     <%= content.title %>
                 </h3>
@@ -198,11 +202,12 @@
                                         class="rounded-2xl object-cover h-full w-full" />
                                     <% } %>
                         </div>
-                        <div class="mb-4 blog-item-category">
-                            <span
-                                class="text-warning-dark bg-[rgba(255,193,7,0.16)] px-2 py-px inline-flex rounded-full text-xs leading-[18px]">
-                                <%= post.category ? post.category.name : 'Vedic' %>
-                            </span>
+                        <div class="mb-4 blog-item-category flex flex-wrap gap-1">
+                            <% post.categories.forEach(cat => { %>
+                                <span class="text-warning-dark bg-[rgba(255,193,7,0.16)] px-2 py-px inline-flex rounded-full text-xs leading-[18px]">
+                                    <%= cat.name %>
+                                </span>
+                            <% }); %>
                         </div>
                         <div class="flex divide-x divide-[rgba(145,158,171,0.24)] blog-item-meta">
                             <p

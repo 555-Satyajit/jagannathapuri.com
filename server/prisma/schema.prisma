@@ -95,7 +95,7 @@ model LibraryCategory {
   meta_title    String?
   meta_description String?
   meta_keywords String?
-  contents     LibraryContent[]
+  contents     LibraryContent[] @relation("LibraryCategoryToContent")
 }
 
 model LibraryTag {
@@ -116,14 +116,13 @@ model LibraryContent {
   content    String
   image      String?
   author     String          @default("Jay Subhdra Team")
-  categoryId Int
   status     String          @default("Active")
   created_at DateTime        @default(now())
   updated_at DateTime        @updatedAt
   meta_title    String?
   meta_description String?
   meta_keywords String?
-  category   LibraryCategory @relation(fields: [categoryId], references: [id])
+  categories LibraryCategory[] @relation("LibraryCategoryToContent")
   tags       LibraryTag[]    @relation("LibraryContentTags")
 }
 

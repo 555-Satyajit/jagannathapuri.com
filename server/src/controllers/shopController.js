@@ -435,7 +435,11 @@ exports.getLibrary = async (req, res) => {
         let where = { status: 'Active' };
 
         if (category) {
-            where.category = { slug: category };
+            where.categories = {
+                some: {
+                    slug: category
+                }
+            };
         }
 
         if (tag) {
@@ -445,7 +449,7 @@ exports.getLibrary = async (req, res) => {
         const [contents, totalContents] = await Promise.all([
             prisma.libraryContent.findMany({
                 where,
-                include: { category: true, tags: true },
+                include: { categories: true, tags: true },
                 orderBy: { created_at: 'desc' },
                 skip: skip,
                 take: pageSize
@@ -462,7 +466,7 @@ exports.getLibrary = async (req, res) => {
 
         const recentPosts = await prisma.libraryContent.findMany({
             where: { status: 'Active' },
-            include: { category: true },
+            include: { categories: true },
             take: 3,
             orderBy: { created_at: 'desc' }
         });
@@ -513,12 +517,12 @@ exports.getLibraryDetails = async (req, res) => {
         const [content, categories, recentPosts] = await Promise.all([
             prisma.libraryContent.findUnique({
                 where: { slug },
-                include: { category: true, tags: true }
+                include: { categories: true, tags: true }
             }),
             prisma.libraryCategory.findMany({ where: { status: 'Active' } }),
             prisma.libraryContent.findMany({
                 where: { status: 'Active', NOT: { slug } },
-                include: { category: true },
+                include: { categories: true },
                 take: 3,
                 orderBy: { created_at: 'desc' }
             })
