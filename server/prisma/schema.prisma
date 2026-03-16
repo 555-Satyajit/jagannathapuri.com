@@ -210,6 +210,7 @@ model Customer {
   ticketMessages TicketMessage[]
   transactions   Transaction[]
   wishlistItems  WishlistItem[]
+  visitorLogs    VisitorLog[]
 }
 
 model Cart {
@@ -524,4 +525,19 @@ model Newsletter {
   email     String   @unique
   status    String   @default("Subscribed")
   createdAt DateTime @default(now())
+}
+
+model VisitorLog {
+  id         Int      @id @default(autoincrement())
+  url        String
+  sessionId  String
+  customerId Int?
+  userAgent  String?
+  ipAddress  String?
+  timestamp  DateTime @default(now())
+  
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  @@index([sessionId])
+  @@index([customerId])
 }

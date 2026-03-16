@@ -21,6 +21,7 @@ router.delete('/notifications/delete/:id', adminController.deleteNotification);
 
 // Admin Dashboard
 router.get('/', adminController.getDashboard);
+router.get('/engagement', adminController.getEngagementAnalytics);
 
 // eCommerce
 router.get('/ecommerce/categories', checkPermission('manage_products'), adminController.getCategoryList);

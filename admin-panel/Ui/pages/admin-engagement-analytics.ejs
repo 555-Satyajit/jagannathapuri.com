@@ -1,0 +1,278 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <h4 class="mb-0">Analytics Filters</h4>
+          <form id="filterForm" class="d-flex align-items-center">
+            <input type="text" id="dateRange" name="dateRange" class="form-control me-2" placeholder="Select Date Range" value="<%= currentFilters.startDate ? currentFilters.startDate + ' to ' + currentFilters.endDate : '' %>" style="width: 300px;">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="/admin/engagement" class="btn btn-outline-secondary ms-2">Reset</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Engagement Rate -->
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="card-title mb-0">Site Engagement</h6>
+            <span class="badge bg-label-primary"><i class="bx bx-chart bx-xs"></i></span>
+          </div>
+          <div class="d-flex align-items-end mb-1">
+            <h4 class="mb-0 me-2"><%= engagementRate %>%</h4>
+          </div>
+          <small class="text-muted">Interactions per visit</small>
+        </div>
+      </div>
+    </div>
+    <!-- Retention Rate -->
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="card-title mb-0">Site Retention</h6>
+            <span class="badge bg-label-success"><i class="bx bx-refresh bx-xs"></i></span>
+          </div>
+          <div class="d-flex align-items-end mb-1">
+            <h4 class="mb-0 me-2"><%= retentionRate %>%</h4>
+          </div>
+          <small class="text-muted">Returning users</small>
+        </div>
+      </div>
+    </div>
+    <!-- Lib Engagement -->
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="card-title mb-0">Library Engagement</h6>
+            <span class="badge bg-label-info"><i class="bx bx-book-open bx-xs"></i></span>
+          </div>
+          <div class="d-flex align-items-end mb-1">
+            <h4 class="mb-0 me-2"><%= libraryEngagementRate %>%</h4>
+          </div>
+          <small class="text-muted">Reader depth</small>
+        </div>
+      </div>
+    </div>
+    <!-- Lib Retention -->
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="card-title mb-0">Library Retention</h6>
+            <span class="badge bg-label-warning"><i class="bx bx-repeat bx-xs"></i></span>
+          </div>
+          <div class="d-flex align-items-end mb-1">
+            <h4 class="mb-0 me-2"><%= libraryRetentionRate %>%</h4>
+          </div>
+          <small class="text-muted">Loyal readers</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Daily Engagement Chart (ApexCharts) -->
+    <div class="col-md-8 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0">Daily Engagement Trend</h5>
+        </div>
+        <div class="card-body">
+          <div id="engagementChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Breakdown (Chart.js) -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        <h5 class="card-header">Section Popularity</h5>
+        <div class="card-body">
+          <div class="chart-container" style="position: relative; height:300px;">
+            <canvas id="sectionChart"></canvas>
+          </div>
+          <div class="mt-3 text-center">
+            <small class="text-muted">General traffic distribution across sections</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Top Library Content -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <h5 class="card-header">Popular Library Content</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Views</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% topContent.forEach(item => { %>
+                <tr>
+                  <td><a href="<%= item.url %>" target="_blank"><strong><%= item.title %></strong></a></td>
+                  <td><span class="badge bg-label-info"><%= item.hits %> hits</span></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Popularity (Chart.js) -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <h5 class="card-header">Category Interest</h5>
+        <div class="card-body">
+          <div class="chart-container" style="position: relative; height:300px;">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Recent Customer Activity Table -->
+     <div class="col-md-12">
+      <div class="card">
+        <h5 class="card-header">Recent Customer Registrations</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <% recentCustomers.forEach(customer => { %>
+                <tr>
+                  <td><strong><%= customer.fullName %></strong></td>
+                  <td><%= customer.email %></td>
+                  <td><span class="badge bg-label-primary me-1"><%= customer.status %></span></td>
+                  <td><%= new Date(customer.created_at).toLocaleDateString() %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const chartData = <%- JSON.stringify(chartData) %>;
+
+    // Flatpickr for date filtering
+    flatpickr("#dateRange", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      onClose: function(selectedDates, dateStr, instance) {
+        // Optional: Auto submit on close if you want
+      }
+    });
+
+    document.getElementById('filterForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const range = document.getElementById('dateRange').value;
+      if (range.includes(' to ')) {
+        const [start, end] = range.split(' to ');
+        window.location.href = `/admin/engagement?startDate=${start}&endDate=${end}`;
+      }
+    });
+
+    // ApexCharts: Engagement Line Chart
+    const engagementChartEl = document.querySelector('#engagementChart');
+    const engagementChartConfig = {
+      series: [
+        { name: 'Total Hits', data: chartData.dailyHits },
+        { name: 'Library Reads', data: chartData.libraryHits }
+      ],
+      chart: {
+        height: 350,
+        type: 'area',
+        toolbar: { show: false }
+      },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth' },
+      xaxis: {
+        categories: chartData.dates,
+        type: 'datetime'
+      },
+      tooltip: { x: { format: 'dd/MM/yy' } }
+    };
+    if (engagementChartEl) {
+      const engagementChart = new ApexCharts(engagementChartEl, engagementChartConfig);
+      engagementChart.render();
+    }
+
+    // Chart.js: Category Chart
+    const categoryChartEl = document.getElementById('categoryChart');
+    if (categoryChartEl) {
+      new Chart(categoryChartEl, {
+        type: 'bar',
+        data: {
+          labels: chartData.categoryLabels,
+          datasets: [{
+            label: 'Views per Category',
+            data: chartData.categoryData,
+            backgroundColor: '#696cff',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // Chart.js: Section Doughnut Chart
+    const sectionChartEl = document.getElementById('sectionChart');
+    if (sectionChartEl) {
+      new Chart(sectionChartEl, {
+        type: 'doughnut',
+        data: {
+          labels: ['Library', 'Store', 'Home', 'Other'],
+          datasets: [{
+            data: chartData.sections,
+            backgroundColor: ['#696cff', '#71dd37', '#03c3ec', '#8592a3'],
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+  });
+</script>

@@ -22,11 +22,23 @@
 
   <ul class="menu-inner py-1">
     <!-- Dashboard -->
-    <li class="menu-item <%= title.includes('Dashboard') ? 'active' : '' %>">
-      <a href="/admin" class="menu-link">
+    <li class="menu-item <%= title.includes('Dashboard') ? 'active open' : '' %>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-grid-alt"></i>
         <div data-i18n="Dashboard">Dashboard</div>
       </a>
+      <ul class="menu-sub">
+        <li class="menu-item <%= title === 'Admin Dashboard' ? 'active' : '' %>">
+          <a href="/admin" class="menu-link">
+            <div data-i18n="Analytics">Analytics</div>
+          </a>
+        </li>
+        <li class="menu-item <%= title === 'Engagement Analytics' ? 'active' : '' %>">
+          <a href="/admin/engagement" class="menu-link">
+            <div data-i18n="Engagement Analytics">Engagement Analytics</div>
+          </a>
+        </li>
+      </ul>
     </li>
 
     <!-- Catalog -->

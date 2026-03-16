@@ -87,7 +87,13 @@ exports.getDashboard = async (req, res) => {
             last7DaysOrders,
             paidOrdersForProfit,
             currentMonthOrders,
-            lastMonthOrders
+            lastMonthOrders,
+            orderStatusCounts,
+            totalNewsletter,
+            recentLogs,
+            totalUniqueVisitors,
+            failedOrdersCount,
+            topSellingData
         ] = await Promise.all([
             prisma.order.aggregate({
                 _sum: { totalAmount: true },
@@ -148,10 +154,90 @@ exports.getDashboard = async (req, res) => {
             prisma.order.groupBy({
                 by: ['status'],
                 _count: { status: true }
+            }),
+            prisma.newsletter.count(),
+            prisma.visitorLog.findMany({
+                take: 1000,
+                orderBy: { timestamp: 'desc' },
+                select: { userAgent: true }
+            }),
+            prisma.visitorLog.groupBy({
+                by: ['sessionId'],
+                _count: { sessionId: true }
+            }).then(res => res.length),
+            prisma.order.count({
+                where: {
+                    paymentStatus: { in: [3, 4] } // 3: Failed, 4: Cancelled
+                }
+            }),
+            prisma.orderItem.groupBy({
+                by: ['productId'],
+                _sum: { quantity: true },
+                orderBy: { _sum: { quantity: 'desc' } },
+                take: 5
             })
         ]);
 
         const totalRevenue = totalRevenueAgg._sum.totalAmount || 0;
+
+        // Process User Statistics (Browsers & Platforms)
+        const browserStats = {
+            'Chrome': 0,
+            'Safari': 0,
+            'Firefox': 0,
+            'Edge': 0,
+            'Other': 0
+        };
+        const platformStats = {
+            'Windows': 0,
+            'MacOS': 0,
+            'Android': 0,
+            'iOS': 0,
+            'Linux': 0,
+            'Other': 0
+        };
+
+        recentLogs.forEach(log => {
+            const ua = log.userAgent || '';
+            
+            // Simple Browser Detection
+            if (ua.includes('Edg/')) browserStats['Edge']++;
+            else if (ua.includes('Chrome')) browserStats['Chrome']++;
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) browserStats['Safari']++;
+            else if (ua.includes('Firefox')) browserStats['Firefox']++;
+            else browserStats['Other']++;
+
+            // Simple Platform Detection
+            if (ua.includes('Windows')) platformStats['Windows']++;
+            else if (ua.includes('Macintosh')) platformStats['MacOS']++;
+            else if (ua.includes('Android')) platformStats['Android']++;
+            else if (ua.includes('iPhone') || ua.includes('iPad')) platformStats['iOS']++;
+            else if (ua.includes('Linux')) platformStats['Linux']++;
+            else platformStats['Other']++;
+        });
+
+        // Convert to Percentages for top 5
+        const totalLogs = recentLogs.length || 1;
+        const processedStats = Object.entries(browserStats)
+            .map(([name, count]) => ({
+                name,
+                count,
+                percentage: ((count / totalLogs) * 100).toFixed(1)
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+        // Fetch details for top selling products
+        const topProducts = await Promise.all(topSellingData.map(async (item) => {
+            const product = await prisma.product.findUnique({
+                where: { id: item.productId },
+                include: { category: true }
+            });
+            return {
+                ...product,
+                totalSold: item._sum.quantity
+            };
+        }));
 
         // Calculate Profit
         let totalProfit = 0;
@@ -192,28 +278,12 @@ exports.getDashboard = async (req, res) => {
         const weeklyOrderSummaryData = Object.values(salesData); // Reuse same daily data for consistency
         const weeklyOrderSummaryLabels = Object.keys(salesData);
 
-        // Order Status Overview (Donut Chart)
-        const [orderStatusCounts, failedOrdersCount] = await Promise.all([
-            prisma.order.groupBy({
-                by: ['status'],
-                _count: { status: true },
-                where: {
-                    paymentStatus: { notIn: [3, 4] } // Exclude Failed/Cancelled from active/completed counts
-                }
-            }),
-            prisma.order.count({
-                where: {
-                    paymentStatus: { in: [3, 4] } // 3: Failed, 4: Cancelled
-                }
-            })
-        ]);
-
         let completed = 0, active = 0;
         orderStatusCounts.forEach(stat => {
             if (stat.status === 4) {
                 completed += stat._count.status; // Delivered
             } else {
-                active += stat._count.status; // 0, 1, 2, 3 are active/cancelled states
+                active += stat._count.status; // Active/Pending
             }
         });
 
@@ -236,6 +306,10 @@ exports.getDashboard = async (req, res) => {
             currentMonthRevenue,
             averageDailySales,
             salesPerformance: salesPerformance.toFixed(1),
+            totalNewsletter,
+            totalUniqueVisitors,
+            visitorStats: processedStats,
+            topProducts,
             staff
         }, (err, html) => {
             if (err) {
@@ -251,6 +325,187 @@ exports.getDashboard = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getEngagementAnalytics = async (req, res) => {
+    try {
+        const staffId = req.session.admin ? req.session.admin.id : null;
+        const staff = staffId ? await prisma.staff.findUnique({ where: { id: staffId }, include: { role: true } }) : null;
+
+        // Date Filtering
+        const { startDate, endDate } = req.query;
+        let dateFilter = {};
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        if (startDate && endDate) {
+            dateFilter = {
+                timestamp: {
+                    gte: new Date(startDate),
+                    lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
+                }
+            };
+        } else {
+            dateFilter = { timestamp: { gte: thirtyDaysAgo } };
+        }
+
+        const [
+            visitorLogs,
+            recentCustomers,
+            libraryContent,
+            libraryCategories
+        ] = await Promise.all([
+            prisma.visitorLog.findMany({
+                where: dateFilter,
+                orderBy: { timestamp: 'asc' }
+            }),
+            prisma.customer.findMany({ take: 5, orderBy: { created_at: 'desc' } }),
+            prisma.libraryContent.findMany({ select: { id: true, title: true, slug: true } }),
+            prisma.libraryCategory.findMany({ include: { contents: { select: { slug: true } } } })
+        ]);
+
+        // Mapping slug to title for easy lookup
+        const slugToTitle = {};
+        libraryContent.forEach(item => {
+            slugToTitle[`/library/${item.slug}`] = item.title;
+        });
+
+        // Mapping slug to category names
+        const slugToCategories = {};
+        libraryCategories.forEach(cat => {
+            cat.contents.forEach(content => {
+                if (!slugToCategories[content.slug]) slugToCategories[content.slug] = [];
+                slugToCategories[content.slug].push(cat.name);
+            });
+        });
+
+        // Process data for charts
+        const dailyHits = {};
+        const libraryHits = {};
+        const sections = { Library: 0, Store: 0, Home: 0, Other: 0 };
+        const contentHits = {};
+        const categoryHits = {};
+
+        // Advanced Metrics: Engagement & Retention
+        const totalHits = visitorLogs.length;
+        const uniqueSessions = new Set(visitorLogs.map(l => l.sessionId));
+        const totalUniqueVisitors = uniqueSessions.size;
+
+        // Engagement: Sessions with > 1 hit
+        const sessionHitCounts = {};
+        visitorLogs.forEach(l => {
+            sessionHitCounts[l.sessionId] = (sessionHitCounts[l.sessionId] || 0) + 1;
+        });
+        const engagedSessionsCount = Object.values(sessionHitCounts).filter(count => count > 1).length;
+        const engagementRate = totalUniqueVisitors > 0 ? (engagedSessionsCount / totalUniqueVisitors) * 100 : 0;
+
+        // Retention: Unique visitors in this window who had logs before this window
+        const windowStart = startDate ? new Date(startDate) : thirtyDaysAgo;
+        const returningVisitorsCount = await prisma.visitorLog.groupBy({
+            by: ['sessionId'],
+            where: {
+                sessionId: { in: Array.from(uniqueSessions) },
+                timestamp: { lt: windowStart }
+            }
+        }).then(res => res.length);
+        const retentionRate = totalUniqueVisitors > 0 ? (returningVisitorsCount / totalUniqueVisitors) * 100 : 0;
+
+        // Library-Specific Metrics
+        const libraryLogs = visitorLogs.filter(l => l.url.startsWith('/library'));
+        const librarySessions = new Set(libraryLogs.map(l => l.sessionId));
+        const totalLibVisitors = librarySessions.size;
+
+        const libSessionHitCounts = {};
+        libraryLogs.forEach(l => {
+            libSessionHitCounts[l.sessionId] = (libSessionHitCounts[l.sessionId] || 0) + 1;
+        });
+        const engagedLibSessionsCount = Object.values(libSessionHitCounts).filter(count => count > 1).length;
+        const libraryEngagementRate = totalLibVisitors > 0 ? (engagedLibSessionsCount / totalLibVisitors) * 100 : 0;
+
+        const returningLibVisitorsCount = await prisma.visitorLog.groupBy({
+            by: ['sessionId'],
+            where: {
+                sessionId: { in: Array.from(librarySessions) },
+                url: { startsWith: '/library' },
+                timestamp: { lt: windowStart }
+            }
+        }).then(res => res.length);
+        const libraryRetentionRate = totalLibVisitors > 0 ? (returningLibVisitorsCount / totalLibVisitors) * 100 : 0;
+
+        visitorLogs.forEach(log => {
+            const date = log.timestamp.toISOString().split('T')[0];
+            dailyHits[date] = (dailyHits[date] || 0) + 1;
+            
+            if (log.url.startsWith('/library')) {
+                const slug = log.url.split('/library/')[1]?.split('?')[0]; // Handle query params if any
+                if (slug) {
+                    contentHits[log.url] = (contentHits[log.url] || 0) + 1;
+                    (slugToCategories[slug] || ['Uncategorized']).forEach(catName => {
+                        categoryHits[catName] = (categoryHits[catName] || 0) + 1;
+                    });
+                }
+                libraryHits[date] = (libraryHits[date] || 0) + 1;
+                sections.Library++;
+            } else if (log.url.startsWith('/shop') || log.url.startsWith('/product')) {
+                sections.Store++;
+            } else if (log.url === '/') {
+                sections.Home++;
+            } else {
+                sections.Other++;
+            }
+        });
+
+        // Sort Top Content
+        const topContent = Object.keys(contentHits)
+            .map(url => ({
+                url,
+                title: slugToTitle[url] || url.replace('/library/', '').replace('-', ' '),
+                hits: contentHits[url]
+            }))
+            .sort((a, b) => b.hits - a.hits)
+            .slice(0, 5);
+
+        // Prepare data for the view
+        const chartData = {
+            dates: Object.keys(dailyHits).sort(),
+            dailyHits: Object.keys(dailyHits).sort().map(d => dailyHits[d]),
+            libraryHits: Object.keys(dailyHits).sort().map(d => libraryHits[d] || 0),
+            sections: [sections.Library, sections.Store, sections.Home, sections.Other],
+            categoryLabels: Object.keys(categoryHits),
+            categoryData: Object.values(categoryHits)
+        };
+
+        req.app.render('pages/admin-engagement-analytics', {
+            chartData,
+            recentCustomers,
+            topContent,
+            engagementRate: engagementRate.toFixed(1),
+            retentionRate: retentionRate.toFixed(1),
+            libraryEngagementRate: libraryEngagementRate.toFixed(1),
+            libraryRetentionRate: libraryRetentionRate.toFixed(1),
+            currentFilters: { startDate, endDate },
+            staff
+        }, (err, html) => {
+            if (err) {
+                console.error('Error rendering engagement analytics:', err);
+                return res.status(500).send('Error rendering engagement analytics');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: 'Engagement Analytics',
+                staff,
+                scripts: [
+                    '/admin-assets/vendor/libs/apex-charts/apexcharts.js',
+                    '/admin-assets/vendor/libs/chartjs/chartjs.js',
+                    '/admin-assets/vendor/libs/flatpickr/flatpickr.js'
+                ],
+                styles: ['/admin-assets/vendor/libs/flatpickr/flatpickr.css']
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching engagement analytics data:', error);
         res.status(500).send('Internal Server Error');
     }
 };

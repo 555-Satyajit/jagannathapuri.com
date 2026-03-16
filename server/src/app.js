@@ -94,6 +94,10 @@ app.use(session({
     proxy: true // Trust the proxy for cookie security (required for secure: true behind nginx)
 }));
 
+// Activity Tracking Middleware
+const activityMiddleware = require('./middlewares/activityMiddleware');
+app.use(activityMiddleware);
+
 
 // Middleware to fetch active popup for public site
 app.use(async (req, res, next) => {

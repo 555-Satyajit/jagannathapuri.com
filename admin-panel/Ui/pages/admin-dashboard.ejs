@@ -35,8 +35,7 @@
     </div>
     <!--/ Welcome Card -->
 
-    <!-- Multi Radial Chart (Placeholder for now) -->
-    <!-- Order Status Overview (Visits Proxy) -->
+    <!-- Order Status Overview -->
     <div class="col-lg-4 col-md-6 col-12 mb-4">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -57,7 +56,6 @@
         </div>
     </div>
     <!--/ Order Status Overview -->
-    <!--/ Multi Radial Chart -->
 
     <!-- Statistics cards & Revenue Growth Chart -->
     <div class="col-lg-4 col-12">
@@ -109,7 +107,6 @@
     </div>
     <!--/ Statistics cards & Revenue Growth Chart -->
 
-    <!-- Weekly Order Summary -->
     <!-- Weekly Order Summary & Sales Overview -->
     <div class="col-xl-8 col-12 mb-4">
         <div class="card">
@@ -184,13 +181,12 @@
         </div>
     </div>
     <!--/ Weekly Order Summary & Sales Overview -->
-    <!--/ Weekly Order Summary -->
 
-    <!-- Latest Update -->
+    <!-- Sales Statistics -->
     <div class="col-md-6 col-lg-6 col-xl-4 col-xl-4 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex align-items-center justify-content-between mb-3">
-                <h5 class="card-title mb-0">Store Statistics</h5>
+                <h5 class="card-title mb-0">Sales Statistics</h5>
             </div>
             <div class="card-body">
                 <ul class="p-0 m-0">
@@ -237,7 +233,7 @@
                             </div>
                         </div>
                     </li>
-                    <li class="d-flex mb-4">
+                    <li class="d-flex ps-1">
                         <div class="avatar avatar-sm flex-shrink-0 me-3">
                             <span class="avatar-initial rounded-circle bg-label-success"><i
                                     class='bx bx-rupee'></i></span>
@@ -251,265 +247,104 @@
                             </div>
                         </div>
                     </li>
-                    <li class="d-flex mb-4">
-                        <div class="avatar avatar-sm flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded-circle bg-label-warning"><i
-                                    class='bx bx-user'></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <p class="mb-0 lh-1">Total Customers</p>
-                                <small class="text-muted">Registered users</small>
-                            </div>
-                            <div class="item-progress fw-semibold">
-                                <%= totalCustomers %>
-                            </div>
-                        </div>
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
-    <!--/ Latest Update -->
-    <!-- All Users -->
+    <!--/ Sales Statistics -->
+
+    <!-- Total Registered Users -->
     <div class="col-md-6 col-lg-6 col-xl-4 mb-4 mb-xl-0">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="card-title mb-2">All Users</h5>
-                <h1 class="display-6 fw-normal mb-0">8,634,820</h1>
+                <h5 class="card-title mb-2">Total Registered Users</h5>
+                <h1 class="display-6 fw-normal mb-0"><%= totalCustomers %></h1>
             </div>
             <div class="card-body">
-                <span class="d-block mb-2">Current Activity</span>
-                <div class="progress progress-stacked mb-3 mb-xl-5" style="height:8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="30"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 15%" aria-valuenow="15"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 10%" aria-valuenow="10"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 40%" aria-valuenow="40"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 15%" aria-valuenow="15"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                <span class="d-block mb-3">User Interaction Summary</span>
                 <ul class="p-0 m-0">
-                    <li class="mb-3 d-flex justify-content-between">
+                    <li class="mb-4 d-flex justify-content-between">
                         <div class="d-flex align-items-center lh-1 me-3">
-                            <span class="badge badge-dot bg-success me-2"></span> USA
+                            <span class="badge badge-dot bg-success me-2"></span> Newsletter Subscribers
                         </div>
                         <div class="d-flex gap-3">
-                            <span>29.5k</span>
-                            <span class="fw-medium">56%</span>
+                            <span><%= totalNewsletter %></span>
                         </div>
                     </li>
-                    <li class="mb-3 d-flex justify-content-between">
+                    <li class="mb-4 d-flex justify-content-between">
                         <div class="d-flex align-items-center lh-1 me-3">
-                            <span class="badge badge-dot bg-danger me-2"></span> France
+                            <span class="badge badge-dot bg-warning me-2"></span> Unique Visitors
                         </div>
                         <div class="d-flex gap-3">
-                            <span>25.7k</span>
-                            <span class="fw-medium">26%</span>
+                            <span><%= totalUniqueVisitors %></span>
                         </div>
                     </li>
-                    <li class="mb-3 d-flex justify-content-between">
+                    <li class="mb-4 d-flex justify-content-between">
                         <div class="d-flex align-items-center lh-1 me-3">
-                            <span class="badge badge-dot bg-info me-2"></span> Italy
+                            <span class="badge badge-dot bg-primary me-2"></span> Active Orders
                         </div>
                         <div class="d-flex gap-3">
-                            <span>11.5k</span>
-                            <span class="fw-medium">34%</span>
+                            <span><%= totalOrders %></span>
                         </div>
                     </li>
-                    <li class="mb-3 d-flex justify-content-between">
+                    <li class="d-flex justify-content-between">
                         <div class="d-flex align-items-center lh-1 me-3">
-                            <span class="badge badge-dot bg-primary me-2"></span> China
+                            <span class="badge badge-dot bg-info me-2"></span> Store Products
                         </div>
                         <div class="d-flex gap-3">
-                            <span>48.5k</span>
-                            <span class="fw-medium">45%</span>
-                        </div>
-                    </li>
-                    <li class="mb-1 d-flex justify-content-between">
-                        <div class="d-flex align-items-center lh-1 me-3">
-                            <span class="badge badge-dot bg-warning me-2"></span> India
-                        </div>
-                        <div class="d-flex gap-3">
-                            <span>22.1k</span>
-                            <span class="fw-medium">7%</span>
+                            <span><%= totalProducts %></span>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    <!--/ All Users -->
+    <!--/ Total Registered Users -->
 
-    <!-- Marketing Campaigns -->
-    <div class="col-xl-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Marketing Campaigns</h5>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" id="marketingOptions" data-bs-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="marketingOptions">
-                        <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex justify-content-between align-content-center flex-wrap gap-4">
-                        <div class="d-flex align-items-center gap-2">
-                            <div id="marketingCampaignChart1"></div>
-                            <div>
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 me-2">25,768</h6>
-                                    <span class="text-success">(+16.2%)</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="badge badge-dot bg-success me-2"></span> Jan 12,2022
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <div id="marketingCampaignChart2"></div>
-                            <div>
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 me-2">5,352</h6>
-                                    <span class="text-danger">(-4.9%)</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="badge badge-dot bg-danger me-2"></span> Jan 12,2022
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="javascript:;" class="btn btn-sm btn-primary">View Report</a>
-                </div>
+    <!-- Top Selling Products -->
+    <div class="col-md-12 col-lg-12 col-xl-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between mb-3">
+                <h5 class="card-title mb-0">Top Selling Products</h5>
             </div>
             <div class="table-responsive">
                 <table class="table border-top">
                     <thead>
                         <tr>
-                            <th>Campaign</th>
-                            <th>Growth</th>
-                            <th>Charges</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Total Sold</th>
                             <th>Status</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
+                        <% topProducts.forEach(product => { %>
                         <tr>
-                            <td class="text-nowrap"><img src="/admin-assets/img/icons/brands/fastrack.png" class="me-3"
-                                    width="22" alt="Fastrack">Fastrack Watches</td>
-                            <td class="text-nowrap"><i class="bx bx-trending-up text-success me-2"></i>28.5%</td>
-                            <td>₹1,324</td>
-                            <td><span class="text-success">Active</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="action1" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="action1">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Write a Review</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Download Invoice</a>
+                            <td class="text-nowrap">
+                                <div class="d-flex align-items-center">
+                                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/admin-assets/img/ecommerce-images/product-1.png' %>" class="me-3 rounded" width="35" height="35" alt="<%= product.product_name %>">
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium text-heading"><%= product.product_name %></span>
+                                        <small class="text-muted"><%= product.product_brand %></small>
                                     </div>
                                 </div>
                             </td>
+                            <td><span class="text-nowrap"><%= product.category ? product.category.name : 'Uncategorized' %></span></td>
+                            <td>₹<%= parseFloat(product.price).toLocaleString() %></td>
+                            <td><span class="fw-medium"><%= product.totalSold %> sold</span></td>
+                            <td><span class="badge bg-label-<%= product.status === 1 ? 'success' : 'warning' %>"><%= product.status === 1 ? 'Active' : 'Inactive' %></span></td>
                         </tr>
+                        <% }) %>
+                        <% if (topProducts.length === 0) { %>
                         <tr>
-                            <td><img src="/admin-assets/img/icons/brands/puma.png" class="me-3" width="22"
-                                    alt="Puma">Puma
-                                Shoes</td>
-                            <td><i class="bx bx-trending-down text-danger me-2"></i>56.6%</td>
-                            <td>₹3,573</td>
-                            <td><span class="text-success">Active</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="action2" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="action2">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Write a Review</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Download Invoice</a>
-                                    </div>
-                                </div>
-                            </td>
+                            <td colspan="5" class="text-center py-4">No sales data available yet.</td>
                         </tr>
-                        <tr>
-                            <td><img src="/admin-assets/img/icons/brands/nike.png" class="me-3" width="22"
-                                    alt="Nike">Nike
-                                Air Jordan</td>
-                            <td><i class="bx bx-trending-up text-success me-2"></i>23.8%</td>
-                            <td>₹12,347</td>
-                            <td><span class="text-danger">Closed</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="action3" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="action3">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Write a Review</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Download Invoice</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img src="/admin-assets/img/icons/brands/oneplus.png" class="me-3" width="22"
-                                    alt="OnePlus">Oneplus 7 Pro</td>
-                            <td><i class="bx bx-trending-up text-success me-2"></i>81.4%</td>
-                            <td>₹5,347</td>
-                            <td><span class="text-success">Active</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="action4" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="action4">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Write a Review</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Download Invoice</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img src="/admin-assets/img/icons/brands/google.png" class="me-3" width="22"
-                                    alt="Google">Google Pixal 6</td>
-                            <td><i class="bx bx-trending-down text-danger me-2"></i>12.8%</td>
-                            <td>₹45,678</td>
-                            <td><span class="text-danger">Closed</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="action5" data-bs-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="action5">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Write a Review</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Download Invoice</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <!--/ Marketing Campaigns -->
+    <!--/ Top Selling Products -->
 </div>
