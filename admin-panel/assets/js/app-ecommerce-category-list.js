@@ -55,6 +55,7 @@ $(function () {
                 { data: 'categories' },
                 { data: 'total_products' },
                 { data: 'total_earnings' },
+                { data: 'status' },
                 { data: null, defaultContent: '' }
             ],
             columnDefs: [
@@ -143,6 +144,23 @@ $(function () {
                     render: function (data, type, full, meta) {
                         var $total_earnings = full['total_earnings'];
                         return '<div class="fw-medium text-sm-end">' + $total_earnings + '</div>';
+                    }
+                },
+                {
+                    // Status
+                    targets: 5,
+                    render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var roleBadgeObj = {
+                            Publish: '<span class="badge bg-label-success">Publish</span>',
+                            Scheduled: '<span class="badge bg-label-warning">Scheduled</span>',
+                            Inactive: '<span class="badge bg-label-danger">Inactive</span>'
+                        };
+                        return (
+                            '<div class="d-flex justify-content-center">' +
+                            (roleBadgeObj[$status] || '<span class="badge bg-label-secondary">' + $status + '</span>') +
+                            '</div>'
+                        );
                     }
                 },
                 {
@@ -265,7 +283,7 @@ $(function () {
                                                     confirmButton: "btn btn-success",
                                                 },
                                             });
-                                            dt.ajax.reload();
+                                            dt.ajax.reload(null, false);
                                         } else {
                                             Swal.fire({
                                                 title: "Error",
@@ -377,7 +395,7 @@ $(function () {
                                     confirmButton: "btn btn-success",
                                 },
                             });
-                            dt_category.ajax.reload();
+                            dt_category.ajax.reload(null, false);
                         } else {
                             Swal.fire({
                                 title: "Error",
@@ -583,7 +601,7 @@ $(function () {
                     offcanvas.hide();
 
                     // Reload table
-                    $('.datatables-category-list').DataTable().ajax.reload();
+                    $('.datatables-category-list').DataTable().ajax.reload(null, false);
                     
                     // Reset button
                     submitBtn.html(originalBtnText).prop('disabled', false);

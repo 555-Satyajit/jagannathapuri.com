@@ -20,6 +20,13 @@ const sessionPool = new pg.Pool({
     connectionTimeoutMillis: 10000, // Increased from 2000 to 10000ms
 });
 
+// PostgreSQL session store options
+const sessionStoreOptions = {
+    pool: sessionPool,
+    tableName: 'session',
+    createTableIfMissing: true
+};
+
 // Diagnostic Middleware for Proxy/SSL
 app.use((req, res, next) => {
     res.locals.protocol = req.protocol;
@@ -76,23 +83,48 @@ app.use(async (req, res, next) => {
 });
 
 // 4. Session and Body Parsing
-app.use(session({
-    store: new pgSession({
-        pool: sessionPool, // Use our limited pool
-        tableName: 'session',
-        createTableIfMissing: true
-    }),
-    secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key', // Use ENV in production
+const adminSessionConfig = {
+    name: 'admin_sid',
+    secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
+    store: new pgSession(sessionStoreOptions),
     resave: false,
-    saveUninitialized: false, // Don't create session until something is stored
+    saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        sameSite: 'lax' // Ensure compatibility
+        maxAge: 6 * 60 * 60 * 1000, // 6 hours
+        sameSite: 'lax'
     },
-    proxy: true // Trust the proxy for cookie security (required for secure: true behind nginx)
-}));
+    proxy: true
+};
+
+const shopSessionConfig = {
+    name: 'shop_sid',
+    secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
+    store: new pgSession(sessionStoreOptions),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+        sameSite: 'lax'
+    },
+    proxy: true
+};
+
+const adminSession = session(adminSessionConfig);
+const shopSession = session(shopSessionConfig);
+
+// Dispatcher Middleware for Sessions
+app.use((req, res, next) => {
+    // Check if the URL starts with /admin
+    if (req.url.startsWith('/admin')) {
+        adminSession(req, res, next);
+    } else {
+        shopSession(req, res, next);
+    }
+});
 
 // Activity Tracking Middleware
 const activityMiddleware = require('./middlewares/activityMiddleware');

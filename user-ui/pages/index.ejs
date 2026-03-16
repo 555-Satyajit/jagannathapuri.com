@@ -4,15 +4,18 @@
   .home-four-picks-slider .slick-track {
     display: flex !important;
   }
+
   .home-four-picks-slider .slick-slide {
     height: auto !important;
     display: flex !important;
   }
-  .home-four-picks-slider .slick-slide > div {
+
+  .home-four-picks-slider .slick-slide>div {
     height: 100%;
     width: 100%;
   }
-  .home-four-picks-slider .slick-slide > div > div {
+
+  .home-four-picks-slider .slick-slide>div>div {
     height: 100%;
   }
 </style>
@@ -313,7 +316,7 @@
           </p>
 
           <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-            <a href="daily-rituals.html"
+            <a href="/daily-rituals"
               class="btn btn-primary rounded-full px-8 py-3 font-semibold hover:shadow-lg transition-all transform hover:-translate-y-1">
               View Today's Rituals
             </a>
@@ -393,59 +396,59 @@
 
               <div class="product-content flex flex-col justify-between h-full">
                 <div class="h-[22px] mb-2">
-                <% if (product.on_sale) { %>
-                  <span
-                    class="product-discount-badge inline-block relative bg-error text-warning-lighter font-medium text-sm leading-[22px] px-1 after:absolute after:top-0 after:left-full after:z-10 after:w-1 after:h-full after:bg-[url('../images/discount-shape.png')] after:bg-no-repeat after:bg-contain uppercase">SALES</span>
-                  <% } %>
+                  <% if (product.on_sale) { %>
+                    <span
+                      class="product-discount-badge inline-block relative bg-error text-warning-lighter font-medium text-sm leading-[22px] px-1 after:absolute after:top-0 after:left-full after:z-10 after:w-1 after:h-full after:bg-[url('../images/discount-shape.png')] after:bg-no-repeat after:bg-contain uppercase">SALES</span>
+                    <% } %>
                 </div>
 
-                    <p class="text-sm leading-[22px] truncate mb-2">
-                      <%= product.category ? product.category.name : 'Uncategorized' %>
-                    </p>
-                    <h6 class="text-[18px] leading-7 font-bold mb-3 line-clamp-2 h-[56px]">
-                      <a href='/product-details/<%= product.slug %>'>
-                        <%= product.product_name %>
-                      </a>
-                    </h6>
-                    <div class="rating-section flex items-center mb-3 h-[22px]">
-                      <div class="flex text-yellow-400">
-                        <% for(let i=1; i <=5; i++) { %>
-                          <i class="bx bxs-star text-sm"></i>
-                          <% } %>
-                      </div>
-                      <span class="text-sm leading-[22px] font-normal inline-block ml-1">(5.0)</span>
-                    </div>
-                    <div class="price-section flex items-center gap-x-3 mb-4 h-[24px]">
-                      <% if (product.on_sale && product.sale_price && product.regular_price) { %>
+                <p class="text-sm leading-[22px] truncate mb-2">
+                  <%= product.category ? product.category.name : 'Uncategorized' %>
+                </p>
+                <h6 class="text-[18px] leading-7 font-bold mb-3 line-clamp-2 h-[56px]">
+                  <a href='/product-details/<%= product.slug %>'>
+                    <%= product.product_name %>
+                  </a>
+                </h6>
+                <div class="rating-section flex items-center mb-3 h-[22px]">
+                  <div class="flex text-yellow-400">
+                    <% for(let i=1; i <=5; i++) { %>
+                      <i class="bx bxs-star text-sm"></i>
+                      <% } %>
+                  </div>
+                  <span class="text-sm leading-[22px] font-normal inline-block ml-1">(5.0)</span>
+                </div>
+                <div class="price-section flex items-center gap-x-3 mb-4 h-[24px]">
+                  <% if (product.on_sale && product.sale_price && product.regular_price) { %>
+                    <span class="current-price text-[16px] leading-6 font-semibold text-light-primary-text">₹<%=
+                        product.sale_price %></span>
+                    <span class="old-price text-sm leading-[22px] text-light-disabled-text line-through">₹<%=
+                        product.regular_price %></span>
+                    <% let discount=Math.round(((product.regular_price - product.sale_price) / product.regular_price) *
+                      100); %>
+                      <span class="discount-percentage text-sm leading-[22px] font-semibold text-error">
+                        <%= discount %>% OFF
+                      </span>
+                      <% } else { %>
                         <span class="current-price text-[16px] leading-6 font-semibold text-light-primary-text">₹<%=
-                            product.sale_price %></span>
-                        <span class="old-price text-sm leading-[22px] text-light-disabled-text line-through">₹<%=
-                            product.regular_price %></span>
-                        <% let discount=Math.round(((product.regular_price - product.sale_price) /
-                          product.regular_price) * 100); %>
-                          <span class="discount-percentage text-sm leading-[22px] font-semibold text-error">
-                            <%= discount %>% OFF
-                          </span>
-                          <% } else { %>
-                            <span class="current-price text-[16px] leading-6 font-semibold text-light-primary-text">₹<%=
-                                product.regular_price || product.price_amount %></span>
-                            <% } %>
-                    </div>
+                            product.regular_price || product.price_amount %></span>
+                        <% } %>
+                </div>
 
-                    <div class="btn-section flex items-center gap-x-4">
-                      <button
-                        class='wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300'
-                        onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
-                        <i
-                          class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
-                      </button>
-                      <a class='btn btn-primary rounded-full font-semibold text-sm leading-6 px-6.5 py-2 flex-1 add-to-cart-btn'
-                        href='#' data-product-id="<%= product.id %>">
-                        <i class="hgi hgi-stroke hgi-shopping-cart-02 text-xl text-white"></i>
+                <div class="btn-section flex items-center gap-x-4">
+                  <button
+                    class='wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300'
+                    onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                    <i
+                      class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
+                  </button>
+                  <a class='btn btn-primary rounded-full font-semibold text-sm leading-6 px-6.5 py-2 flex-1 add-to-cart-btn'
+                    href='#' data-product-id="<%= product.id %>">
+                    <i class="hgi hgi-stroke hgi-shopping-cart-02 text-xl text-white"></i>
 
-                        <span>Add to Cart</span>
-                      </a>
-                    </div>
+                    <span>Add to Cart</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -532,7 +535,7 @@
                     </div>
                   </div>
 
-              <div class="product-content flex flex-col flex-1 pt-4">
+                  <div class="product-content flex flex-col flex-1 pt-4">
                     <h6 class="text-[20px] leading-[30px] font-bold pb-3 line-clamp-2">
                       <a href='/product-details?id=<%= product.id %>'>
                         <%= product.product_name %>
