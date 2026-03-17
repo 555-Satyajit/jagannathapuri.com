@@ -224,8 +224,8 @@ exports.getShop = async (req, res) => {
             ...attributes
         } = req.query;
 
-        const currentPage = parseInt(page);
-        const itemsPerPage = parseInt(limit);
+        const currentPage = Math.max(1, parseInt(page) || 1);
+        const itemsPerPage = Math.max(1, parseInt(limit) || 9);
         const skip = (currentPage - 1) * itemsPerPage;
 
         // Build Where Clause
@@ -428,8 +428,8 @@ exports.getService = async (req, res) => {
 exports.getLibrary = async (req, res) => {
     try {
         const { category, tag, page = 1, limit = 6 } = req.query;
-        const currentPage = parseInt(page);
-        const pageSize = parseInt(limit);
+        const currentPage = Math.max(1, parseInt(page) || 1);
+        const pageSize = Math.max(1, parseInt(limit) || 6);
         const skip = (currentPage - 1) * pageSize;
 
         let where = { status: 'Active' };
