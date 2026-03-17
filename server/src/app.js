@@ -118,11 +118,11 @@ const shopSession = session(shopSessionConfig);
 
 // Dispatcher Middleware for Sessions
 app.use((req, res, next) => {
-    const host = req.get('host');
-    const adminDomain = process.env.ADMIN_DOMAIN || 'admin.localhost:3000';
+    const host = (req.get('host') || '').toLowerCase().split(':')[0];
+    const adminDomain = (process.env.ADMIN_DOMAIN || '').toLowerCase().split(':')[0];
     
     // Check if the host matches the admin domain
-    if (host === adminDomain) {
+    if (adminDomain && host === adminDomain) {
         adminSession(req, res, next);
     } else {
         shopSession(req, res, next);
@@ -131,26 +131,36 @@ app.use((req, res, next) => {
 
 // Domain-based Routing Restriction Middleware
 app.use((req, res, next) => {
-    const host = req.get('host');
-    const mainDomain = process.env.MAIN_DOMAIN || 'localhost:3000';
-    const adminDomain = process.env.ADMIN_DOMAIN || 'admin.localhost:3000';
+    const host = (req.get('host') || '').toLowerCase().split(':')[0];
+    const mainHost = (process.env.MAIN_DOMAIN || '').toLowerCase().split(':')[0];
+    const adminHost = (process.env.ADMIN_DOMAIN || '').toLowerCase().split(':')[0];
 
-    // If accessing via Admin Domain
-    if (host === adminDomain) {
-        // Only allow /admin, /api, /assets, /admin-assets, /uploads
-        const allowedPaths = ['/admin', '/api', '/assets', '/admin-assets', '/uploads'];
-        const isAllowed = allowedPaths.some(path => req.path.startsWith(path));
-        
-        if (!isAllowed) {
-            // Redirect to main shop domain for non-admin content
-            return res.redirect(`http://${mainDomain}${req.url}`);
-        }
-    } 
-    // If accessing via Main Domain
-    else if (host === mainDomain) {
-        // Prevent access to /admin on the main domain
-        if (req.path.startsWith('/admin')) {
-            return res.status(404).render('pages/404', { title: '404 - Page Not Found' });
+    // Debugging for VPS issues (Silent in production unless NODE_ENV is not set)
+    if (req.path === '/' || req.path.startsWith('/admin')) {
+        console.log(`[Domain Check] Host: ${host}, Main: ${mainHost}, Admin: ${adminHost}, Path: ${req.path}`);
+    }
+
+    // Only apply restriction if domains are configured and distinct
+    if (mainHost && adminHost && mainHost !== adminHost) {
+        // If accessing via Admin Domain
+        if (host === adminHost) {
+            const allowedPaths = ['/admin', '/api', '/assets', '/admin-assets', '/uploads'];
+            const isAllowed = allowedPaths.some(path => req.path.startsWith(path));
+            
+            if (!isAllowed) {
+                // Redirect to main shop domain using current protocol
+                const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+                const target = `${protocol}://${process.env.MAIN_DOMAIN}${req.url}`;
+                console.log(`[Redirect] Admin -> Shop: ${target}`);
+                return res.redirect(target);
+            }
+        } 
+        // If accessing via Main Domain
+        else if (host === mainHost) {
+            // Prevent access to /admin on the main domain
+            if (req.path.startsWith('/admin')) {
+                return res.status(404).render('pages/404', { title: '404 - Page Not Found' });
+            }
         }
     }
 
