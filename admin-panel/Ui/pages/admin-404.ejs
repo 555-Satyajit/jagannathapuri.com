@@ -1,35 +1,35 @@
 <style>
     .wrap-404 {
         width: 100%;
-        min-height: 60vh;
+        min-height: calc(100vh - 180px); /* Fill screen minus header/footer */
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: center; /* Center vertically */
         align-items: center;
         text-align: center;
-        padding: 60px 18px;
-    }
-
-    .title-404 {
-        margin: 0;
-        color: #ff3e1d; /* Vibrant Red */
-        font-family: "Pacifico", cursive;
-        font-size: clamp(2.2rem, 4vw, 3.5rem);
-        line-height: 1;
-    }
-
-    .subtitle-404 {
-        margin: 12px 0 30px;
-        color: #8592a3; /* Neutral Gray */
-        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-        font-weight: 700;
+        padding: 0;
     }
 
     .error-image-404 {
         width: min(500px, 92vw);
         height: auto;
         display: block;
-        margin-bottom: 48px;
+        margin-bottom: 5px; /* Added small gap */
+    }
+
+    .title-404 {
+        margin: 10px 0 0; /* Added top gap */
+        color: #ffab00; 
+        font-family: "Pacifico", cursive;
+        font-size: clamp(2.2rem, 4vw, 3.5rem);
+        line-height: 1.1;
+    }
+
+    .subtitle-404 {
+        margin: 5px 0 30px; /* Increased bottom gap */
+        color: #8592a3;
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        font-weight: 700;
     }
 
     .home-btn-404 {
@@ -52,19 +52,14 @@
         box-shadow: 0 5px 12px rgba(0, 0, 0, 0.14);
     }
 
-    @media (max-width: 540px) {
-        .wrap-404 {
-            min-height: 50vh;
-        }
-    }
 </style>
 
 <div class="container">
     <main class="wrap-404">
-        <h1 class="title-404">why are you here</h1>
+        <img class="error-image-404" src="/admin-assets/404/404.png" alt="404 illustration" />
+        
+        <h1 class="title-404">Sorry, Page Not Found</h1>
         <p class="subtitle-404">This admin page does not exist!</p>
-
-        <img class="error-image-404" src="/admin-assets/404/404.png" alt="404 crying illustration" />
 
         <a class="home-btn-404" href="/admin">
             <i class="bx bx-home-alt"></i>
