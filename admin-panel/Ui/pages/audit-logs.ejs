@@ -20,7 +20,9 @@
                     <% logs.forEach(log=> { %>
                         <tr>
                             <td>
-                                <%= new Date(log.createdAt).toLocaleString() %>
+                                <span class="local-date" data-utc="<%= log.createdAt.toISOString() %>">
+                                    <%= new Date(log.createdAt).toLocaleString() %>
+                                </span>
                             </td>
                             <td>
                                 <div class="d-flex justify-content-start align-items-center">

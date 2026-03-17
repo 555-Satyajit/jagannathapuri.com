@@ -117,6 +117,28 @@
             <% }); %>
                 <% } %>
 
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const formatLocalDates = () => {
+                                document.querySelectorAll('.local-date').forEach(el => {
+                                    const utc = el.getAttribute('data-utc');
+                                    if (utc) {
+                                        const date = new Date(utc);
+                                        if (!isNaN(date)) {
+                                            el.textContent = date.toLocaleString();
+                                            el.classList.remove('local-date'); // Prevent double processing
+                                        }
+                                    }
+                                });
+                            };
+                            formatLocalDates();
+
+                            // Re-run for dynamic content (optional but good for future)
+                            const observer = new MutationObserver(formatLocalDates);
+                            observer.observe(document.body, { childList: true, subtree: true });
+                        });
+                    </script>
+
 </body>
 
 </html>
