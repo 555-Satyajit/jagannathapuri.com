@@ -2887,6 +2887,37 @@ exports.saveRole = async (req, res) => {
     }
 };
 
+exports.getStaffRolesData = async (req, res) => {
+    try {
+        const staffList = await prisma.staff.findMany({
+            include: { role: true },
+            orderBy: { created_at: 'desc' }
+        });
+
+        const statusMap = {
+            'Active': 2,
+            'Inactive': 3,
+            'Pending': 1
+        };
+
+        const formattedData = staffList.map(staff => ({
+            id: staff.id,
+            full_name: staff.full_name,
+            email: staff.email,
+            role: staff.role ? staff.role.name : 'N/A',
+            avatar: staff.avatar || '',
+            status: statusMap[staff.status] || 1,
+            current_plan: 'Enterprise', // Mocked as placeholders for now
+            billing: 'Auto Debit'      // Mocked as placeholders for now
+        }));
+
+        res.json({ data: formattedData });
+    } catch (error) {
+        console.error('Error fetching staff roles data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 exports.savePermission = async (req, res) => {
     try {
         const { modalPermissionName } = req.body;

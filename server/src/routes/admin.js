@@ -76,6 +76,7 @@ router.delete('/ecommerce/customers/delete/:id', checkPermission('manage_custome
 router.get('/ecommerce/transactions', checkPermission('manage_transactions'), adminController.getTransactionList);
 router.get('/ecommerce/transactions/data', checkPermission('manage_transactions'), adminController.getTransactionData);
 router.get('/roles', checkPermission('manage_staff'), adminController.getRoleList);
+router.get('/roles/staff/data', checkPermission('manage_staff'), adminController.getStaffRolesData);
 router.post('/roles/add', checkPermission('manage_staff'), adminController.saveRole);
 router.get('/permissions', checkPermission('manage_staff'), adminController.getPermissionList);
 router.post('/permissions/add', checkPermission('manage_staff'), adminController.savePermission);

@@ -1527,14 +1527,24 @@ exports.submitFeedback = async (req, res) => {
     }
 
     try {
-        await prisma.feedback.create({
-            data: {
-                name,
-                email,
-                message,
-                customerId
-            }
-        });
+        await prisma.$transaction([
+            prisma.feedback.create({
+                data: {
+                    name,
+                    email,
+                    message,
+                    customerId
+                }
+            }),
+            prisma.notification.create({
+                data: {
+                    type: 'contact_message',
+                    message: `New message from ${name}`,
+                    link: '/admin/store/contact/messages',
+                    isRead: false
+                }
+            })
+        ]);
 
         res.json({ success: true, message: 'Thank you for your feedback!' });
     } catch (error) {

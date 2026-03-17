@@ -12,7 +12,7 @@ $(function () {
     // DataTable Initialization
     if (e.length) {
         e.DataTable({
-            ajax: assetsPath + "json/user-list.json", // TODO: Switch to real API /admin/staff/json if available
+            ajax: "/admin/roles/staff/data",
             columns: [
                 { data: "" },
                 { data: "full_name" },

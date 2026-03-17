@@ -19,7 +19,7 @@
                     <% if(messages && messages.length> 0) { %>
                         <% messages.forEach(message=> { %>
                             <tr>
-                                <td>
+                                <td data-order="<%= message.created_at.getTime() %>">
                                     <%= moment(message.created_at).format('DD MMM YYYY HH:mm') %>
                                 </td>
                                 <td>
