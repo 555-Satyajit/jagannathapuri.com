@@ -118,12 +118,43 @@ const shopSession = session(shopSessionConfig);
 
 // Dispatcher Middleware for Sessions
 app.use((req, res, next) => {
-    // Check if the URL starts with /admin
-    if (req.url.startsWith('/admin')) {
+    const host = req.get('host');
+    const adminDomain = process.env.ADMIN_DOMAIN || 'admin.localhost:3000';
+    
+    // Check if the host matches the admin domain
+    if (host === adminDomain) {
         adminSession(req, res, next);
     } else {
         shopSession(req, res, next);
     }
+});
+
+// Domain-based Routing Restriction Middleware
+app.use((req, res, next) => {
+    const host = req.get('host');
+    const mainDomain = process.env.MAIN_DOMAIN || 'localhost:3000';
+    const adminDomain = process.env.ADMIN_DOMAIN || 'admin.localhost:3000';
+
+    // If accessing via Admin Domain
+    if (host === adminDomain) {
+        // Only allow /admin, /api, /assets, /admin-assets, /uploads
+        const allowedPaths = ['/admin', '/api', '/assets', '/admin-assets', '/uploads'];
+        const isAllowed = allowedPaths.some(path => req.path.startsWith(path));
+        
+        if (!isAllowed) {
+            // Redirect to main shop domain for non-admin content
+            return res.redirect(`http://${mainDomain}${req.url}`);
+        }
+    } 
+    // If accessing via Main Domain
+    else if (host === mainDomain) {
+        // Prevent access to /admin on the main domain
+        if (req.path.startsWith('/admin')) {
+            return res.status(404).render('pages/404', { title: '404 - Page Not Found' });
+        }
+    }
+
+    next();
 });
 
 // Activity Tracking Middleware
