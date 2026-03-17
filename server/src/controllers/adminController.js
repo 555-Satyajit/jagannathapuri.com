@@ -15,31 +15,24 @@ const { logAction } = require('../lib/auditLogger');
 
 exports.getAuditLogs = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 20;
-        const skip = (page - 1) * limit;
+        const staff = req.user;
 
-        const [logs, total] = await Promise.all([
-            prisma.auditLog.findMany({
-                skip,
-                take: limit,
-                orderBy: { createdAt: 'desc' },
-                include: {
-                    admin: {
-                        select: { full_name: true, username: true, avatar: true }
-                    }
-                }
+        // Fetch metadata for filters
+        const [admins, actions, entities] = await Promise.all([
+            prisma.staff.findMany({
+                where: { auditLogs: { some: {} } },
+                select: { id: true, full_name: true }
             }),
-            prisma.auditLog.count()
+            prisma.auditLog.groupBy({ by: ['action'] }),
+            prisma.auditLog.groupBy({ by: ['entity'], where: { entity: { not: null } } })
         ]);
 
-        const totalPages = Math.ceil(total / limit);
-
         req.app.render('pages/audit-logs', {
-            logs,
-            currentPage: page,
-            totalPages,
-            user: req.user
+            admins,
+            actions: actions.map(a => a.action),
+            entities: entities.map(e => e.entity),
+            user: req.user,
+            staff
         }, (err, html) => {
             if (err) {
                 console.error('Error rendering audit logs:', err);
@@ -51,24 +44,100 @@ exports.getAuditLogs = async (req, res) => {
                 title: 'Audit Logs',
                 styles: [
                     '/admin-assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css',
-                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css'
+                    '/admin-assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
+                    '/admin-assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css',
+                    '/admin-assets/vendor/libs/select2/select2.css',
+                    '/admin-assets/vendor/libs/flatpickr/flatpickr.css'
                 ],
                 scripts: [
                     '/admin-assets/vendor/libs/moment/moment.js',
-                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'
+                    '/admin-assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+                    '/admin-assets/vendor/libs/select2/select2.js',
+                    '/admin-assets/vendor/libs/flatpickr/flatpickr.js',
+                    '/admin-assets/js/audit-logs-list.js'
                 ]
             });
         });
     } catch (error) {
-        console.error('Error fetching audit logs:', error);
+        console.error('Error fetching audit logs metadata:', error);
         res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getAuditLogsData = async (req, res) => {
+    try {
+        const { adminId, action, entity, search, startDate, endDate, ipAddress } = req.query;
+        let where = {};
+
+        if (adminId) where.adminId = parseInt(adminId);
+        if (action) where.action = action;
+        if (entity) where.entity = entity;
+        if (ipAddress) where.ipAddress = { contains: ipAddress, mode: 'insensitive' };
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) {
+                // Parse as local start of day and convert to Date
+                where.createdAt.gte = new Date(startDate + 'T00:00:00');
+            }
+            if (endDate) {
+                // Parse as local end of day
+                where.createdAt.lte = new Date(endDate + 'T23:59:59.999');
+            }
+        }
+    
+        // Combined filters (admin, action, entity, date, ip)
+        let finalWhere = { ...where };
+
+        // If search is provided, it must also satisfy the filters above
+        if (search) {
+            finalWhere = {
+                AND: [
+                    where,
+                    {
+                        OR: [
+                            { details: { contains: search, mode: 'insensitive' } },
+                            { action: { contains: search, mode: 'insensitive' } },
+                            { entity: { contains: search, mode: 'insensitive' } },
+                            { admin: { full_name: { contains: search, mode: 'insensitive' } } },
+                            { ipAddress: { contains: search, mode: 'insensitive' } }
+                        ]
+                    }
+                ]
+            };
+        }
+
+        const logs = await prisma.auditLog.findMany({
+            where: finalWhere,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                admin: {
+                    select: { full_name: true, username: true, avatar: true }
+                }
+            }
+        });
+
+        const formattedData = logs.map(log => ({
+            id: log.id,
+            createdAt: log.createdAt,
+            admin: log.admin,
+            action: log.action,
+            entity: log.entity,
+            entityId: log.entityId,
+            details: log.details,
+            ipAddress: log.ipAddress
+        }));
+
+        res.json({ data: formattedData });
+    } catch (error) {
+        console.error('Error fetching audit logs data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
 exports.getDashboard = async (req, res) => {
     try {
-        const staffId = req.session.admin ? req.session.admin.id : null;
-        const staff = staffId ? await prisma.staff.findUnique({ where: { id: staffId }, include: { role: true } }) : null;
+        const staff = req.user;
 
         const now = new Date();
         const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -331,8 +400,7 @@ exports.getDashboard = async (req, res) => {
 
 exports.getEngagementAnalytics = async (req, res) => {
     try {
-        const staffId = req.session.admin ? req.session.admin.id : null;
-        const staff = staffId ? await prisma.staff.findUnique({ where: { id: staffId }, include: { role: true } }) : null;
+        const staff = req.user;
 
         // Date Filtering
         const { startDate, endDate } = req.query;
@@ -617,6 +685,7 @@ exports.saveCategory = async (req, res) => {
         });
 
         res.json({ success: true, category: newCategory });
+        await logAction(req, 'CREATE_CATEGORY', 'Category', newCategory.id, `Created category: ${newCategory.name}`);
     } catch (error) {
         console.error('Error saving category:', error);
         if (error.code === 'P2002') {
@@ -666,6 +735,7 @@ exports.deleteCategory = async (req, res) => {
 
         await prisma.category.delete({ where: { id: categoryId } });
         res.json({ success: true });
+        await logAction(req, 'DELETE_CATEGORY', 'Category', categoryId, `Deleted category: ${category.name}`);
     } catch (error) {
         console.error('Error deleting category:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -720,6 +790,7 @@ exports.bulkDeleteCategories = async (req, res) => {
         }
 
         res.json({ success: true, message: `Successfully deleted ${deletedCount} category(ies).` });
+        await logAction(req, 'BULK_DELETE_CATEGORIES', 'Category', null, `Bulk deleted ${deletedCount} categories. Skipped: ${skippedCategories.length}`);
 
     } catch (error) {
         console.error('Error bulk deleting categories:', error);
@@ -1263,7 +1334,7 @@ exports.addCoupon = (req, res) => {
 exports.saveCoupon = async (req, res) => {
     try {
         const { code, type, amount, expiry, status, usage_limit, per_user_limit } = req.body;
-        await prisma.coupon.create({
+        const newCoupon = await prisma.coupon.create({
             data: {
                 code,
                 discount_type: type,
@@ -1275,6 +1346,7 @@ exports.saveCoupon = async (req, res) => {
             }
         });
         res.redirect('/admin/ecommerce/coupons');
+        await logAction(req, 'CREATE_COUPON', 'Coupon', newCoupon.id, `Created coupon: ${code}`);
     } catch (error) {
         console.error('Error saving coupon:', error);
         res.status(500).send('Error saving coupon');
@@ -1327,8 +1399,9 @@ exports.editCoupon = async (req, res) => {
 exports.updateCoupon = async (req, res) => {
     try {
         const { code, type, amount, expiry, status, usage_limit, per_user_limit } = req.body;
+        const couponId = parseInt(req.params.id);
         await prisma.coupon.update({
-            where: { id: parseInt(req.params.id) },
+            where: { id: couponId },
             data: {
                 code,
                 discount_type: type,
@@ -1340,6 +1413,7 @@ exports.updateCoupon = async (req, res) => {
             }
         });
         res.redirect('/admin/ecommerce/coupons');
+        await logAction(req, 'UPDATE_COUPON', 'Coupon', couponId, `Updated coupon: ${code}`);
     } catch (error) {
         console.error('Error updating coupon:', error);
         res.status(500).send('Error updating coupon');
@@ -1348,10 +1422,13 @@ exports.updateCoupon = async (req, res) => {
 
 exports.deleteCoupon = async (req, res) => {
     try {
+        const couponId = parseInt(req.params.id);
+        const coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
         await prisma.coupon.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: couponId }
         });
         res.json({ success: true, message: 'Coupon deleted successfully' });
+        await logAction(req, 'DELETE_COUPON', 'Coupon', couponId, `Deleted coupon: ${coupon ? coupon.code : couponId}`);
     } catch (error) {
         console.error('Error deleting coupon:', error);
         res.status(500).json({ success: false, error: 'Error deleting coupon' });
@@ -1529,6 +1606,7 @@ exports.updateOrderStatus = async (req, res) => {
         });
 
         res.json({ success: true, message: 'Order status updated successfully' });
+        await logAction(req, 'UPDATE_ORDER_STATUS', 'Order', orderId, `Updated order status/payment. Data: ${JSON.stringify(updateData)}`);
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).json({ success: false, error: 'Failed to update order status' });
@@ -2740,54 +2818,68 @@ exports.getPermissionList = async (req, res) => {
 
 exports.saveRole = async (req, res) => {
     try {
-        const { modalRoleName, userManagementRead, userManagementWrite, userManagementCreate } = req.body;
-        // Note: The frontend sends checkbox IDs as keys if checked.
-        // We need to map these keys to permission names.
-        // But for now, let's just log what we get to debug if needed, or assume a mapping.
-        // Actually, the frontend JS handles collecting data. I'll need to check app-access-roles.js
-        // For now, I'll rely on it sending 'permissions' or handle it there.
-        // Let's assume for now the frontend sends 'modalRoleName' and we'll fix JS to send 'permissions' array.
-
-        // Wait, looking at admin-role-list.ejs, the checkboxes have IDs like 'userManagementRead'.
-        // If the form is serialized, these will be present if checked.
-        // I should update the JS to collect these into an array of names.
-
-        // This saveRole implementation assumes `permissions` is passed in body using JS update.
-        // I will update app-access-roles.js to send 'permissions' array.
-
-        const { permissions } = req.body;
+        const { roleId, modalRoleName, permissions } = req.body;
 
         if (!modalRoleName) {
             return res.status(400).json({ error: 'Role name is required' });
         }
 
-        const existingRole = await prisma.role.findUnique({
-            where: { name: modalRoleName }
-        });
-
-        if (existingRole) {
-            return res.status(400).json({ error: 'Role already exists' });
-        }
-
-        let permsToConnect = [];
+        let permsToSync = [];
         if (permissions && Array.isArray(permissions)) {
-            // Find permissions by name
             const permissionRecords = await prisma.permission.findMany({
                 where: { name: { in: permissions } }
             });
-            permsToConnect = permissionRecords.map(p => ({ id: p.id }));
+            permsToSync = permissionRecords.map(p => ({ id: p.id }));
         }
 
-        const newRole = await prisma.role.create({
-            data: {
-                name: modalRoleName,
-                permissions: {
-                    connect: permsToConnect
+        if (roleId) {
+            // Update existing role
+            const id = parseInt(roleId);
+            
+            // Check if name is taken by another role
+            const nameTaken = await prisma.role.findFirst({
+                where: {
+                    name: modalRoleName,
+                    NOT: { id: id }
                 }
-            }
-        });
+            });
 
-        res.status(200).json({ message: 'Role created successfully', role: newRole });
+            if (nameTaken) {
+                return res.status(400).json({ error: 'Another role with this name already exists' });
+            }
+
+            const updatedRole = await prisma.role.update({
+                where: { id: id },
+                data: {
+                    name: modalRoleName,
+                    permissions: {
+                        set: permsToSync // Replace existing permissions with new set
+                    }
+                }
+            });
+
+            return res.status(200).json({ message: 'Role updated successfully', role: updatedRole });
+        } else {
+            // Create new role
+            const existingRole = await prisma.role.findUnique({
+                where: { name: modalRoleName }
+            });
+
+            if (existingRole) {
+                return res.status(400).json({ error: 'Role already exists' });
+            }
+
+            const newRole = await prisma.role.create({
+                data: {
+                    name: modalRoleName,
+                    permissions: {
+                        connect: permsToSync
+                    }
+                }
+            });
+
+            return res.status(200).json({ message: 'Role created successfully', role: newRole });
+        }
 
     } catch (error) {
         console.error('Error saving role:', error);
@@ -2865,6 +2957,7 @@ exports.updateCategory = async (req, res) => {
         });
 
         res.json({ success: true, category: updatedCategory });
+        await logAction(req, 'UPDATE_CATEGORY', 'Category', updatedCategory.id, `Updated category: ${updatedCategory.name}`);
     } catch (error) {
         console.error('Error updating category:', error);
         if (error.code === 'P2002') {
@@ -2985,6 +3078,7 @@ exports.saveService = async (req, res) => {
         }
 
         res.redirect('/admin/store/home/service/list');
+        await logAction(req, id ? 'UPDATE_SERVICE' : 'CREATE_SERVICE', 'Service', id || null, `Saved service: ${title}`);
     } catch (error) {
         console.error('Error in saveService:', error);
         res.status(500).send('Internal Server Error');
@@ -2993,10 +3087,13 @@ exports.saveService = async (req, res) => {
 
 exports.deleteService = async (req, res) => {
     try {
+        const serviceId = parseInt(req.params.id);
+        const service = await prisma.service.findUnique({ where: { id: serviceId } });
         await prisma.service.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: serviceId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_SERVICE', 'Service', serviceId, `Deleted service: ${service ? service.title : serviceId}`);
     } catch (error) {
         console.error('Error in deleteService:', error);
         res.status(500).json({ success: false });
@@ -3114,6 +3211,7 @@ exports.saveHero = async (req, res) => {
         }
 
         res.redirect('/admin/store/home/hero/list');
+        await logAction(req, id ? 'UPDATE_HERO' : 'CREATE_HERO', 'HeroSection', id || null, `Saved hero section: ${title}`);
     } catch (error) {
         console.error('Error in saveHero:', error);
         res.status(500).send('Internal Server Error');
@@ -3122,10 +3220,13 @@ exports.saveHero = async (req, res) => {
 
 exports.deleteHero = async (req, res) => {
     try {
+        const heroId = parseInt(req.params.id);
+        const hero = await prisma.heroSection.findUnique({ where: { id: heroId } });
         await prisma.heroSection.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: heroId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_HERO', 'HeroSection', heroId, `Deleted hero section: ${hero ? hero.title : heroId}`);
     } catch (error) {
         console.error('Error in deleteHero:', error);
         res.status(500).json({ success: false });
@@ -3236,6 +3337,7 @@ exports.savePromo = async (req, res) => {
         }
 
         res.redirect('/admin/store/home/promo/list');
+        await logAction(req, id ? 'UPDATE_PROMO' : 'CREATE_PROMO', 'PromoBanner', id || null, `Saved promo banner: ${title}`);
     } catch (error) {
         console.error('Error in savePromo:', error);
         res.status(500).send('Internal Server Error');
@@ -3244,10 +3346,11 @@ exports.savePromo = async (req, res) => {
 
 exports.deletePromo = async (req, res) => {
     try {
-        await prisma.promoBanner.delete({
-            where: { id: parseInt(req.params.id) }
-        });
+        const promoId = parseInt(req.params.id);
+        const promo = await prisma.promoBanner.findUnique({ where: { id: promoId } });
+        await prisma.promoBanner.delete({ where: { id: promoId } });
         res.json({ success: true });
+        await logAction(req, 'DELETE_PROMO', 'PromoBanner', promoId, `Deleted promo banner: ${promo ? promo.title : promoId}`);
     } catch (error) {
         console.error('Error in deletePromo:', error);
         res.status(500).json({ success: false });
@@ -3336,6 +3439,7 @@ exports.saveLibCategory = async (req, res) => {
             });
         }
         res.json({ success: true });
+        await logAction(req, id ? 'UPDATE_LIB_CATEGORY' : 'CREATE_LIB_CATEGORY', 'LibraryCategory', id || null, `Saved library category: ${name}`);
     } catch (error) {
         console.error('Error saving library category:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
@@ -3344,10 +3448,13 @@ exports.saveLibCategory = async (req, res) => {
 
 exports.deleteLibCategory = async (req, res) => {
     try {
+        const catId = parseInt(req.params.id);
+        const category = await prisma.libraryCategory.findUnique({ where: { id: catId } });
         await prisma.libraryCategory.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: catId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_LIB_CATEGORY', 'LibraryCategory', catId, `Deleted library category: ${category ? category.name : catId}`);
     } catch (error) {
         console.error('Error deleting library category:', error);
         res.status(500).json({ success: false, error: 'Cannot delete category with contents' });
@@ -3582,6 +3689,7 @@ exports.saveLibContent = async (req, res) => {
             });
         }
         res.json({ success: true });
+        await logAction(req, id && id !== '' ? 'UPDATE_LIBRARY' : 'CREATE_LIBRARY', 'Library', id || null, `Saved library content: ${title}`);
     } catch (error) {
         console.error('Error saving library content:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
@@ -3590,10 +3698,13 @@ exports.saveLibContent = async (req, res) => {
 
 exports.deleteLibContent = async (req, res) => {
     try {
+        const libId = parseInt(req.params.id);
+        const libContent = await prisma.libraryContent.findUnique({ where: { id: libId } });
         await prisma.libraryContent.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: libId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_LIBRARY', 'Library', libId, `Deleted library content: ${libContent ? libContent.title : libId}`);
     } catch (error) {
         console.error('Error deleting library content:', error);
         res.status(500).json({ success: false });
@@ -3651,6 +3762,7 @@ exports.saveRitual = async (req, res) => {
             await prisma.dailyRitual.create({ data });
         }
         res.redirect('/admin/daily-rituals');
+        await logAction(req, id ? 'UPDATE_RITUAL' : 'CREATE_RITUAL', 'DailyRitual', id || null, `Saved daily ritual: ${name}`);
     } catch (error) {
         console.error('Error saving ritual:', error);
         res.status(500).send('Internal Server Error');
@@ -3659,8 +3771,11 @@ exports.saveRitual = async (req, res) => {
 
 exports.deleteRitual = async (req, res) => {
     try {
-        await prisma.dailyRitual.delete({ where: { id: parseInt(req.params.id) } });
+        const ritualId = parseInt(req.params.id);
+        const ritual = await prisma.dailyRitual.findUnique({ where: { id: ritualId } });
+        await prisma.dailyRitual.delete({ where: { id: ritualId } });
         res.json({ success: true });
+        await logAction(req, 'DELETE_RITUAL', 'DailyRitual', ritualId, `Deleted daily ritual: ${ritual ? ritual.name : ritualId}`);
     } catch (error) {
         console.error('Error deleting ritual:', error);
         res.status(500).json({ success: false });
@@ -3679,6 +3794,7 @@ exports.saveDarshanTiming = async (req, res) => {
             await prisma.darshanTiming.create({ data });
         }
         res.redirect('/admin/daily-rituals');
+        await logAction(req, id ? 'UPDATE_DARSHAN' : 'CREATE_DARSHAN', 'DarshanTiming', id || null, `Saved darshan timing: ${name}`);
     } catch (error) {
         console.error('Error saving darshan timing:', error);
         res.status(500).send('Internal Server Error');
@@ -3707,6 +3823,7 @@ exports.saveTempleFact = async (req, res) => {
             await prisma.templeFact.create({ data });
         }
         res.redirect('/admin/daily-rituals');
+        await logAction(req, id ? 'UPDATE_FACT' : 'CREATE_FACT', 'TempleFact', id || null, `Saved temple fact: ${title}`);
     } catch (error) {
         console.error('Error saving temple fact:', error);
         res.status(500).send('Internal Server Error');
@@ -3715,8 +3832,11 @@ exports.saveTempleFact = async (req, res) => {
 
 exports.deleteTempleFact = async (req, res) => {
     try {
-        await prisma.templeFact.delete({ where: { id: parseInt(req.params.id) } });
+        const factId = parseInt(req.params.id);
+        const fact = await prisma.templeFact.findUnique({ where: { id: factId } });
+        await prisma.templeFact.delete({ where: { id: factId } });
         res.json({ success: true });
+        await logAction(req, 'DELETE_FACT', 'TempleFact', factId, `Deleted temple fact: ${fact ? fact.title : factId}`);
     } catch (error) {
         console.error('Error deleting temple fact:', error);
         res.status(500).json({ success: false });
@@ -3826,6 +3946,7 @@ exports.savePanchang = async (req, res) => {
         }
 
         res.redirect('/admin/panchang');
+        await logAction(req, id ? 'UPDATE_PANCHANG' : 'CREATE_PANCHANG', 'Panchang', id || null, `Saved panchang for: ${new Date(date).toDateString()}`);
     } catch (error) {
         console.error('Error in savePanchang:', error);
         res.status(500).send('Internal Server Error');
@@ -3834,10 +3955,13 @@ exports.savePanchang = async (req, res) => {
 
 exports.deletePanchang = async (req, res) => {
     try {
+        const panchangId = parseInt(req.params.id);
+        const panchang = await prisma.panchang.findUnique({ where: { id: panchangId } });
         await prisma.panchang.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: panchangId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_PANCHANG', 'Panchang', panchangId, `Deleted panchang entry for: ${panchang ? panchang.date.toDateString() : panchangId}`);
     } catch (error) {
         console.error('Error deleting panchang:', error);
         res.status(500).json({ success: false });
@@ -3900,6 +4024,7 @@ exports.saveFestival = async (req, res) => {
             });
         }
         res.redirect('/admin/festivals');
+        await logAction(req, id ? 'UPDATE_FESTIVAL' : 'CREATE_FESTIVAL', 'Festival', id || null, `Saved festival: ${name}`);
     } catch (error) {
         console.error('Error saving festival:', error);
         res.status(500).send('Internal Server Error');
@@ -3908,10 +4033,13 @@ exports.saveFestival = async (req, res) => {
 
 exports.deleteFestival = async (req, res) => {
     try {
+        const festivalId = parseInt(req.params.id);
+        const festival = await prisma.festival.findUnique({ where: { id: festivalId } });
         await prisma.festival.delete({
-            where: { id: parseInt(req.params.id) }
+            where: { id: festivalId }
         });
         res.json({ success: true });
+        await logAction(req, 'DELETE_FESTIVAL', 'Festival', festivalId, `Deleted festival: ${festival ? festival.name : festivalId}`);
     } catch (error) {
         console.error('Error deleting festival:', error);
         res.status(500).json({ success: false });
@@ -4058,6 +4186,7 @@ exports.saveGeneralSettings = async (req, res) => {
         configStore.clearCache();
 
         res.redirect('/admin/settings/general');
+        await logAction(req, 'UPDATE_SETTINGS', 'Settings', 'General', 'Updated general admin settings (Logo, Hero, SEO, etc.)');
     } catch (error) {
         console.error('Error saving general settings:', error);
         res.status(500).send('Internal Server Error');
@@ -4097,6 +4226,7 @@ exports.saveShippingPaymentSettings = async (req, res) => {
             create: { key: 'shipping_payment', value: settings }
         });
         res.redirect('/admin/settings/shipping-payment');
+        await logAction(req, 'UPDATE_SETTINGS', 'Settings', 'Shipping/Payment', 'Updated shipping and payment settings');
     } catch (error) {
         console.error('Error saving shipping payment settings:', error);
         res.status(500).send('Internal Server Error');

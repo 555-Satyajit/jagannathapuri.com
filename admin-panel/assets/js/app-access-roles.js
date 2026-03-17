@@ -220,7 +220,18 @@ $(function () {
                 }
             });
 
+            Swal.fire({
+                title: 'Saving...',
+                text: 'Please wait while we save the role.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             const data = {
+                roleId: formData.get('modalRoleId'),
                 modalRoleName: formData.get('modalRoleName'),
                 permissions: permissions
             };
@@ -235,22 +246,38 @@ $(function () {
                 .then(response => response.json())
                 .then(result => {
                     if (result.error) {
-                        // Show error (using toast or alert)
-                        // We could use the built-in toast if available, or just alert for now
-                        alert(result.error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: result.error,
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-primary'
+                            },
+                            buttonsStyling: false
+                        });
                     } else {
-                        // Success
-                        // Close modal
-                        const modal = bootstrap.Modal.getInstance(document.querySelector('#addRoleModal'));
-                        modal.hide();
-
-                        // Reload page to show new role
-                        location.reload();
+                        Swal.fire({
+                            title: 'Success!',
+                            text: result.message || 'Role saved successfully',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while saving the role.');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while saving the role.',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        },
+                        buttonsStyling: false
+                    });
                 });
         });
     }
@@ -263,6 +290,10 @@ $(function () {
     if (addNewRoleBtn) {
         addNewRoleBtn.onclick = function () {
             roleTitle.innerHTML = "Add New Role";
+            document.getElementById('modalRoleId').value = "";
+            document.getElementById('modalRoleName').value = "";
+            checkboxList.forEach(e => e.checked = false);
+            if (selectAll) selectAll.checked = false;
         };
     }
 
@@ -270,7 +301,21 @@ $(function () {
         roleEditModals.forEach(function (e) {
             e.onclick = function () {
                 roleTitle.innerHTML = "Edit Role";
-                // TODO: Populate form with role data for editing
+                const roleId = this.getAttribute('data-id');
+                const roleName = this.getAttribute('data-name');
+                const rolePermissions = this.getAttribute('data-permissions').split(',');
+
+                document.getElementById('modalRoleId').value = roleId;
+                document.getElementById('modalRoleName').value = roleName;
+
+                checkboxList.forEach(cb => {
+                    cb.checked = rolePermissions.includes(cb.value);
+                });
+                
+                // Update selectAll state
+                if (selectAll) {
+                    selectAll.checked = Array.from(checkboxList).every(cb => cb.checked);
+                }
             };
         });
     }

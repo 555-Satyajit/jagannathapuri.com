@@ -73,8 +73,8 @@ router.get('/ecommerce/customers/details/:id/:tab', checkPermission('manage_cust
 router.delete('/ecommerce/customers/delete/:id', checkPermission('manage_customers'), adminController.deleteCustomer);
 
 // Transactions
-router.get('/ecommerce/transactions', checkPermission('manage_orders'), adminController.getTransactionList);
-router.get('/ecommerce/transactions/data', checkPermission('manage_orders'), adminController.getTransactionData);
+router.get('/ecommerce/transactions', checkPermission('manage_transactions'), adminController.getTransactionList);
+router.get('/ecommerce/transactions/data', checkPermission('manage_transactions'), adminController.getTransactionData);
 router.get('/roles', checkPermission('manage_staff'), adminController.getRoleList);
 router.post('/roles/add', checkPermission('manage_staff'), adminController.saveRole);
 router.get('/permissions', checkPermission('manage_staff'), adminController.getPermissionList);
@@ -91,65 +91,66 @@ router.get('/tickets/view/:id', checkPermission('manage_customers'), adminContro
 router.post('/tickets/action', checkPermission('manage_customers'), upload.array('attachments', 10), adminController.performTicketAction);
 
 // Settings
-router.get('/settings/general', adminController.getGeneralSettings);
-router.post('/settings/general', upload.fields([
+router.get('/settings/general', checkPermission('manage_store_config'), adminController.getGeneralSettings);
+router.post('/settings/general', checkPermission('manage_store_config'), upload.fields([
     { name: 'logo', maxCount: 1 },
     { name: 'favicon', maxCount: 1 }
 ]), adminController.saveGeneralSettings);
-router.get('/settings/shipping-payment', checkPermission('manage_settings'), adminController.getShippingPaymentSettings);
-router.post('/settings/shipping-payment', checkPermission('manage_settings'), adminController.saveShippingPaymentSettings);
+router.get('/settings/shipping-payment', checkPermission('manage_store_config'), adminController.getShippingPaymentSettings);
+router.post('/settings/shipping-payment', checkPermission('manage_store_config'), adminController.saveShippingPaymentSettings);
 
 // Audit Logs
 router.get('/settings/audit-logs', checkPermission('manage_settings'), adminController.getAuditLogs);
+router.get('/settings/audit-logs/data', checkPermission('manage_settings'), adminController.getAuditLogsData);
 
 // Store Configuration - Manage Home
 // Hero Section
-router.get('/store/home/hero/list', checkPermission('manage_settings'), adminController.getHeroList);
-router.get('/store/home/hero/add', checkPermission('manage_settings'), adminController.getAddHero);
-router.get('/store/home/hero/edit/:id', checkPermission('manage_settings'), adminController.getEditHero);
-router.post('/store/home/hero/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveHero);
-router.delete('/store/home/hero/delete/:id', checkPermission('manage_settings'), adminController.deleteHero);
+router.get('/store/home/hero/list', checkPermission('manage_store_config'), adminController.getHeroList);
+router.get('/store/home/hero/add', checkPermission('manage_store_config'), adminController.getAddHero);
+router.get('/store/home/hero/edit/:id', checkPermission('manage_store_config'), adminController.getEditHero);
+router.post('/store/home/hero/save', checkPermission('manage_store_config'), upload.single('image'), adminController.saveHero);
+router.delete('/store/home/hero/delete/:id', checkPermission('manage_store_config'), adminController.deleteHero);
 
 // Promo Banner
-router.get('/store/home/promo/list', checkPermission('manage_settings'), adminController.getPromoList);
-router.get('/store/home/promo/add', checkPermission('manage_settings'), adminController.getAddPromo);
-router.get('/store/home/promo/edit/:id', checkPermission('manage_settings'), adminController.getEditPromo);
-router.post('/store/home/promo/save', checkPermission('manage_settings'), adminController.savePromo);
-router.delete('/store/home/promo/delete/:id', checkPermission('manage_settings'), adminController.deletePromo);
+router.get('/store/home/promo/list', checkPermission('manage_store_config'), adminController.getPromoList);
+router.get('/store/home/promo/add', checkPermission('manage_store_config'), adminController.getAddPromo);
+router.get('/store/home/promo/edit/:id', checkPermission('manage_store_config'), adminController.getEditPromo);
+router.post('/store/home/promo/save', checkPermission('manage_store_config'), adminController.savePromo);
+router.delete('/store/home/promo/delete/:id', checkPermission('manage_store_config'), adminController.deletePromo);
 
 // Pilgrimage Services
-router.get('/store/home/service/list', checkPermission('manage_settings'), adminController.getServiceList);
-router.get('/store/home/service/add', checkPermission('manage_settings'), adminController.getAddService);
-router.get('/store/home/service/edit/:id', checkPermission('manage_settings'), adminController.getEditService);
-router.post('/store/home/service/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveService);
-router.delete('/store/home/service/delete/:id', checkPermission('manage_settings'), adminController.deleteService);
+router.get('/store/home/service/list', checkPermission('manage_store_config'), adminController.getServiceList);
+router.get('/store/home/service/add', checkPermission('manage_store_config'), adminController.getAddService);
+router.get('/store/home/service/edit/:id', checkPermission('manage_store_config'), adminController.getEditService);
+router.post('/store/home/service/save', checkPermission('manage_store_config'), upload.single('image'), adminController.saveService);
+router.delete('/store/home/service/delete/:id', checkPermission('manage_store_config'), adminController.deleteService);
 
 // Home Tabs
-router.get('/store/home/tabs/list', checkPermission('manage_settings'), adminController.getHomeTabList);
-router.get('/store/home/tabs/data', checkPermission('manage_settings'), adminController.getHomeTabData);
-router.post('/store/home/tabs/save', checkPermission('manage_settings'), adminController.saveHomeTab);
-router.delete('/store/home/tabs/delete/:id', checkPermission('manage_settings'), adminController.deleteHomeTab);
+router.get('/store/home/tabs/list', checkPermission('manage_store_config'), adminController.getHomeTabList);
+router.get('/store/home/tabs/data', checkPermission('manage_store_config'), adminController.getHomeTabData);
+router.post('/store/home/tabs/save', checkPermission('manage_store_config'), adminController.saveHomeTab);
+router.delete('/store/home/tabs/delete/:id', checkPermission('manage_store_config'), adminController.deleteHomeTab);
 
 // Manage Library
 // Categories
-router.get('/library/categories', checkPermission('manage_settings'), adminController.getLibCategoryList);
-router.get('/library/categories/data', checkPermission('manage_settings'), adminController.getLibCategoryData);
-router.post('/library/categories/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveLibCategory);
-router.delete('/library/categories/delete/:id', checkPermission('manage_settings'), adminController.deleteLibCategory);
+router.get('/library/categories', checkPermission('manage_store_config'), adminController.getLibCategoryList);
+router.get('/library/categories/data', checkPermission('manage_store_config'), adminController.getLibCategoryData);
+router.post('/library/categories/save', checkPermission('manage_store_config'), upload.single('image'), adminController.saveLibCategory);
+router.delete('/library/categories/delete/:id', checkPermission('manage_store_config'), adminController.deleteLibCategory);
 
 // Content
-router.get('/library/content', checkPermission('manage_settings'), adminController.getLibContentList);
-router.get('/library/content/data', checkPermission('manage_settings'), adminController.getLibContentData);
-router.get('/library/content/add', checkPermission('manage_settings'), adminController.getAddLibContent);
-router.get('/library/content/edit/:id', checkPermission('manage_settings'), adminController.getEditLibContent);
-router.post('/library/content/save', checkPermission('manage_settings'), upload.single('image'), adminController.saveLibContent);
-router.delete('/library/content/delete/:id', checkPermission('manage_settings'), adminController.deleteLibContent);
+router.get('/library/content', checkPermission('manage_store_config'), adminController.getLibContentList);
+router.get('/library/content/data', checkPermission('manage_store_config'), adminController.getLibContentData);
+router.get('/library/content/add', checkPermission('manage_store_config'), adminController.getAddLibContent);
+router.get('/library/content/edit/:id', checkPermission('manage_store_config'), adminController.getEditLibContent);
+router.post('/library/content/save', checkPermission('manage_store_config'), upload.single('image'), adminController.saveLibContent);
+router.delete('/library/content/delete/:id', checkPermission('manage_store_config'), adminController.deleteLibContent);
 
 // Manage Contact
-router.get('/store/contact', checkPermission('manage_settings'), adminController.getContactSettings);
-router.post('/store/contact/save', checkPermission('manage_settings'), adminController.saveContactSettings);
-router.get('/store/contact/messages', checkPermission('manage_settings'), adminController.getContactMessages);
-router.delete('/store/contact/messages/delete/:id', checkPermission('manage_settings'), adminController.deleteContactMessage);
+router.get('/store/contact', checkPermission('manage_store_config'), adminController.getContactSettings);
+router.post('/store/contact/save', checkPermission('manage_store_config'), adminController.saveContactSettings);
+router.get('/store/contact/messages', checkPermission('manage_store_config'), adminController.getContactMessages);
+router.delete('/store/contact/messages/delete/:id', checkPermission('manage_store_config'), adminController.deleteContactMessage);
 
 // Manage Policies
 router.get('/settings/policies/privacy', checkPermission('manage_settings'), adminController.getPrivacyPolicy);
@@ -160,45 +161,45 @@ router.get('/settings/policies/return', checkPermission('manage_settings'), admi
 router.post('/settings/policies/return/save', checkPermission('manage_settings'), adminController.saveReturnPolicy);
 
 // Manage Daily Rituals
-router.get('/daily-rituals', checkPermission('manage_settings'), adminController.getDailyRitualsAdmin);
+router.get('/daily-rituals', checkPermission('manage_store_config'), adminController.getDailyRitualsAdmin);
 
 // Rituals CRUD
-router.post('/daily-rituals/save', checkPermission('manage_settings'), adminController.saveRitual);
-router.delete('/daily-rituals/delete/:id', checkPermission('manage_settings'), adminController.deleteRitual);
+router.post('/daily-rituals/save', checkPermission('manage_store_config'), adminController.saveRitual);
+router.delete('/daily-rituals/delete/:id', checkPermission('manage_store_config'), adminController.deleteRitual);
 
 // Darshan Timings CRUD
-router.post('/darshan-timings/save', checkPermission('manage_settings'), adminController.saveDarshanTiming);
-router.delete('/darshan-timings/delete/:id', checkPermission('manage_settings'), adminController.deleteDarshanTiming);
+router.post('/darshan-timings/save', checkPermission('manage_store_config'), adminController.saveDarshanTiming);
+router.delete('/darshan-timings/delete/:id', checkPermission('manage_store_config'), adminController.deleteDarshanTiming);
 
 // Temple Facts CRUD
-router.post('/temple-facts/save', checkPermission('manage_settings'), adminController.saveTempleFact);
-router.delete('/temple-facts/delete/:id', checkPermission('manage_settings'), adminController.deleteTempleFact);
+router.post('/temple-facts/save', checkPermission('manage_store_config'), adminController.saveTempleFact);
+router.delete('/temple-facts/delete/:id', checkPermission('manage_store_config'), adminController.deleteTempleFact);
 
 // Manage Panchang
-router.get('/panchang', checkPermission('manage_settings'), adminController.getPanchangList);
-router.get('/panchang/add', checkPermission('manage_settings'), adminController.getAddPanchang);
-router.get('/panchang/edit/:id', checkPermission('manage_settings'), adminController.getEditPanchang);
-router.post('/panchang/save', checkPermission('manage_settings'), adminController.savePanchang);
-router.delete('/panchang/delete/:id', checkPermission('manage_settings'), adminController.deletePanchang);
+router.get('/panchang', checkPermission('manage_store_config'), adminController.getPanchangList);
+router.get('/panchang/add', checkPermission('manage_store_config'), adminController.getAddPanchang);
+router.get('/panchang/edit/:id', checkPermission('manage_store_config'), adminController.getEditPanchang);
+router.post('/panchang/save', checkPermission('manage_store_config'), adminController.savePanchang);
+router.delete('/panchang/delete/:id', checkPermission('manage_store_config'), adminController.deletePanchang);
 
 // Manage Festivals
-router.get('/festivals', checkPermission('manage_settings'), adminController.getFestivalList);
-router.post('/festivals/save', checkPermission('manage_settings'), adminController.saveFestival);
-router.delete('/festivals/delete/:id', checkPermission('manage_settings'), adminController.deleteFestival);
+router.get('/festivals', checkPermission('manage_store_config'), adminController.getFestivalList);
+router.post('/festivals/save', checkPermission('manage_store_config'), adminController.saveFestival);
+router.delete('/festivals/delete/:id', checkPermission('manage_store_config'), adminController.deleteFestival);
 
 // Manage Popups
-router.get('/store/popup/list', checkPermission('manage_settings'), adminController.getPopupList);
-router.post('/store/popup/save', checkPermission('manage_settings'), upload.single('popupImage'), adminController.savePopup);
-router.delete('/store/popup/delete/:id', checkPermission('manage_settings'), adminController.deletePopup);
+router.get('/store/popup/list', checkPermission('manage_store_config'), adminController.getPopupList);
+router.post('/store/popup/save', checkPermission('manage_store_config'), upload.single('popupImage'), adminController.savePopup);
+router.delete('/store/popup/delete/:id', checkPermission('manage_store_config'), adminController.deletePopup);
 
 // Quill Image Upload
-router.post('/library/content/upload-image', checkPermission('manage_settings'), upload.single('image'), adminController.uploadLibraryImage);
+router.post('/library/content/upload-image', checkPermission('manage_store_config'), upload.single('image'), adminController.uploadLibraryImage);
 
 // Tags API (for select2)
-router.get('/library/tags/search', checkPermission('manage_settings'), adminController.searchLibTags);
+router.get('/library/tags/search', checkPermission('manage_store_config'), adminController.searchLibTags);
 
 // Newsletter Management
-router.get('/newsletter/list', checkPermission('manage_settings'), adminController.getNewsletterList);
-router.delete('/newsletter/delete/:id', checkPermission('manage_settings'), adminController.deleteNewsletter);
+router.get('/newsletter/list', checkPermission('manage_store_config'), adminController.getNewsletterList);
+router.delete('/newsletter/delete/:id', checkPermission('manage_store_config'), adminController.deleteNewsletter);
 
 module.exports = router;

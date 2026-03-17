@@ -1,10 +1,58 @@
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Settings /</span> Audit Logs</h4>
 
+<!-- Filter -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title">Filter</h5>
+        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+            <div class="col-md-3">
+                <select id="FilterAdmin" class="form-select text-capitalize">
+                    <option value="">All Admins</option>
+                    <% admins.forEach(admin => { %>
+                        <option value="<%= admin.id %>"><%= admin.full_name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="FilterAction" class="form-select text-capitalize">
+                    <option value="">All Actions</option>
+                    <% actions.forEach(action => { %>
+                        <option value="<%= action %>"><%= action %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="FilterEntity" class="form-select text-capitalize">
+                    <option value="">All Entities</option>
+                    <% entities.forEach(entity => { %>
+                        <option value="<%= entity %>"><%= entity %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="FilterIP" class="form-control" placeholder="Search IP Address" />
+            </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+            <div class="col-md-4">
+                <input type="text" id="FilterDateRange" class="form-control" placeholder="Select Date Range" />
+            </div>
+            <div class="col-md-2">
+                <button id="btnResetFilters" class="btn btn-label-secondary w-100">
+                    <i class="bx bx-reset me-1"></i>Reset
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Audit Logs Table -->
 <div class="card">
-    <h5 class="card-header">Activity History</h5>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="m-0">Activity History</h5>
+    </div>
+    <div class="card-datatable table-responsive">
+        <table class="datatables-audit-logs table border-top">
             <thead>
                 <tr>
                     <th>Date & Time</th>
@@ -15,88 +63,7 @@
                     <th>IP Address</th>
                 </tr>
             </thead>
-            <tbody class="table-border-bottom-0">
-                <% if (logs && logs.length> 0) { %>
-                    <% logs.forEach(log=> { %>
-                        <tr>
-                            <td>
-                                <span class="local-date" data-utc="<%= log.createdAt.toISOString() %>">
-                                    <%= new Date(log.createdAt).toLocaleString() %>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex justify-content-start align-items-center">
-                                    <div class="avatar-wrapper">
-                                        <div class="avatar me-2">
-                                            <img src="<%= (log.admin && log.admin.avatar) ? '/uploads/staff/' + log.admin.avatar : '/admin-assets/img/avatars/1.png' %>"
-                                                alt="Avatar" class="rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-column">
-                                        <span class="text-body text-truncate fw-semibold">
-                                            <%= log.admin ? log.admin.full_name : 'Unknown' %>
-                                        </span>
-                                        <small class="text-muted">@<%= log.admin ? log.admin.username : 'unknown' %>
-                                                </small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="badge bg-label-primary">
-                                    <%= log.action %>
-                                </span></td>
-                            <td>
-                                <% if (log.entity) { %>
-                                    <span class="fw-bold">
-                                        <%= log.entity %>
-                                    </span>
-                                    <% if (log.entityId) { %>
-                                        <small class="text-muted">(#<%= log.entityId %>)</small>
-                                        <% } %>
-                                            <% } else { %>
-                                                -
-                                                <% } %>
-                            </td>
-                            <td>
-                                <span title="<%= log.details %>">
-                                    <%= log.details ? (log.details.length> 50 ? log.details.substring(0, 50) + '...' :
-                                        log.details) : '-' %>
-                                </span>
-                            </td>
-                            <td><small>
-                                    <%= log.ipAddress || 'Unknown' %>
-                                </small></td>
-                        </tr>
-                        <% }) %>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="6" class="text-center">No audit logs found.</td>
-                                </tr>
-                                <% } %>
-            </tbody>
         </table>
     </div>
-
-    <!-- Pagination -->
-    <% if (totalPages> 1) { %>
-        <div class="card-footer py-4">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-                        <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
-                    </li>
-                    <% for(let i=1; i <=totalPages; i++) { %>
-                        <li class="page-item <%= currentPage == i ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>">
-                                <%= i %>
-                            </a>
-                        </li>
-                        <% } %>
-                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
-                            </li>
-                </ul>
-            </nav>
-        </div>
-        <% } %>
 </div>
-<!--/ Audit Logs Table -->
+<!--/ Audit Logs Table -->

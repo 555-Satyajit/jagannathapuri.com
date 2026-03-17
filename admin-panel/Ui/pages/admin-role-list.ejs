@@ -29,7 +29,11 @@
                                 <%= role.name %>
                             </h4>
                             <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#addRoleModal"
-                                class="role-edit-modal"><small>Edit Role</small></a>
+                                class="role-edit-modal"
+                                data-id="<%= role.id %>"
+                                data-name="<%= role.name %>"
+                                data-permissions="<%= role.permissions.map(p => p.name).join(',') %>"
+                            ><small>Edit Role</small></a>
                         </div>
                     </div>
                 </div>
@@ -94,6 +98,7 @@
                 </div>
                 <!-- Add role form -->
                 <form id="addRoleForm" class="row g-3" onsubmit="return false">
+                    <input type="hidden" id="modalRoleId" name="modalRoleId" />
                     <div class="col-12 mb-4">
                         <label class="form-label" for="modalRoleName">Role Name</label>
                         <input type="text" id="modalRoleName" name="modalRoleName" class="form-control"

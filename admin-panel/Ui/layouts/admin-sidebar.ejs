@@ -42,6 +42,7 @@
     </li>
 
     <!-- Catalog -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_products')))) { %>
     <li
       class="menu-item <%= title.includes('Category') || title.includes('Product') || title.includes('Attribute') || title.includes('Coupon') ? 'active open' : '' %>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -71,31 +72,40 @@
         </li>
       </ul>
     </li>
+    <% } %>
 
     <!-- Customers -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_customers')))) { %>
     <li class="menu-item <%= title.includes('Customers') ? 'active' : '' %>">
       <a href="/admin/ecommerce/customers" class="menu-link">
         <i class="menu-icon tf-icons bx bx-group"></i>
         <div data-i18n="Customers">Customers</div>
       </a>
     </li>
+    <% } %>
 
     <!-- Orders -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_orders')))) { %>
     <li class="menu-item <%= title.includes('Orders') ? 'active' : '' %>">
       <a href="/admin/ecommerce/orders" class="menu-link">
         <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
         <div data-i18n="Orders">Orders</div>
       </a>
     </li>
+    <% } %>
 
     <!-- Transactions -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_transactions')))) { %>
     <li class="menu-item <%= title.includes('Transactions') ? 'active' : '' %>">
       <a href="/admin/ecommerce/transactions" class="menu-link">
         <i class="menu-icon tf-icons bx bx-credit-card-front"></i>
         <div data-i18n="Transactions">Transactions</div>
       </a>
     </li>
+    <% } %>
 
+    <!-- User Management -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_staff')))) { %>
     <!-- Roles -->
     <li class="menu-item <%= title.includes('Roles') ? 'active' : '' %>">
       <a href="/admin/roles" class="menu-link">
@@ -119,8 +129,10 @@
         <div data-i18n="Our Staff">Our Staff</div>
       </a>
     </li>
+    <% } %>
 
     <!-- Tickets -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_customers')))) { %>
     <li class="menu-item <%= title.includes('Tickets') ? 'active open' : '' %>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-receipt"></i>
@@ -134,8 +146,10 @@
         </li>
       </ul>
     </li>
+    <% } %>
 
     <!-- Store Configuration -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_store_config')))) { %>
     <li
       class="menu-item <%= title.includes('Configuration') || title.includes('Home') || title.includes('Hero') || title.includes('Promo') || title.includes('Library') || title.includes('Daily Rituals') || title.includes('Panchang') || title.includes('Festivals') ? 'active open' : '' %>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -228,6 +242,17 @@
           </a>
         </li>
 
+        <li class="menu-item <%= title.includes('General') ? 'active' : '' %>">
+          <a href="/admin/settings/general" class="menu-link">
+            <div data-i18n="General">General</div>
+          </a>
+        </li>
+        <li class="menu-item <%= title.includes('Shipping & Payment') ? 'active' : '' %>">
+          <a href="/admin/settings/shipping-payment" class="menu-link">
+            <div data-i18n="Shipping & Payment">Shipping & Payment</div>
+          </a>
+        </li>
+
         <!-- Manage Contact -->
         <li
           class="menu-item <%= title.includes('Manage Contact') || title.includes('Contact Messages') ? 'active open' : '' %>">
@@ -247,7 +272,18 @@
             </li>
           </ul>
         </li>
+      </ul>
+    </li>
+    <% } %>
 
+    <!-- Settings -->
+    <% if (staff && staff.role && (staff.role.name === 'Admin' || (staff.role.permissions && staff.role.permissions.some(p => p.name === 'manage_settings')))) { %>
+    <li class="menu-item <%= title.includes('Settings') || title.includes('Policy') || title.includes('Audit') ? 'active open' : '' %>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-cog"></i>
+        <div data-i18n="Settings">Settings</div>
+      </a>
+      <ul class="menu-sub">
         <!-- Manage Policies -->
         <li
           class="menu-item <%= title.includes('Privacy Policy') || title.includes('Terms & Conditions') || title.includes('Return Policy') ? 'active open' : '' %>">
@@ -272,32 +308,6 @@
             </li>
           </ul>
         </li>
-
-        <li class="menu-item <%= title.includes('General') ? 'active' : '' %>">
-          <a href="/admin/settings/general" class="menu-link">
-            <div data-i18n="General">General</div>
-          </a>
-        </li>
-        <li class="menu-item <%= title.includes('Shipping & Payment') ? 'active' : '' %>">
-          <a href="/admin/settings/shipping-payment" class="menu-link">
-            <div data-i18n="Shipping & Payment">Shipping & Payment</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-    <!-- Settings -->
-    <li class="menu-item <%= title.includes('Settings') ? 'active open' : '' %>">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-cog"></i>
-        <div data-i18n="Settings">Settings</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item <%= title.includes('Profile') ? 'active' : '' %>">
-          <a href="/admin/settings/profile" class="menu-link">
-            <div data-i18n="Profile">Profile</div>
-          </a>
-        </li>
         <li class="menu-item <%= title.includes('Audit Logs') ? 'active' : '' %>">
           <a href="/admin/settings/audit-logs" class="menu-link">
             <div data-i18n="Audit Logs">Audit Logs</div>
@@ -305,6 +315,7 @@
         </li>
       </ul>
     </li>
+    <% } %>
   </ul>
 
 
