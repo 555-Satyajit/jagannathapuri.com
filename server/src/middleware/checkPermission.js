@@ -32,9 +32,16 @@ module.exports = (requiredPermission) => {
              }); */
 
             if (!staff || !staff.role) {
-                console.warn(`User ${staffId} has no role assigned.`);
-                return res.status(403).render('pages/error-403', { layout: 'layouts/admin-master', title: 'Access Denied' });
-                // Or just send 403 status if error page not ready
+                console.warn(`User ${staff.id} has no role assigned.`);
+                return res.status(403).render('pages/admin-denied', {}, (err, html) => {
+                    if (err) return res.status(403).send('Access Denied');
+                    res.render('layouts/admin-master', {
+                        body: html,
+                        title: '403 - Access Denied',
+                        staff: null,
+                        hideSidebar: true
+                    });
+                });
             }
 
             const hasPermission = staff.role.permissions.some(p => p.name === requiredPermission);
@@ -44,7 +51,18 @@ module.exports = (requiredPermission) => {
                 return next();
             } else {
                 console.warn(`User ${staff.username} denied access to ${req.originalUrl}. Missing permission: ${requiredPermission}`);
-                return res.status(403).send('Access Denied: You do not have permission to view this resource.');
+                return res.status(403).render('pages/admin-denied', {}, (err, html) => {
+                    if (err) {
+                        console.error('Error rendering Admin Denied page content:', err);
+                        return res.status(403).send('Access Denied: You do not have permission to view this resource.');
+                    }
+                    res.render('layouts/admin-master', {
+                        body: html,
+                        title: '403 - Access Denied',
+                        staff: req.user || null,
+                        hideSidebar: true
+                    });
+                });
             }
         } catch (error) {
             console.error('Error in checkPermission middleware:', error);

@@ -258,19 +258,38 @@ app.use('/', routes);
 app.use('/api', require('./routes/api'));
 
 // 404 Error Handler
-app.use((req, res, next) => {
-    let wishlistIds = [];
-    res.status(404).render('pages/404', {}, (err, html) => {
-        if (err) {
-            console.error('Error rendering 404 page content:', err);
-            return res.status(404).send('Page not found');
-        }
-        res.render('layouts/master', {
-            body: html,
-            wishlistIds,
-            title: '404 - Page Not Found'
+app.use(async (req, res, next) => {
+    const host = req.get('host') || '';
+    const ADMIN_DOMAIN = process.env.ADMIN_DOMAIN || 'admin.jagannathapuri.com';
+    const isAdminDomain = host.toLowerCase().includes(ADMIN_DOMAIN.toLowerCase());
+
+    if (isAdminDomain || req.path.startsWith('/admin')) {
+        res.status(404).render('pages/admin-404', {}, (err, html) => {
+            if (err) {
+                console.error('Error rendering Admin 404 page content:', err);
+                return res.status(404).send('Admin Page not found');
+            }
+            res.render('layouts/admin-master', {
+                body: html,
+                title: '404 - Admin Page Not Found',
+                staff: req.session.staff || null,
+                hideSidebar: true
+            });
         });
-    });
+    } else {
+        let wishlistIds = [];
+        res.status(404).render('pages/404', {}, (err, html) => {
+            if (err) {
+                console.error('Error rendering 404 page content:', err);
+                return res.status(404).send('Page not found');
+            }
+            res.render('layouts/master', {
+                body: html,
+                wishlistIds,
+                title: '404 - Page Not Found'
+            });
+        });
+    }
 });
 
 module.exports = app;

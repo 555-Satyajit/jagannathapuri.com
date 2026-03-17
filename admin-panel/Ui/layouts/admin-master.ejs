@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr"
+<html lang="en" class="light-style layout-navbar-fixed <%= typeof hideSidebar !== 'undefined' && hideSidebar ? 'layout-without-menu' : 'layout-menu-fixed' %> layout-compact " dir="ltr"
     data-theme="theme-default" data-assets-path="/admin-assets/" data-template="vertical-menu-template">
 
 <head>
@@ -12,7 +12,7 @@
     <meta name="description" content="Jagannathapuri Admin Panel" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/admin-assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/admin-assets/img/favicon/jp-icon-logo.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +59,9 @@
     <div class="layout-wrapper layout-content-navbar  ">
         <div class="layout-container">
 
-            <%- include('admin-sidebar') %>
+            <% if (typeof hideSidebar === 'undefined' || !hideSidebar) { %>
+                <%- include('admin-sidebar') %>
+            <% } %>
 
                 <!-- Layout container -->
                 <div class="layout-page">
