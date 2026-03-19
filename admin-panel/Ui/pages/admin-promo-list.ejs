@@ -61,7 +61,12 @@
             btn.onclick = function () {
                 if (confirm('Are you sure you want to delete this promo banner?')) {
                     const id = this.dataset.id;
-                    fetch(`/admin/store/home/promo/delete/${id}`, { method: 'DELETE' })
+                    fetch(`/admin/store/home/promo/delete/${id}`, { 
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) location.reload();

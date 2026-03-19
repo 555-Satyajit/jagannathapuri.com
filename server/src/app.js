@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const session = require('express-session');
 const routes = require('./routes/index');
@@ -9,6 +10,7 @@ const app = express();
 
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const csrf = require('csurf');
 const pg = require('pg');
 const pgSession = require('connect-pg-simple')(session);
 
@@ -27,10 +29,11 @@ const sessionStoreOptions = {
     createTableIfMissing: true
 };
 
-// Diagnostic Middleware for Proxy/SSL
+// Diagnostic Middleware for Proxy/SSL and Locals Defaults
 app.use((req, res, next) => {
     res.locals.protocol = req.protocol;
     res.locals.host = req.get('host');
+    res.locals.csrfToken = ''; // Default for EJS to avoid ReferenceError
     if (process.env.NODE_ENV === 'production') {
         console.log(`[Debug] ${req.method} ${req.url} - Secure: ${req.secure}, Protocol: ${req.protocol}, X-Forwarded-Proto: ${req.get('x-forwarded-proto')}`);
     }
@@ -39,7 +42,20 @@ app.use((req, res, next) => {
 
 // 1. Security Headers (Helmet)
 app.use(helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://maps.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "*.google-analytics.com", "https://www.googletagmanager.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://unpkg.com", "data:"],
+            connectSrc: ["'self'", "https://*.supabase.co", "*.google-analytics.com", "https://www.google-analytics.com"],
+            frameSrc: ["'self'", "https://www.google.com"],
+            mediaSrc: ["'self'", "data:", "blob:"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: [],
+        },
+    },
     crossOriginEmbedderPolicy: false
 }));
 
@@ -49,11 +65,18 @@ app.set('trust proxy', 1);
 // Rate Limiting definition
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5000, // Increased to 5000 to ensure NO real user gets blocked (approx 5 pages/sec)
+    max: 5000, 
     standardHeaders: true,
     legacyHeaders: false,
     message: 'Too many requests from this IP, please try again after 15 minutes',
     skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' // Skip localhost
+});
+
+// Stricter limiter for Auth/OTP routes
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // 20 attempts per 15 minutes
+    message: 'Too many login or OTP attempts. Please try again later.'
 });
 
 // 2. Serve static files FIRST (High priority for performance)
@@ -83,6 +106,12 @@ app.use(async (req, res, next) => {
 });
 
 // 4. Session and Body Parsing
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Using the same secret for session and signed cookies
+const cookieSecret = process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key';
+app.use(cookieParser(cookieSecret));
+
 const adminSessionConfig = {
     name: 'admin_sid',
     secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
@@ -103,7 +132,7 @@ const shopSessionConfig = {
     secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
     store: new pgSession(sessionStoreOptions),
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
@@ -127,6 +156,18 @@ app.use((req, res, next) => {
     } else {
         shopSession(req, res, next);
     }
+});
+
+// CSRF Protection
+const { conditionalCsrf } = require('./middlewares/csrfMiddleware');
+app.use(conditionalCsrf);
+
+// Provide CSRF Token to all views as a stable value assigned once per request
+app.use((req, res, next) => {
+    if (typeof req.csrfToken === 'function') {
+        res.locals.csrfToken = req.csrfToken();
+    }
+    next();
 });
 
 // Domain-based Routing Restriction Middleware
@@ -244,8 +285,6 @@ app.use(async (req, res, next) => {
 
 const categoryMiddleware = require('./middlewares/categoryMiddleware');
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(categoryMiddleware);
 
 app.set('view engine', 'ejs');
@@ -253,6 +292,10 @@ app.set('views', [
     path.join(__dirname, '../../user-ui'),
     path.join(__dirname, '../../admin-panel/Ui')
 ]);
+
+app.use('/admin/login', authLimiter);
+app.post('/api/send-otp', authLimiter);
+app.post('/login', authLimiter);
 
 app.use('/', routes);
 app.use('/api', require('./routes/api'));
@@ -290,6 +333,18 @@ app.use(async (req, res, next) => {
             });
         });
     }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    if (err.code === 'EBADCSRFTOKEN') {
+        console.error(`[CSRF ERROR] Requested Path: ${req.path}, Message: ${err.message}`);
+        return res.status(403).json({
+            success: false,
+            message: 'Invalid or missing CSRF token. Request rejected for security.'
+        });
+    }
+    next(err);
 });
 
 module.exports = app;

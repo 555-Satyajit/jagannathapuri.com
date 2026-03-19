@@ -304,11 +304,29 @@ $(function () {
             customClass: { confirmButton: "btn btn-primary me-2", cancelButton: "btn btn-label-secondary" },
             buttonsStyling: !1
         }).then(function (a) {
-            a.value ? fetch("/admin/ecommerce/orders/delete/" + s.id, { method: "DELETE" }).then(e => e.json()).then(s => {
-                s.success ? (t.remove().draw(), Swal.fire({ icon: "success", title: "Deleted!", text: "Order has been removed.", customClass: { confirmButton: "btn btn-success" } })) : Swal.fire({ icon: "error", title: "Error!", text: s.error || "Failed to delete order.", customClass: { confirmButton: "btn btn-success" } })
-            }).catch(e => {
-                Swal.fire({ icon: "error", title: "Error!", text: "An error occurred while deleting.", customClass: { confirmButton: "btn btn-success" } })
-            }) : a.dismiss === Swal.DismissReason.cancel && Swal.fire({ title: "Cancelled", text: "Cancelled Delete :)", icon: "error", customClass: { confirmButton: "btn btn-success" } })
+            if (a.value) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                fetch("/admin/ecommerce/orders/delete/" + s.id, {
+                    method: "DELETE",
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                    .then(e => {
+                        if (!e.ok) {
+                            return e.text().then(text => {
+                                throw new Error(text || `Server returned ${e.status}`);
+                            });
+                        }
+                        return e.json();
+                    })
+                    .then(s => {
+                        s.success ? (t.remove().draw(), Swal.fire({ icon: "success", title: "Deleted!", text: "Order has been removed.", customClass: { confirmButton: "btn btn-success" } })) : Swal.fire({ icon: "error", title: "Error!", text: s.error || "Failed to delete order.", customClass: { confirmButton: "btn btn-success" } })
+                    }).catch(e => {
+                        console.error('Delete error:', e);
+                        Swal.fire({ icon: "error", title: "Error!", text: e.message || "An error occurred while deleting.", customClass: { confirmButton: "btn btn-success" } })
+                    });
+            } else a.dismiss === Swal.DismissReason.cancel && Swal.fire({ title: "Cancelled", text: "Cancelled Delete :)", icon: "error", customClass: { confirmButton: "btn btn-success" } })
         })
     });
 

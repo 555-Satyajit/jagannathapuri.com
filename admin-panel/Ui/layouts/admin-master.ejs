@@ -51,6 +51,8 @@
                     <script src="/admin-assets/vendor/js/template-customizer.js"></script>
                     <script src="/admin-assets/js/config.js"></script>
 
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
 </head>
 
 <body>
@@ -138,6 +140,16 @@
                             // Re-run for dynamic content (optional but good for future)
                             const observer = new MutationObserver(formatLocalDates);
                             observer.observe(document.body, { childList: true, subtree: true });
+
+                            // CSRF Protection for jQuery AJAX
+                            if (typeof jQuery !== 'undefined') {
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                $.ajaxSetup({
+                                    headers: {
+                                        'X-CSRF-TOKEN': csrfToken
+                                    }
+                                });
+                            }
                         });
                     </script>
 

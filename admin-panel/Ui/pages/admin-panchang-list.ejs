@@ -67,8 +67,12 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`/admin/panchang/delete/${id}`, {
-                    method: 'DELETE'
-                }).then(res => res.json())
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                    .then(res => res.json())
                     .then(data => {
                         if (data.success) {
                             Swal.fire('Deleted!', 'Panchang entry has been deleted.', 'success')

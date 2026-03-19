@@ -267,7 +267,10 @@
 
                     fetch('/admin/ecommerce/orders/update-status/' + orderId, {
                         method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
                         body: JSON.stringify(data)
                     })
                         .then(res => res.json())
@@ -311,7 +314,12 @@
                     buttonsStyling: false
                 }).then((result) => {
                     if (result.value) {
-                        fetch('/admin/ecommerce/orders/delete/' + orderId, { method: 'DELETE' })
+                        fetch('/admin/ecommerce/orders/delete/' + orderId, { 
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        })
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {

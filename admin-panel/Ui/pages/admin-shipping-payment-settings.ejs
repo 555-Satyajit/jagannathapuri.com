@@ -7,6 +7,7 @@
             <p class="card-text">Manage your store's shipping rates and payment gateways here.</p>
 
             <form action="/admin/settings/shipping-payment" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <h6>Shipping Settings</h6>

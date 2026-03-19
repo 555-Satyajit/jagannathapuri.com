@@ -9,6 +9,7 @@
                 <h5 class="card-header">Feature Section (Promo Banners)</h5>
                 <div class="card-body">
                     <form id="promoBannerForm" action="/admin/store/home/banner/save" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                         <div class="row">
                             <% features.forEach((feature, index)=> { %>
                                 <div class="col-md-6 mb-4">

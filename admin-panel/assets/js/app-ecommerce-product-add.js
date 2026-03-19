@@ -50,7 +50,8 @@
         parallelUploads: 1, // NEW PROPERTY
         maxFilesize: 5, // NEW PROPERTY
         headers: { // NEW PROPERTY
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
           console.log('Dropzone initialized');

@@ -74,7 +74,10 @@
                 if (result.isConfirmed) {
                     try {
                         const response = await fetch(`/admin/newsletter/delete/${id}`, {
-                            method: 'DELETE'
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
                         });
                         const result = await response.json();
                         if (result.success) {

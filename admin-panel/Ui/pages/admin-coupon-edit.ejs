@@ -8,6 +8,7 @@
             <h5 class="card-header">Edit Coupon</h5>
             <div class="card-body">
                 <form action="/admin/ecommerce/coupons/edit/<%= coupon.id %>" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                     <div class="mb-3">
                         <label for="couponCode" class="form-label">Coupon Code</label>
                         <input type="text" class="form-control" id="couponCode" name="code" value="<%= coupon.code %>"

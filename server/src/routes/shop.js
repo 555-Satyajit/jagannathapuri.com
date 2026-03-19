@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const shopController = require('../controllers/shopController');
-const isAuth = require('../middlewares/authMiddleware');
+const isAuth = require('../middlewares/customerAuth');
 
 router.get('/', shopController.getHome);
 router.get('/shop', shopController.getShop);

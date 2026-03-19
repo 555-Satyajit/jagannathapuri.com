@@ -10,6 +10,7 @@
                 <div class="card-body">
                     <form id="heroSectionForm" action="/admin/store/home/hero/save" method="POST"
                         enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                         <div class="row">
                             <!-- Banner Image -->
                             <div class="col-md-6 mb-3">

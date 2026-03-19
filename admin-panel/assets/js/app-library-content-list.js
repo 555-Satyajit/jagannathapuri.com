@@ -252,8 +252,21 @@ $(function () {
       buttonsStyling: false
     }).then(function (result) {
       if (result.value) {
-        fetch(`/admin/library/content/delete/${contentId}`, { method: 'DELETE' })
-          .then(res => res.json())
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        fetch(`/admin/library/content/delete/${contentId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': csrfToken
+          }
+        })
+          .then(res => {
+            if (!res.ok) {
+              return res.text().then(text => {
+                throw new Error(text || `Server returned ${res.status}`);
+              });
+            }
+            return res.json();
+          })
           .then(data => {
             if (data.success) {
               Swal.fire({
@@ -275,6 +288,16 @@ $(function () {
                 buttonsStyling: false
               });
             }
+          })
+          .catch(err => {
+            console.error('Delete error:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.message || 'An error occurred while deleting.',
+              confirmButtonClass: 'btn btn-primary',
+              buttonsStyling: false
+            });
           });
       }
     });

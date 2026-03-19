@@ -842,7 +842,8 @@
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
               },
               body: formData
             });

@@ -60,27 +60,37 @@ $(function () {
                 modalPermissionName: formData.get('modalPermissionName')
             };
 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
             fetch('/admin/permissions/add', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(data)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || `Server returned ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(result => {
                     if (result.error) {
                         alert(result.error);
                     } else {
                         // Close modal
                         const modal = bootstrap.Modal.getInstance(document.querySelector('#addPermissionModal'));
-                        modal.hide();
+                        if (modal) modal.hide();
                         location.reload();
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while saving the permission.');
+                    alert(error.message || 'An error occurred while saving the permission.');
                 });
         });
     }

@@ -63,6 +63,7 @@
                     <p>Enter festival details to display on the Vedic Calendar.</p>
                 </div>
                 <form id="festivalForm" class="row g-3" action="/admin/festivals/save" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= locals.csrfToken || '' %>">
                     <input type="hidden" name="id" id="festivalId">
                     <div class="col-12">
                         <label class="form-label" for="festivalName">Festival Name</label>
@@ -150,7 +151,12 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/admin/festivals/delete/${id}`, { method: 'DELETE' })
+                fetch(`/admin/festivals/delete/${id}`, { 
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                    }
+                })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) location.reload();

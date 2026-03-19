@@ -71,6 +71,9 @@
 
     <!-- ========== SweetAlert2 CSS ========== -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
 </head>
 
 <body>
@@ -246,6 +249,20 @@
               <!-- ========== Custom JS ========== -->
               <script src="/assets/js/main.js" defer></script>
               <script>
+                // CSRF Protection for AJAX
+                document.addEventListener('DOMContentLoaded', function() {
+                  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                  
+                  if (typeof jQuery !== 'undefined') {
+                    $.ajaxSetup({
+                      headers: {
+                        'CSRF-Token': csrfToken
+                      }
+                    });
+                  }
+                });
+              </script>
+              <script>
                 async function addToWishlist(productId) {
                   const heartIcons = document.querySelectorAll(`.wishlist-btn[data-product-id="${productId}"] i`);
                   const isRemoving = heartIcons.length > 0 && (heartIcons[0].classList.contains('text-error') || heartIcons[0].classList.contains('bxs-heart'));
@@ -255,7 +272,8 @@
                     const response = await fetch(url, {
                       method: 'POST',
                       headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                       },
                       body: JSON.stringify({ productId })
                     });

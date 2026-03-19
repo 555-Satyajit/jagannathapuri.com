@@ -56,6 +56,7 @@
         <!-- Offcanvas Body -->
         <div class="offcanvas-body border-top">
             <form class="pt-0" id="eCommerceCategoryListForm" action="/admin/ecommerce/attributes" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                 <!-- Name -->
                 <div class="mb-3">
                     <label class="form-label" for="ecommerce-category-title">Title</label>
@@ -127,7 +128,10 @@
             const id = $(this).data('id');
             if (confirm('Are you sure you want to delete this attribute?')) {
                 fetch('/admin/ecommerce/attributes/delete/' + id, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
                 }).then(response => {
                     if (response.ok) {
                         window.location.reload();

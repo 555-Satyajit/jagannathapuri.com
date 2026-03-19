@@ -148,7 +148,10 @@
         try {
             const response = await fetch('/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: JSON.stringify(data)
             });
             const result = await response.json();
@@ -198,7 +201,10 @@
             sendOtpBtn.innerText = 'Sending...';
             const response = await fetch('/send-otp', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: JSON.stringify({ email })
             });
             const result = await response.json();
@@ -224,7 +230,10 @@
         try {
             const response = await fetch('/verify-otp', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: JSON.stringify({ email, token })
             });
             const result = await response.json();

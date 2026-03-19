@@ -1659,7 +1659,8 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest"
+            "X-Requested-With": "XMLHttpRequest",
+            "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           }
         });
         const data = await response.json();
@@ -1693,7 +1694,8 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "X-Requested-With": "XMLHttpRequest",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(formData)
       });
@@ -1739,7 +1741,8 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "X-Requested-With": "XMLHttpRequest",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(formData)
       });
@@ -1838,7 +1841,10 @@
       $btn.prop("disabled", true).text("Sending...");
       const response = await fetch("/send-otp", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
         body: JSON.stringify({ email })
       });
       const data = await response.json();
@@ -1870,7 +1876,10 @@
       $submitBtn.prop("disabled", true).text("Verifying...");
       const response = await fetch("/verify-otp", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
         body: JSON.stringify({ email, token })
       });
       const data = await response.json();
@@ -1921,7 +1930,8 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "X-Requested-With": "XMLHttpRequest",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(data)
       });
@@ -2080,7 +2090,8 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "X-Requested-With": "XMLHttpRequest",
+          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({ items: itemsToAdd })
       });

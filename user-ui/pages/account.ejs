@@ -1151,7 +1151,10 @@
 
     fetch('/user-address-add', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
@@ -1196,9 +1199,12 @@
       phone: document.getElementById('edit_phone').value
     };
 
-    fetch(`/ user - address - edit / ${id} `, {
+    fetch(`/user-address-edit/${id}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
@@ -1211,8 +1217,11 @@
 
   function deleteAddress(id) {
     if (!confirm('Are you sure you want to delete this address?')) return;
-    fetch(`/ user - address - delete/${id}`, {
-      method: 'POST'
+    fetch(`/user-address-delete/${id}`, {
+      method: 'POST',
+      headers: {
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
     })
       .then(res => res.json())
       .then(data => {
@@ -1229,7 +1238,10 @@
     };
     fetch('/user-update-profile', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
@@ -1247,7 +1259,10 @@
   function removeFromWishlist(productId) {
     if (!confirm('Are you sure you want to remove this item from your wishlist?')) return;
     fetch(`/user-wishlist-remove/${productId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
     })
       .then(res => res.json())
       .then(data => {
@@ -1404,7 +1419,10 @@
 
     fetch('/user-change-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())

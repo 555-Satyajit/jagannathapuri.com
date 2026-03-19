@@ -12,17 +12,45 @@ const activityMiddleware = async (req, res, next) => {
         return next();
     }
 
+    const userAgent = req.get('User-Agent') || '';
+    // 1. Skip Common Bots
+    const botPatterns = [
+        'GPTBot', 'Googlebot', 'Bingbot', 'yandexbot', 'applebot', 
+        'Baiduspider', 'facebookexternalhit', 'Slackbot', 'BuiltWith',
+        'AhrefsBot', 'MJ12bot', 'meta-webindexer', 'CensysInspect'
+    ];
+    
+    if (botPatterns.some(pattern => userAgent.toLowerCase().includes(pattern.toLowerCase()))) {
+        return next();
+    }
+
     try {
         const path = req.path;
         const sessionId = req.sessionID;
+        const ipAddress = req.ip;
+        const userAgent = req.get('User-Agent') || '';
 
-        // Check if we already logged this URL for this session in the last 10 minutes
+        // 1. Skip Common Bots
+        const botPatterns = [
+            'GPTBot', 'Googlebot', 'Bingbot', 'yandexbot', 'applebot', 
+            'Baiduspider', 'facebookexternalhit', 'Slackbot', 'BuiltWith'
+        ];
+        
+        const isBot = botPatterns.some(pattern => userAgent.toLowerCase().includes(pattern.toLowerCase()));
+        if (isBot) {
+            return next();
+        }
+
+        // 2. Enhanced Deduplication (Session OR IP + URL within 10 minutes)
         const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
         const recentLog = await prisma.visitorLog.findFirst({
             where: {
-                sessionId: sessionId,
                 url: path,
-                timestamp: { gte: tenMinutesAgo }
+                timestamp: { gte: tenMinutesAgo },
+                OR: [
+                    { sessionId: sessionId },
+                    { ipAddress: ipAddress }
+                ]
             }
         });
 
@@ -31,14 +59,14 @@ const activityMiddleware = async (req, res, next) => {
             return next();
         }
         
-        // Log the activity
+        // 3. Log the activity
         await prisma.visitorLog.create({
             data: {
                 url: path,
                 sessionId: sessionId,
                 customerId: req.session.customerId || null,
-                userAgent: req.get('User-Agent'),
-                ipAddress: req.ip
+                userAgent: userAgent,
+                ipAddress: ipAddress
             }
         });
     } catch (error) {

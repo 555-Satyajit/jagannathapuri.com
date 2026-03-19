@@ -4,6 +4,7 @@
     <div class="row">
         <div class="col-12">
             <form id="settingsForm" action="/admin/settings/general" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                 <input type="hidden" name="header_json" id="header_json">
                 <input type="hidden" name="footer_json" id="footer_json">
                 <input type="hidden" name="home_json" id="home_json">

@@ -122,6 +122,7 @@
     <div class="offcanvas-body mx-0 flex-grow-0">
         <form class="add-new-ticket pt-0" id="addNewTicketForm" action="/admin/tickets/add" method="POST"
             enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
             <div class="mb-3">
                 <label class="form-label" for="ticketSubject">Subject</label>
                 <input type="text" class="form-control" id="ticketSubject" placeholder="Brief issue description"

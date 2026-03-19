@@ -91,6 +91,7 @@
                         <hr>
                         <div class="d-grid gap-2">
                             <form action="/admin/tickets/action" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                                 <input type="hidden" name="ticket_id" value="<%= ticket.id %>">
                                 <input type="hidden" name="action" value="close">
                                 <button type="submit" class="btn btn-label-danger w-100 mb-2">Close Ticket</button>
@@ -116,6 +117,7 @@
                     <p>Select a staff member to assign this ticket.</p>
                 </div>
                 <form id="assignTicketForm" class="row g-3" action="/admin/tickets/action" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                     <input type="hidden" name="ticket_id" value="<%= ticket.id %>">
                     <input type="hidden" name="action" value="assign">
                     <div class="col-12">
@@ -150,6 +152,7 @@
             </div>
             <div class="card-body">
                 <form action="/admin/tickets/action" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                     <input type="hidden" name="ticket_id" value="<%= ticket.id %>">
                     <input type="hidden" name="action" value="reply">
                     <div class="mb-3">

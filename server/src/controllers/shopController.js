@@ -179,7 +179,22 @@ exports.getHome = async (req, res) => {
             orderBy: { created_at: 'desc' }
         });
 
-        // 7. Fetch Wishlist if logged in
+        // 7. Fetch Product Categories for Grid (New)
+        homeConfig.productCategories = await prisma.category.findMany({
+            where: {
+                status: { in: ['Publish', 'Active'] },
+                parentId: null
+            },
+            include: {
+                _count: {
+                    select: { products: true }
+                }
+            },
+            take: 6,
+            orderBy: { created_at: 'desc' }
+        });
+
+        // 8. Fetch Wishlist if logged in
         if (req.session.customerId) {
             const wishlist = await prisma.wishlistItem.findMany({
                 where: { customerId: req.session.customerId },

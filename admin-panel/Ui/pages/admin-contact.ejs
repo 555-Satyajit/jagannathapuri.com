@@ -4,6 +4,7 @@
     <div class="row">
         <div class="col-12">
             <form id="contactForm" action="/admin/store/contact/save" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken || '' %>">
                 <input type="hidden" name="contact_json" id="contact_json">
 
                 <div class="nav-align-top mb-4">

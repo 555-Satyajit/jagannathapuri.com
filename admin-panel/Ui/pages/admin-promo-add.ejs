@@ -8,67 +8,61 @@
             <input type="hidden" name="id" value="<%= promo.id %>">
             <% } %>
 
-                <div class="row">
-                    <!-- Icon and Title Section -->
-                    <div class="col-12 col-xl-10 mb-4">
-                        <div class="card">
-                            <h5 class="card-header">General Information</h5>
-                            <div class="card-body pb-5"> <!-- Added pb-5 to ensure enough space -->
-                                <div class="mb-4">
-                                    <label for="icon" class="form-label" style="font-weight: 600;">Icon (Boxicons
-                                        Class)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i
-                                                class="<%= promo ? promo.icon : 'bx bx-help-circle' %>"
-                                                id="iconPreview"></i></span>
-                                        <input type="text" class="form-control" id="icon" name="icon"
-                                            value="<%= promo ? promo.icon : '' %>" placeholder="e.g. bx bx-truck">
-                                    </div>
-                                    <small class="text-muted">Browse icons at <a href="https://boxicons.com/"
-                                            target="_blank">boxicons.com</a></small>
-                                </div>
-
-                                <div class="mb-5"> <!-- Increased mb for the title block -->
-                                    <label class="form-label" style="font-weight: 600;">Title</label>
-                                    <div id="title-editor-wrapper" style="min-height: 211px;">
-                                        <!-- Wrapper with min-height -->
-                                        <div id="title-editor-container" style="height: 120px;">
-                                            <%- promo ? promo.title : '' %>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="title" id="titleInput">
-                                </div>
+        <div class="row">
+            <!-- Icon and Title Section -->
+            <div class="col-12 col-xl-10 mb-4">
+                <div class="card">
+                    <h5 class="card-header">General Information</h5>
+                    <div class="card-body pb-5">
+                        <div class="mb-4">
+                            <label for="icon" class="form-label" style="font-weight: 600;">Icon (Boxicons Class)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="<%= promo ? promo.icon : 'bx bx-help-circle' %>" id="iconPreview"></i></span>
+                                <input type="text" class="form-control" id="icon" name="icon"
+                                    value="<%= promo ? promo.icon : '' %>" placeholder="e.g. bx bx-truck">
                             </div>
+                            <small class="text-muted">Browse icons at <a href="https://boxicons.com/" target="_blank">boxicons.com</a></small>
                         </div>
-                    </div>
 
-                    <!-- Description Section (Isolated) -->
-                    <div class="col-12 col-xl-10 mb-4">
-                        <div class="card border border-primary shadow-none">
-                            <h5 class="card-header bg-label-primary">Content Description</h5>
-                            <div class="card-body pt-3">
-                                <div class="mb-0">
-                                    <label for="subtitle" class="form-label" style="font-weight: 600;">Description
-                                        Summary</label>
-                                    <textarea class="form-control" id="subtitle" name="subtitle" rows="6"
-                                        placeholder="Write a detailed description here..."><%= promo ? promo.subtitle : '' %></textarea>
+                        <div class="mb-5">
+                            <label class="form-label" style="font-weight: 600;">Title</label>
+                            <div id="title-editor-wrapper" style="min-height: 211px;">
+                                <div id="title-editor-container" style="height: 120px;">
+                                    <%- promo ? promo.title : '' %>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="col-12 col-xl-10">
-                        <div class="card">
-                            <div class="card-body">
-                                <button type="submit" class="btn btn-primary me-sm-3 me-1">
-                                    <i class="bx bx-save me-1"></i> Save Promo Banner
-                                </button>
-                                <a href="/admin/store/home/promo/list" class="btn btn-label-secondary">Cancel</a>
-                            </div>
+                            <input type="hidden" name="title" id="titleInput">
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="col-12 col-xl-10 mb-4">
+                <div class="card border border-primary shadow-none">
+                    <h5 class="card-header bg-label-primary">Content Description</h5>
+                    <div class="card-body pt-3">
+                        <div class="mb-0">
+                            <label for="subtitle" class="form-label" style="font-weight: 600;">Description Summary</label>
+                            <textarea class="form-control" id="subtitle" name="subtitle" rows="6"
+                                placeholder="Write a detailed description here..."><%= promo ? promo.subtitle : '' %></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-12 col-xl-10">
+                <div class="card">
+                    <div class="card-body">
+                        <button type="submit" id="savePromoBtn" class="btn btn-primary me-sm-3 me-1">
+                            <i class="bx bx-save me-1"></i> Save Promo Banner
+                        </button>
+                        <a href="/admin/store/home/promo/list" class="btn btn-label-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 
@@ -93,6 +87,8 @@
 
         const iconInput = document.getElementById('icon');
         const iconPreview = document.getElementById('iconPreview');
+        const promoForm = document.getElementById('promoForm');
+        const savePromoBtn = document.getElementById('savePromoBtn');
 
         if (iconInput) {
             iconInput.addEventListener('input', function () {
@@ -100,12 +96,70 @@
             });
         }
 
-        // Handle Form Submission
-        const form = document.getElementById('promoForm');
-        form.onsubmit = function () {
-            const titleInput = document.querySelector('#titleInput');
-            titleInput.value = quillTitle.root.innerHTML;
-            return true;
-        };
+        // Handle AJAX Form Submission
+        if (promoForm) {
+            promoForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                
+                // Update hidden title input with Quill content
+                const titleInput = document.querySelector('#titleInput');
+                titleInput.value = quillTitle.root.innerHTML;
+
+                // Show loading state
+                const originalBtnText = savePromoBtn.innerHTML;
+                savePromoBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+                savePromoBtn.disabled = true;
+
+                const formData = $(promoForm).serialize();
+                const actionUrl = promoForm.getAttribute('action');
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: formData,
+                    // Use regular form encoding since this is NOT multipart
+                    success: function (res) {
+                        if (res.success || (typeof res === 'object' && !res.error)) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Promo banner saved successfully',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = '/admin/store/home/promo/list';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: res.error || (res.message && res.message.includes('CSRF') ? 'Security session expired. Please refresh the page.' : (res.message || 'Failed to save banner'))
+                            });
+                            savePromoBtn.innerHTML = originalBtnText;
+                            savePromoBtn.disabled = false;
+                        }
+                    },
+                    error: function (xhr) {
+                        let errorMessage = 'System Error during submission.';
+                        if (xhr.status === 403) {
+                            errorMessage = 'CSRF Security Validation Failed. Please refresh the page.';
+                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Submission Failed',
+                            text: errorMessage
+                        });
+                        
+                        savePromoBtn.innerHTML = originalBtnText;
+                        savePromoBtn.disabled = false;
+                    }
+                });
+            });
+        }
     });
-</script>
+</script>

@@ -3,7 +3,12 @@
         Swal.fire({ title: "Are you sure?", text: "You won't be able to revert customer!", icon: "warning", showCancelButton: !0, confirmButtonText: "Yes, Delete customer!", customClass: { confirmButton: "btn btn-primary me-2", cancelButton: "btn btn-label-secondary" }, buttonsStyling: !1 }).then(function (t) {
             if (t.value) {
                 const customerId = window.location.pathname.split('/').pop();
-                fetch('/admin/ecommerce/customers/delete/' + customerId, { method: 'DELETE' })
+                fetch('/admin/ecommerce/customers/delete/' + customerId, { 
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {

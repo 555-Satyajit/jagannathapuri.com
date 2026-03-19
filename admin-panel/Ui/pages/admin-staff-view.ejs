@@ -285,6 +285,7 @@
                         <p>Updating staff details will receive a privacy audit.</p>
                     </div>
                     <form id="editUserForm" class="row g-3" action="/admin/staff/update" method="POST">
+                <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                         <input type="hidden" name="staff_id" value="<%= staff.id %>" />
                         <div class="col-12 col-md-6">
                             <label class="form-label" for="modalEditUserFirstName">First Name</label>

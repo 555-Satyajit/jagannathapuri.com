@@ -152,7 +152,10 @@ $(function () {
 
         if (confirm("Are you sure you want to delete this coupon?")) {
             fetch("/admin/ecommerce/coupons/delete/" + couponId, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
             })
                 .then(response => response.json())
                 .then(data => {

@@ -169,6 +169,9 @@
                     const formData = new FormData(categoryForm);
                     const res = await fetch('/admin/library/categories/save', {
                         method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
                         body: formData
                     });
                     const data = await res.json();

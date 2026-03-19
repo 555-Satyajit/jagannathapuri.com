@@ -129,6 +129,9 @@
             try {
                 const response = await fetch('/admin/store/popup/save', {
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: formData
                 });
                 const result = await response.json();
@@ -187,7 +190,10 @@
                 if (result.isConfirmed) {
                     try {
                         const response = await fetch(`/admin/store/popup/delete/${id}`, {
-                            method: 'DELETE'
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
                         });
                         const result = await response.json();
                         if (result.success) {

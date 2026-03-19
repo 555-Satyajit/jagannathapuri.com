@@ -5,6 +5,7 @@
     </h4>
 
     <form id="libraryContentForm" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
         <input type="hidden" name="id" value="<%= content ? content.id : '' %>">
         <div class="row">
             <!-- Left Column: Content -->
@@ -209,6 +210,9 @@
 
                 const res = await fetch('/admin/library/content/upload-image', {
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: formData
                 });
                 const data = await res.json();
@@ -291,6 +295,9 @@
                 const formData = new FormData(form);
                 const res = await fetch('/admin/library/content/save', {
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                    },
                     body: formData
                 });
 

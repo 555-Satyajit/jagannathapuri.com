@@ -236,14 +236,24 @@ $(function () {
                 permissions: permissions
             };
 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
             fetch('/admin/roles/add', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(data)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || `Server returned ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(result => {
                     if (result.error) {
                         Swal.fire({
