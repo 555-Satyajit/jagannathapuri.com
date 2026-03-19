@@ -129,7 +129,7 @@
                                 </div>
                                 <!-- button -->
                                 <div class="flex items-center xl:gap-x-6 gap-x-2 md:gap-x-4 pt-5">
-                                    <a href="<%= service.link %>"
+                                    <a href="tel:<%= service.phone || (typeof siteConfig !== 'undefined' && siteConfig.footer && siteConfig.footer.contact_phone) %>"
                                         class="btn btn-large btn-default shadow-none w-full outline rounded-[100px] py-2.5 flex items-center justify-center gap-2">
                                         <span class="inline-flex items-center justify-center">
                                             <i
@@ -137,7 +137,7 @@
                                         </span>
                                         <%= service.icon.includes('car') ? 'Book Now' : (service.icon.includes('guide')
                                             ? 'Get Guidance' : (service.icon.includes('hotel') ? 'Find Stay'
-                                            : 'Register Now' )) %>
+                                            : 'Call Now' )) %>
                                     </a>
                                 </div>
                             </div>
@@ -153,4 +153,4 @@
     </div>
 </div>
 <!-- ========== Vendor Grid Section END ========== -->
-
+
