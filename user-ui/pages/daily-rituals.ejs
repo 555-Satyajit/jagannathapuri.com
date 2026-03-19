@@ -8,11 +8,11 @@
         theme: {
             extend: {
                 colors: {
-                    primary: '#6200EA',
+                    primary: '#800000',
                     secondary: '#3366ff',
-                    'primary-lighter': '#EDE7F6',
-                    'primary-light': '#B388FF',
-                    'primary-dark': '#3700B3',
+                    'primary-lighter': '#FFEBEE',
+                    'primary-light': '#E57373',
+                    'primary-dark': '#5B0000',
                 },
                 fontFamily: {
                     'urbanist': ['Urbanist', 'sans-serif'],
@@ -29,7 +29,7 @@
 <style>
     /* Use site's native variables */
     :root {
-        --color-ritual-bg: #f6f2ff;
+        --color-ritual-bg: #FFF5F5;
         --color-ritual-accent: var(--color-primary);
         --color-ritual-accent-light: var(--color-primary-light);
         --color-ritual-accent-lighter: var(--color-primary-lighter);
@@ -49,7 +49,7 @@
 
     .ritual-shell {
         background:
-            radial-gradient(1200px 480px at 50% -10%, rgba(98, 0, 234, 0.14), transparent 60%),
+            radial-gradient(1200px 480px at 50% -10%, rgba(128, 0, 0, 0.14), transparent 60%),
             linear-gradient(180deg, var(--color-ritual-bg) 0%, #ffffff 48%);
     }
 
@@ -64,7 +64,7 @@
 
     .ritual-card:hover {
         transform: translateY(-5px) !important;
-        box-shadow: 0 14px 30px -14px rgba(55, 0, 179, 0.35), 0 10px 20px -12px rgba(33, 43, 54, 0.18) !important;
+        box-shadow: 0 14px 30px -14px rgba(128, 0, 0, 0.35), 0 10px 20px -12px rgba(33, 43, 54, 0.18) !important;
     }
 
     /* Force centering for icons in circular containers */
@@ -132,7 +132,7 @@
     }
 
     .ritual-status-upcoming {
-        background: rgba(98, 0, 234, 0.1);
+        background: rgba(128, 0, 0, 0.1);
         color: var(--color-ritual-accent-dark);
     }
 

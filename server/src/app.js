@@ -45,15 +45,15 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "*.google-analytics.com", "https://www.googletagmanager.com", "https://translate.google.com", "https://www.gstatic.com"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://www.gstatic.com"],
-            imgSrc: ["'self'", "data:", "blob:", "https:", "http:", "https://*.googleapis.com", "https://translate.google.com", "https://www.gstatic.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://unpkg.com", "data:"],
-            connectSrc: ["'self'", "https://*.supabase.co", "*.google-analytics.com", "https://www.google-analytics.com", "https://*.googleapis.com", "https://cdn.jsdelivr.net"],
-            frameSrc: ["'self'", "https://www.google.com", "https://translate.google.com", "https://*.googleapis.com"],
-            mediaSrc: ["'self'", "data:", "blob:"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "localhost:*", "127.0.0.1:*", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "https://*.google-analytics.com", "https://www.googletagmanager.com", "https://translate.google.com", "https://www.gstatic.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "localhost:*", "127.0.0.1:*", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://www.gstatic.com"],
+            imgSrc: ["'self'", "data:", "blob:", "localhost:*", "127.0.0.1:*", "https:", "http:", "https://*.googleapis.com", "https://translate.google.com", "https://www.gstatic.com"],
+            fontSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://unpkg.com", "data:"],
+            connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://*.supabase.co", "https://*.google-analytics.com", "https://www.google-analytics.com", "https://*.googleapis.com", "https://cdn.jsdelivr.net"],
+            frameSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://www.google.com", "https://translate.google.com", "https://*.googleapis.com"],
+            mediaSrc: ["'self'", "localhost:*", "127.0.0.1:*", "data:", "blob:"],
             objectSrc: ["'none'"],
-            upgradeInsecureRequests: [],
+            ...(process.env.NODE_ENV === 'production' ? { upgradeInsecureRequests: [] } : {}),
         },
     },
     crossOriginEmbedderPolicy: false
@@ -142,8 +142,14 @@ const shopSessionConfig = {
     proxy: true
 };
 
-const adminSession = session(adminSessionConfig);
-const shopSession = session(shopSessionConfig);
+const adminSession = session({
+    ...adminSessionConfig,
+    store: new pgSession(sessionStoreOptions)
+});
+const shopSession = session({
+    ...shopSessionConfig,
+    store: new pgSession(sessionStoreOptions)
+});
 
 // Dispatcher Middleware for Sessions
 app.use((req, res, next) => {

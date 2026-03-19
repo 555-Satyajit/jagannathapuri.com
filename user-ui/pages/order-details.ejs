@@ -2,11 +2,11 @@
 <div class="bg-gray-50 border-b border-gray-200">
     <div class="container mx-auto px-4 py-4">
         <nav class="flex text-sm text-gray-500 font-medium">
-            <a href="/" class="hover:text-purple-600 transition-colors flex items-center gap-1">
+            <a href="/" class="hover:text-[#800000] transition-colors flex items-center gap-1">
                 <i class="hgi hgi-stroke hgi-home-01"></i> Home
             </a>
             <span class="mx-2 text-gray-400">/</span>
-            <a href="/user-account" class="hover:text-purple-600 transition-colors">My Account</a>
+            <a href="/user-account" class="hover:text-[#800000] transition-colors">My Account</a>
             <span class="mx-2 text-gray-400">/</span>
             <span class="text-gray-900 font-semibold">Order Details</span>
         </nav>
@@ -17,8 +17,8 @@
 <style>
     /* Custom Styles for Order Details Page */
     :root {
-        --od-primary: #6200EA;
-        --od-primary-light: #B388FF;
+        --od-primary: #800000;
+        --od-primary-light: #E57373;
         --od-bg: #f8f9fa;
         --od-card-bg: #ffffff;
         --od-text-dark: #161c24;
@@ -99,13 +99,13 @@
         background: var(--od-primary);
         color: white;
         border: none;
-        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+        box-shadow: 0 4px 15px rgba(128, 0, 0, 0.3);
     }
 
     .od-btn-primary:hover {
         background: #5000cc;
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(98, 0, 234, 0.4);
+        box-shadow: 0 6px 20px rgba(128, 0, 0, 0.4);
     }
 
     .od-grid {
@@ -153,7 +153,7 @@
         width: 40px;
         height: 40px;
         border-radius: 12px;
-        background: rgba(98, 0, 234, 0.1);
+        background: rgba(128, 0, 0, 0.1);
         color: var(--od-primary);
         display: flex;
         align-items: center;
@@ -194,7 +194,7 @@
         top: 0;
         left: 0;
         height: 100%;
-        background: linear-gradient(90deg, var(--od-primary) 0%, #a855f7 100%);
+        background: linear-gradient(90deg, var(--od-primary) 0%, #E57373 100%);
         border-radius: 4px;
         transition: width 1s ease-out;
     }
@@ -235,7 +235,7 @@
         border-color: var(--od-primary);
         background: var(--od-primary);
         color: white;
-        box-shadow: 0 0 0 5px rgba(98, 0, 234, 0.15);
+        box-shadow: 0 0 0 5px rgba(128, 0, 0, 0.15);
         transform: scale(1.1);
     }
 

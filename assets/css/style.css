@@ -88,11 +88,11 @@ others css
     --color-light-secondary-text: #495057;
     --color-light-disabled-text: #919eab;
     --color-dark-secondary-text: #919eab;
-    --color-primary-lighter: #EDE7F6;
-    --color-primary-light: #B388FF;
-    --color-primary: #6200EA;
-    --color-primary-dark: #3700B3;
-    --color-primary-darker: #311B92;
+    --color-primary-lighter: #FFEBEE;
+    --color-primary-light: #E57373;
+    --color-primary: #800000;
+    --color-primary-dark: #5B0000;
+    --color-primary-darker: #300000;
     --color-secondary: #3366ff;
     --color-secondary-dark: #1939b7;
     --color-info: #1890ff;
@@ -2332,7 +2332,7 @@ others css
   }
 
   .bg-\[\#A0E2E0\] {
-    background-color: #A0E2E0;
+    background-color: #FFEBEE;
   }
 
   .bg-\[\#A4F7CC\] {
@@ -7444,11 +7444,11 @@ others css
     }
   }
 
-  .lg\:before\:bg-\[\#A0E2E0\] {
+  .lg\:before\:bg-\[\#FFEBEE\] {
     @media (width >=64rem) {
       &::before {
         content: var(--tw-content);
-        background-color: #A0E2E0;
+        background-color: #FFEBEE;
       }
     }
   }
@@ -7579,11 +7579,11 @@ others css
     }
   }
 
-  .lg\:after\:bg-\[\#A0E2E0\] {
+  .lg\:after\:bg-\[\#FFEBEE\] {
     @media (width >=64rem) {
       &::after {
         content: var(--tw-content);
-        background-color: #A0E2E0;
+        background-color: #FFEBEE;
       }
     }
   }
