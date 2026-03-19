@@ -63,6 +63,66 @@
                       Hindi
                     </a>
                   </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="bn">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Bengali
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="mr">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Marathi
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="ta">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Tamil
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="te">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Telugu
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="kn">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Kannada
+                    </a>
+                  </li>
+                  <li class="py-2 px-4 group/item">
+                    <a href="javascript:void(0)"
+                      class="flex items-center gap-x-2 relative text-light-primary-text hover:text-primary lang-select"
+                      data-lang="ml">
+                      <span class="w-8 h-8 bg-[#F0F0F0] inline-flex items-center justify-center rounded-full">
+                        <i class="hgi hgi-stroke hgi-language-circle text-base text-gray-600"></i>
+                      </span>
+                      Malayalam
+                    </a>
+                  </li>
                 </ul>
 
                 <!-- Hidden Google Translate Element (Off-screen for better init) -->
@@ -71,7 +131,7 @@
                   function googleTranslateElementInit() {
                     new google.translate.TranslateElement({
                       pageLanguage: 'en',
-                      includedLanguages: 'en,or,hi',
+                      includedLanguages: 'en,or,hi,bn,mr,ta,te,kn,ml',
                       layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
                       autoDisplay: false
                     }, 'google_translate_element');
@@ -105,7 +165,7 @@
                     const googtrans = getCookie('googtrans');
                     if (googtrans) {
                       const lang = googtrans.split('/').pop();
-                      const labelMap = { 'en': 'English', 'or': 'Odia', 'hi': 'Hindi' };
+                      const labelMap = { 'en': 'English', 'or': 'Odia', 'hi': 'Hindi', 'bn': 'Bengali', 'mr': 'Marathi', 'ta': 'Tamil', 'te': 'Telugu', 'kn': 'Kannada', 'ml': 'Malayalam' };
                       if (labelMap[lang]) {
                         const display = document.getElementById('current-lang-display');
                         if (display) {

@@ -101,28 +101,27 @@
         <% homeConfig.services.forEach((service, index)=> { %>
           <div class="col-span-6 md:col-span-4 xl:col-span-2">
             <div data-wow-delay="<%= 0.2 + (index * 0.1) %>s"
-              class="flex flex-col items-center text-center wow animate__animated animate__fadeInUp">
-              <div class="w-[100px] h-[100px] flex items-center justify-center text-[#919EAB]">
+              class="group flex flex-col items-center text-center p-6 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2 wow animate__animated animate__fadeInUp">
+              <div class="w-[100px] h-[100px] relative flex items-center justify-center rounded-full bg-primary-lighter/5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md mb-4 overflow-hidden border border-transparent group-hover:border-primary/10">
                 <% if (service.image) { 
                   let serviceImgPath = service.image;
                   if (!serviceImgPath.startsWith('http')) {
-                    // Check various prefixes or default to uploads
                     if (serviceImgPath.startsWith('categoryImage-') || serviceImgPath.startsWith('images-') || serviceImgPath.startsWith('product_images-') || !serviceImgPath.includes('/')) {
                       serviceImgPath = '/uploads/' + serviceImgPath;
                     }
                   }
                 %>
                   <img src="<%= serviceImgPath %>" alt="<%= service.title %>"
-                    class="w-full h-full object-contain">
+                    class="w-full h-full object-cover">
                   <% } else { %>
-                    <i class="hgi hgi-stroke <%= service.icon %> text-6xl"></i>
+                    <i class="hgi hgi-stroke <%= service.icon %> text-4xl text-primary"></i>
                     <% } %>
               </div>
               <a href="<%= service.link %>"
-                class="hover:text-primary pt-4 pb-2.5 font-semibold text-light-primary-text">
+                class="hover:text-primary pt-2 pb-1 font-bold text-light-primary-text transition-colors">
                 <%= service.title %>
               </a>
-              <p class="text-sm leading-[22px]">
+              <p class="text-xs leading-[18px] text-light-secondary-text">
                 <%= service.subtitle %>
               </p>
             </div>
@@ -138,8 +137,8 @@
         <% homeConfig.productCategories.forEach((category, index)=> { %>
           <div class="col-span-6 md:col-span-4 xl:col-span-2">
             <div data-wow-delay="<%= 0.2 + (index * 0.1) %>s"
-              class="flex flex-col items-center text-center wow animate__animated animate__fadeInUp">
-              <div class="w-[100px] h-[100px] flex items-center justify-center text-[#919EAB]">
+              class="group flex flex-col items-center text-center p-6 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2 wow animate__animated animate__fadeInUp">
+              <div class="w-[100px] h-[100px] relative flex items-center justify-center rounded-full bg-warning-lighter/5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md mb-4 overflow-hidden border border-transparent group-hover:border-warning/10">
                 <% if (category.image) { 
                   let imagePath = category.image;
                   if (!imagePath.startsWith('http')) {
@@ -151,16 +150,16 @@
                   }
                 %>
                   <img src="<%= imagePath %>" alt="<%= category.name %>"
-                    class="w-full h-full object-contain">
+                    class="w-full h-full object-cover">
                   <% } else { %>
-                    <i class="hgi hgi-stroke hgi-folder-01 text-6xl"></i>
+                    <i class="hgi hgi-stroke hgi-folder-01 text-4xl text-warning"></i>
                     <% } %>
               </div>
               <a href="/shop?category=<%= category.slug %>"
-                class="hover:text-primary pt-4 pb-2.5 font-semibold text-light-primary-text">
+                class="hover:text-primary pt-2 pb-1 font-bold text-light-primary-text transition-colors">
                 <%= category.name %>
               </a>
-              <p class="text-sm leading-[22px]">
+              <p class="text-xs leading-[18px] text-light-secondary-text">
                 <%= category._count.products %> Items
               </p>
             </div>
@@ -191,7 +190,7 @@
             <div
               class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-3">
               <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-              <p class="font-semibold text-sm">Live from Puri</p>
+              <!-- <p class="font-semibold text-sm">Live from Puri</p> -->
             </div>
           </div>
         </div>
@@ -200,9 +199,9 @@
         <div class="text-center md:text-left order-1 md:order-2 md:pl-6 lg:pl-10">
 
           <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
-            <span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-bold">
+            <!-- <span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-bold">
               LIVE FROM PURI
-            </span>
+            </span> -->
             <span
               class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-green-100 text-green-700 text-sm font-bold border border-green-200">
               Mandir Darshan Open

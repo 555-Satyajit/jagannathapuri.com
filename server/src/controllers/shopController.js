@@ -190,7 +190,7 @@ exports.getHome = async (req, res) => {
                     select: { products: true }
                 }
             },
-            take: 6,
+            take: 14,
             orderBy: { created_at: 'desc' }
         });
 

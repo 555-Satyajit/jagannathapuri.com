@@ -45,12 +45,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://maps.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "*.google-analytics.com", "https://www.googletagmanager.com"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
-            imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "*.google-analytics.com", "https://www.googletagmanager.com", "https://translate.google.com", "https://www.gstatic.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://www.gstatic.com"],
+            imgSrc: ["'self'", "data:", "blob:", "https:", "http:", "https://*.googleapis.com", "https://translate.google.com", "https://www.gstatic.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://unpkg.com", "data:"],
-            connectSrc: ["'self'", "https://*.supabase.co", "*.google-analytics.com", "https://www.google-analytics.com"],
-            frameSrc: ["'self'", "https://www.google.com"],
+            connectSrc: ["'self'", "https://*.supabase.co", "*.google-analytics.com", "https://www.google-analytics.com", "https://*.googleapis.com", "https://cdn.jsdelivr.net"],
+            frameSrc: ["'self'", "https://www.google.com", "https://translate.google.com", "https://*.googleapis.com"],
             mediaSrc: ["'self'", "data:", "blob:"],
             objectSrc: ["'none'"],
             upgradeInsecureRequests: [],
