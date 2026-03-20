@@ -6,7 +6,7 @@ exports.getAttributeList = async (req, res) => {
             orderBy: { created_at: 'desc' }
         });
 
-        req.app.render('pages/admin-attribute-list', { attributes }, (err, html) => {
+        res.render('pages/admin-attribute-list', { attributes }, (err, html) => {
             if (err) {
                 console.error('Error rendering attribute list:', err);
                 return res.status(500).send('Error rendering attribute list');

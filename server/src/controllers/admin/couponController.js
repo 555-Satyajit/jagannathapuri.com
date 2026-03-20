@@ -21,7 +21,7 @@ exports.getCouponList = async (req, res) => {
         }));
 
 
-        req.app.render('pages/admin-coupon-list', { coupons: formattedCoupons, staff }, (err, html) => {
+        res.render('pages/admin-coupon-list', { coupons: formattedCoupons, staff }, (err, html) => {
             if (err) {
                 console.error('Error rendering coupon list:', err);
                 return res.status(500).send('Error rendering coupon list');
@@ -113,7 +113,7 @@ exports.editCoupon = async (req, res) => {
 
         if (!coupon) return res.status(404).send('Coupon not found');
 
-        req.app.render('pages/admin-coupon-edit', { coupon, staff }, (err, html) => {
+        res.render('pages/admin-coupon-edit', { coupon, staff }, (err, html) => {
             if (err) {
                 console.error('Error rendering coupon edit:', err);
                 return res.status(500).send('Error rendering coupon edit');

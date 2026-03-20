@@ -1651,29 +1651,51 @@
 
 
   /*------ Logout Flow ----*/
-  $body.on("click", ".logout-btn", async function (e) {
+  $body.on("click", ".logout-btn", function (e) {
     e.preventDefault();
-    if (confirm("Are you sure you want to log out?")) {
-      try {
-        const response = await fetch("/logout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-            "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of your session!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#880000',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log out!',
+      cancelButtonText: 'Stay logged in',
+      background: '#fff',
+      borderRadius: '16px'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch("/logout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+          });
+          const data = await response.json();
+          if (data.success) {
+            Swal.fire({
+              title: 'Logged Out!',
+              text: 'You have been successfully logged out.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = "/";
+            });
+          } else {
+            Swal.fire('Error!', data.error || "Logout failed", 'error');
           }
-        });
-        const data = await response.json();
-        if (data.success) {
-          window.location.href = "/";
-        } else {
-          alert(data.error || "Logout failed");
+        } catch (error) {
+          console.error("Logout error:", error);
+          Swal.fire('Error!', "Something went wrong. Please try again.", 'error');
         }
-      } catch (error) {
-        console.error("Logout error:", error);
-        alert("Something went wrong. Please try again.");
       }
-    }
+    });
   });
 
   /*------ Login Form Submission ----*/

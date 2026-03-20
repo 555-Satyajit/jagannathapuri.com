@@ -5,7 +5,7 @@ const renderPolicyEdit = (req, res, title, configKey, saveUrl, activeMenu) => {
     prisma.siteConfig.findUnique({ where: { key: configKey } })
         .then(config => {
             const content = config ? config.value.content : '';
-            req.app.render('pages/admin-policy-edit', { pageTitle: title, content, saveUrl }, (err, html) => {
+            res.render('pages/admin-policy-edit', { pageTitle: title, content, saveUrl }, (err, html) => {
                 if (err) {
                     console.error(`Error rendering ${configKey} policy:`, err);
                     return res.status(500).send('Error rendering page');

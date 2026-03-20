@@ -13,7 +13,7 @@ exports.getCategoryList = async (req, res) => {
             include: { subCategories: true }
         });
 
-        req.app.render('pages/admin-category-list', { categories }, (err, html) => {
+        res.render('pages/admin-category-list', { categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin category list:', err);
                 return res.status(500).send('Error rendering admin category list');

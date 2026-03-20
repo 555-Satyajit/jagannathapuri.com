@@ -14,7 +14,7 @@ exports.getAuditLogs = async (req, res) => {
             prisma.auditLog.groupBy({ by: ['entity'], where: { entity: { not: null } } })
         ]);
 
-        req.app.render('pages/audit-logs', {
+        res.render('pages/audit-logs', {
             admins,
             actions: actions.map(a => a.action),
             entities: entities.map(e => e.entity),

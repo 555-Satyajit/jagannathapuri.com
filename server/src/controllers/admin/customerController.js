@@ -147,7 +147,7 @@ exports.getCustomerDetails = async (req, res) => {
             country: customer.addresses.find(a => a.isDefault)?.country || 'N/A'
         };
 
-        req.app.render('pages/admin-customer-details', { customer: formattedCustomer, activeTab: tab }, (err, html) => {
+        res.render('pages/admin-customer-details', { customer: formattedCustomer, activeTab: tab }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');

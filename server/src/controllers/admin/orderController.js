@@ -18,7 +18,7 @@ exports.getOrderList = async (req, res) => {
             cancelled
         };
 
-        req.app.render('pages/admin-order-list', { stats }, (err, html) => {
+        res.render('pages/admin-order-list', { stats }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin order list:', err);
                 return res.status(500).send('Error rendering admin order list');
@@ -131,7 +131,7 @@ exports.getOrderDetails = async (req, res) => {
             return res.status(404).send('Order not found');
         }
 
-        req.app.render('pages/admin-order-details', { order }, (err, html) => {
+        res.render('pages/admin-order-details', { order }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin order details:', err);
                 return res.status(500).send('Error rendering admin order details');
@@ -201,7 +201,7 @@ exports.downloadInvoice = async (req, res) => {
 
         const baseUrl = `${req.protocol}://${req.get('host')}`;
         // Render the EJS template to a string
-        req.app.render('pages/invoice-print', { order, baseUrl }, async (err, html) => {
+        res.render('pages/invoice-print', { order, baseUrl }, async (err, html) => {
             if (err) {
                 console.error('Error rendering invoice template:', err);
                 return res.status(500).send('Error generating invoice');
@@ -250,7 +250,7 @@ exports.getInvoice = async (req, res) => {
         const tax = subtotal * 0.05; // Assuming 5% tax or fetch from config
         const total = subtotal + tax + order.shippingFee;
 
-        req.app.render('pages/admin-invoice-view', { order, subtotal, tax, total }, (err, html) => {
+        res.render('pages/admin-invoice-view', { order, subtotal, tax, total }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin invoice view:', err);
                 return res.status(500).send('Error rendering invoice view');

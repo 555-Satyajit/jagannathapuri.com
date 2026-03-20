@@ -18,7 +18,7 @@ exports.getTransactionList = async (req, res) => {
             otherCount
         };
 
-        req.app.render('pages/admin-transaction-list', { stats }, (err, html) => {
+        res.render('pages/admin-transaction-list', { stats }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');

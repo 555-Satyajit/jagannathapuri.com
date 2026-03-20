@@ -11,7 +11,7 @@ exports.getRoleList = async (req, res) => {
 
         const permissions = await prisma.permission.findMany();
 
-        req.app.render('pages/admin-role-list', { roles, permissions }, (err, html) => {
+        res.render('pages/admin-role-list', { roles, permissions }, (err, html) => {
             if (err) {
                 console.error('Error rendering role list:', err);
                 return res.status(500).send('Error rendering role list');
@@ -45,7 +45,7 @@ exports.getPermissionList = async (req, res) => {
             orderBy: { id: 'desc' }
         });
 
-        req.app.render('pages/admin-permission-list', { permissions }, (err, html) => {
+        res.render('pages/admin-permission-list', { permissions }, (err, html) => {
             if (err) {
                 console.error('Error rendering permission list:', err);
                 return res.status(500).send('Error rendering permission list');

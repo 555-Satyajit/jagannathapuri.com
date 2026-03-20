@@ -12,6 +12,12 @@ const csrfProtection = csrf({
 });
 
 const conditionalCsrf = (req, res, next) => {
+    // Exclude Supabase session verify route from global CSRF
+    // This route already uses secure access_token verification
+    if (req.path === '/auth/session/verify') {
+        return next();
+    }
+
     // For GET requests, we ALWAYS want to call csrfProtection to ensure req.csrfToken is available
     if (req.method === 'GET') {
         return csrfProtection(req, res, next);
@@ -27,18 +33,6 @@ const conditionalCsrf = (req, res, next) => {
 };
 
 const routeCsrfProtection = (req, res, next) => {
-    // Detailed logs to catch the specific failure for services
-    console.log(`[CSRF Debug] Route-level check. Path: ${req.url}`);
-    console.log(`[CSRF Debug] Signed Cookies: ${Object.keys(req.signedCookies || {}).join(', ')}`);
-    console.log(`[CSRF Debug] Body: ${req.body ? 'Parsed' : 'NOT PARSED'}`);
-    
-    if (req.body) {
-        console.log(`[CSRF Debug] Token in body: ${req.body._csrf ? 'Found' : 'MISSING'}`);
-        if (!req.body._csrf) {
-            console.log(`[CSRF Debug] Request body keys: ${Object.keys(req.body).join(', ')}`);
-        }
-    }
-
     return csrfProtection(req, res, (err) => {
         if (err) {
             console.error(`[CSRF Debug] Validation FAILED: ${err.message}`);

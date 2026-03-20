@@ -12,7 +12,7 @@ exports.getLibCategoryList = async (req, res) => {
             include: { _count: { select: { contents: true } } }
         });
 
-        req.app.render('pages/admin-library-category-list', { categories }, (err, html) => {
+        res.render('pages/admin-library-category-list', { categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');
@@ -130,7 +130,7 @@ exports.getLibContentList = async (req, res) => {
             orderBy: { name: 'asc' }
         });
 
-        req.app.render('pages/admin-library-content-list', { categories }, (err, html) => {
+        res.render('pages/admin-library-content-list', { categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');
@@ -193,7 +193,7 @@ exports.getAddLibContent = async (req, res) => {
         });
         const tags = await prisma.libraryTag.findMany();
 
-        req.app.render('pages/admin-library-content-add', { categories, tags, content: null }, (err, html) => {
+        res.render('pages/admin-library-content-add', { categories, tags, content: null }, (err, html) => {
             if (err) return res.status(500).send('Error rendering page');
             res.render('layouts/admin-master', {
                 body: html,
@@ -232,7 +232,7 @@ exports.getEditLibContent = async (req, res) => {
 
         if (!content) return res.status(404).send('Content not found');
 
-        req.app.render('pages/admin-library-content-add', { categories, tags, content }, (err, html) => {
+        res.render('pages/admin-library-content-add', { categories, tags, content }, (err, html) => {
             if (err) return res.status(500).send('Error rendering page');
             res.render('layouts/admin-master', {
                 body: html,

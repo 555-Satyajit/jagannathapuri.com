@@ -344,7 +344,8 @@ app.use(async (req, res, next) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
-        console.error(`[CSRF ERROR] Requested Path: ${req.path}, Message: ${err.message}`);
+        console.error(`[CSRF ERROR] ${req.method} ${req.path} - Invalid or missing token`);
+
         return res.status(403).json({
             success: false,
             message: 'Invalid or missing CSRF token. Request rejected for security.'

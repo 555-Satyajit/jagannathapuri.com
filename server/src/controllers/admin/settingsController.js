@@ -67,7 +67,7 @@ exports.getGeneralSettings = async (req, res) => {
             seo: { ...defaultSettings.seo, ...(settings.seo || {}) }
         };
 
-        req.app.render('pages/admin-general-settings', { settings: finalSettings }, (err, html) => {
+        res.render('pages/admin-general-settings', { settings: finalSettings }, (err, html) => {
             if (err) {
                 console.error('Error rendering general settings:', err);
                 return res.status(500).send('Error rendering page');
@@ -156,7 +156,7 @@ exports.getShippingPaymentSettings = async (req, res) => {
             payment: { cod_enabled: true, online_payment_enabled: true }
         };
 
-        req.app.render('pages/admin-shipping-payment-settings', { settings }, (err, html) => {
+        res.render('pages/admin-shipping-payment-settings', { settings }, (err, html) => {
             if (err) {
                 console.error('Error rendering shipping payment settings:', err);
                 return res.status(500).send('Error rendering page');
@@ -209,7 +209,7 @@ exports.getContactSettings = async (req, res) => {
         };
         const settings = config ? { ...defaultSettings, ...config.value } : defaultSettings;
 
-        req.app.render('pages/admin-contact', { settings }, (err, html) => {
+        res.render('pages/admin-contact', { settings }, (err, html) => {
             if (err) {
                 console.error('Error rendering contact settings:', err);
                 return res.status(500).send('Error rendering page');

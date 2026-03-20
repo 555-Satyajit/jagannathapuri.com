@@ -18,7 +18,7 @@ exports.getStaffList = async (req, res) => {
             joining_date: staff.joining_date || new Date(staff.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         }));
 
-        req.app.render('pages/admin-staff-list', { staffList: formattedStaff, roles }, (err, html) => {
+        res.render('pages/admin-staff-list', { staffList: formattedStaff, roles }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');
@@ -64,7 +64,7 @@ exports.getStaffView = async (req, res) => {
             return res.status(404).send('Staff member not found');
         }
 
-        req.app.render('pages/admin-staff-view', { staff }, (err, html) => {
+        res.render('pages/admin-staff-view', { staff }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');

@@ -9,7 +9,7 @@ exports.getDailyRitualsAdmin = async (req, res) => {
             prisma.templeFact.findMany({ orderBy: { created_at: 'desc' } })
         ]);
 
-        req.app.render('pages/admin-rituals-list', { rituals, darshans, facts }, (err, html) => {
+        res.render('pages/admin-rituals-list', { rituals, darshans, facts }, (err, html) => {
             if (err) {
                 console.error('Error rendering rituals admin:', err);
                 return res.status(500).send('Error rendering page');
@@ -134,7 +134,7 @@ exports.getPanchangList = async (req, res) => {
             orderBy: { date: 'desc' }
         });
 
-        req.app.render('pages/admin-panchang-list', { panchangList }, (err, html) => {
+        res.render('pages/admin-panchang-list', { panchangList }, (err, html) => {
             if (err) {
                 console.error('Error rendering panchang list admin:', err);
                 return res.status(500).send('Error rendering page');
@@ -186,7 +186,7 @@ exports.getEditPanchang = async (req, res) => {
 
         if (!panchang) return res.status(404).send('Panchang entry not found');
 
-        req.app.render('pages/admin-panchang-add', { panchang }, (err, html) => {
+        res.render('pages/admin-panchang-add', { panchang }, (err, html) => {
             if (err) {
                 console.error('Error rendering edit panchang:', err);
                 return res.status(500).send('Error rendering page');
@@ -260,7 +260,7 @@ exports.getFestivalList = async (req, res) => {
             orderBy: { date: 'asc' }
         });
 
-        req.app.render('pages/admin-festival-list', { festivals }, (err, html) => {
+        res.render('pages/admin-festival-list', { festivals }, (err, html) => {
             if (err) {
                 console.error('Error rendering festival list admin:', err);
                 return res.status(500).send('Error rendering page');

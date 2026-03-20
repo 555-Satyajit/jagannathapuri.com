@@ -13,7 +13,7 @@ exports.getServiceList = async (req, res) => {
         const services = await prisma.service.findMany({
             orderBy: { created_at: 'desc' }
         });
-        req.app.render('pages/admin-service-list', { services }, (err, html) => {
+        res.render('pages/admin-service-list', { services }, (err, html) => {
             if (err) {
                 console.error('Error rendering service list:', err);
                 return res.status(500).send('Error rendering page');
@@ -61,7 +61,7 @@ exports.getEditService = async (req, res) => {
         });
         if (!service) return res.status(404).send('Service not found');
 
-        req.app.render('pages/admin-service-add', { service }, (err, html) => {
+        res.render('pages/admin-service-add', { service }, (err, html) => {
             if (err) {
                 console.error('Error rendering service edit:', err);
                 return res.status(500).send('Error rendering page');
@@ -140,7 +140,7 @@ exports.getHeroList = async (req, res) => {
         const heroes = await prisma.heroSection.findMany({
             orderBy: { order: 'asc' }
         });
-        req.app.render('pages/admin-hero-list', { heroes }, (err, html) => {
+        res.render('pages/admin-hero-list', { heroes }, (err, html) => {
             if (err) {
                 console.error('Error rendering hero list:', err);
                 return res.status(500).send('Error rendering page');
@@ -193,7 +193,7 @@ exports.getEditHero = async (req, res) => {
         });
         if (!hero) return res.status(404).send('Hero not found');
 
-        req.app.render('pages/admin-hero-add', { hero }, (err, html) => {
+        res.render('pages/admin-hero-add', { hero }, (err, html) => {
             if (err) {
                 console.error('Error rendering hero edit:', err);
                 return res.status(500).send('Error rendering page');
@@ -272,7 +272,7 @@ exports.getPromoList = async (req, res) => {
         const promos = await prisma.promoBanner.findMany({
             orderBy: { order: 'asc' }
         });
-        req.app.render('pages/admin-promo-list', { promos }, (err, html) => {
+        res.render('pages/admin-promo-list', { promos }, (err, html) => {
             if (err) {
                 console.error('Error rendering promo list:', err);
                 return res.status(500).send('Error rendering page');
@@ -323,7 +323,7 @@ exports.getEditPromo = async (req, res) => {
         });
         if (!promo) return res.status(404).send('Promo not found');
 
-        req.app.render('pages/admin-promo-add', { promo }, (err, html) => {
+        res.render('pages/admin-promo-add', { promo }, (err, html) => {
             if (err) {
                 console.error('Error rendering promo edit:', err);
                 return res.status(500).send('Error rendering page');
@@ -393,7 +393,7 @@ exports.deletePromo = async (req, res) => {
 exports.getHomeTabList = async (req, res) => {
     try {
         const categories = await prisma.category.findMany({ select: { id: true, name: true } });
-        req.app.render('pages/admin-home-tabs', { categories }, (err, html) => {
+        res.render('pages/admin-home-tabs', { categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering home tabs:', err);
                 return res.status(500).send('Error rendering page');
@@ -478,7 +478,7 @@ exports.getPopupList = async (req, res) => {
             orderBy: { created_at: 'desc' }
         });
 
-        req.app.render('pages/admin-popup-list', { popups, moment }, (err, html) => {
+        res.render('pages/admin-popup-list', { popups, moment }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin popup list:', err);
                 return res.status(500).send('Error rendering admin popup list');
@@ -559,7 +559,7 @@ exports.getNewsletterList = async (req, res) => {
             orderBy: { createdAt: 'desc' }
         });
 
-        req.app.render('pages/admin-newsletter-list', { subscribers, moment }, (err, html) => {
+        res.render('pages/admin-newsletter-list', { subscribers, moment }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin newsletter list:', err);
                 return res.status(500).send('Error rendering admin newsletter list');

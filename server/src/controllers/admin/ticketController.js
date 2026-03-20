@@ -32,7 +32,7 @@ exports.getTicketList = async (req, res) => {
             closedGrowth: '+31%'
         };
 
-        req.app.render('pages/admin-ticket-list', { tickets, stats }, (err, html) => {
+        res.render('pages/admin-ticket-list', { tickets, stats }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');
@@ -125,7 +125,7 @@ exports.getTicketView = async (req, res) => {
             include: { role: true }
         });
 
-        req.app.render('pages/admin-ticket-view', { ticket, staffList }, (err, html) => {
+        res.render('pages/admin-ticket-view', { ticket, staffList }, (err, html) => {
             if (err) {
                 console.error('Error rendering page:', err);
                 return res.status(500).send('Internal Server Error');

@@ -17,7 +17,7 @@ exports.getProductList = async (req, res) => {
             prisma.product.count({ where: { quantity: { lte: 10 } } })
         ]);
 
-        req.app.render('pages/admin-product-list', {
+        res.render('pages/admin-product-list', {
             categories,
             totalProducts,
             activeProducts,
@@ -59,7 +59,7 @@ exports.addProduct = async (req, res) => {
         const attributes = await prisma.attribute.findMany();
         const categories = await prisma.category.findMany();
 
-        req.app.render('pages/admin-product-add', { attributes, categories }, (err, html) => {
+        res.render('pages/admin-product-add', { attributes, categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin product add:', err);
                 return res.status(500).send('Error rendering admin product add');
@@ -107,7 +107,7 @@ exports.editProduct = async (req, res) => {
             return res.status(404).send('Product not found');
         }
 
-        req.app.render('pages/admin-product-edit', { product, attributes, categories }, (err, html) => {
+        res.render('pages/admin-product-edit', { product, attributes, categories }, (err, html) => {
             if (err) {
                 console.error('Error rendering admin product edit:', err);
                 return res.status(500).send('Error rendering admin product edit');
@@ -413,7 +413,7 @@ exports.viewProduct = async (req, res) => {
             product.specifications = [];
         }
 
-        req.app.render('pages/admin-product-view', { product, reviews, relatedProducts }, (err, html) => {
+        res.render('pages/admin-product-view', { product, reviews, relatedProducts }, (err, html) => {
             if (err) {
                 console.error('Error rendering product view:', err);
                 return res.status(500).send('Error rendering product view');
