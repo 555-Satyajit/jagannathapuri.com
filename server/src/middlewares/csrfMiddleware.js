@@ -5,24 +5,28 @@ const csrfProtection = (req, res, next) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const host = req.headers.host || '';
     const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
-    
-    // Only use secure cookies if in production and NOT on localhost (for dev testing)
     const secure = isProduction && !isLocal && (req.secure || req.headers['x-forwarded-proto'] === 'https');
-
-    if (isProduction) {
-        console.log(`[CSRF Debug] Path: ${req.path}, Host: ${host}, isLocal: ${isLocal}, Secure: ${secure}`);
-        console.log(`[CSRF Debug] Cookies: ${req.signedCookies ? Object.keys(req.signedCookies) : 'None'}`);
-    }
 
     return csrf({ 
         cookie: {
-            signed: true,
+            signed: false, // More stable, especially with varying secrets
             httpOnly: true,
             secure: secure,
             sameSite: 'lax',
             path: '/'
         }
-    })(req, res, next);
+    })(req, res, (err) => {
+        if (err && err.code === 'EBADCSRFTOKEN') {
+            if (req.path.startsWith('/api')) {
+                console.error(`[CSRF API Error] ${req.method} ${req.path} - Token invalid`);
+                return res.status(403).json({ 
+                    success: false, 
+                    error: 'Security token mismatch. Please refresh the page.' 
+                });
+            }
+        }
+        next(err);
+    });
 };
 
 const conditionalCsrf = (req, res, next) => {
