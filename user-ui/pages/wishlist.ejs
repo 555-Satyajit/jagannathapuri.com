@@ -197,7 +197,8 @@
           const response = await fetch('/api/wishlist/remove', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'x-csrf-token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({ productId })
           });

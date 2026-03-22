@@ -157,7 +157,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'x-csrf-token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify(data)
             });
@@ -210,7 +210,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'x-csrf-token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({ email })
             });
@@ -239,7 +239,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'x-csrf-token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({ email, token })
             });
