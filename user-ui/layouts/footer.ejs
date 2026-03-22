@@ -336,7 +336,8 @@
           const response = await fetch('/api/newsletter/subscribe', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             },
             body: JSON.stringify({ email: email })
           });

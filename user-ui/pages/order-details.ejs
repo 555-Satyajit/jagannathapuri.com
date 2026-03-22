@@ -792,7 +792,7 @@
             })
             .catch(error => {
                 console.error('Error downloading invoice:', error);
-                alert('Failed to download invoice. Please try again.');
+                Swal.fire({ icon: 'error', text: 'Failed to download invoice. Please try again.' });
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
                 btn.style.opacity = '1';

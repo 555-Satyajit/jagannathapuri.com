@@ -4,6 +4,7 @@
 <head>
     <title>Authenticating...</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -44,8 +45,13 @@
                 if (result.success) {
                     window.location.href = "/user-account";
                 } else {
-                    alert("Session syncing failed");
-                    window.location.href = "/login";
+                    Swal.fire({ 
+                        icon: 'error', 
+                        title: 'Sync Failed', 
+                        text: 'Session syncing failed. Please try logging in again.' 
+                    }).then(() => {
+                        window.location.href = "/login";
+                    });
                 }
             } catch (err) {
                 console.error("Session sync error:", err);

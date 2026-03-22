@@ -11254,14 +11254,14 @@ Others css
   }
 
   .btn-primary {
-    background-color: var(--color-btn-complement) !important;
-    border-color: var(--color-btn-complement) !important;
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
     color: #fff !important;
   }
 
   .btn-primary:hover {
-    background-color: var(--color-btn-complement-dark) !important;
-    border-color: var(--color-btn-complement-dark) !important;
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
   }
 }
 

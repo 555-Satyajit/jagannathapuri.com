@@ -156,8 +156,8 @@
                     <%= product.product_name %>
                   </h3>
                   <button
-                    class='wishlist-btn size-10 inline-flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300'
-                    onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                    class='wishlist-btn size-10 inline-flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300 js-add-wishlist'
+                    data-product-id="<%= product.id %>">
                     <i
                       class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
                   </button>
@@ -554,8 +554,8 @@
                         <% let imgPath=img.startsWith('http') ? img : (img.startsWith('/uploads/') ? img
                           : '/uploads/reviews/' + img); %>
                           <img src="<%= imgPath %>"
-                            class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
-                            onclick="window.open('<%= imgPath %>', '_blank')" />
+                            class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform js-zoom-image"
+                            data-src="<%= imgPath %>" />
                       </div>
                       <% }) %>
                   </div>
@@ -674,8 +674,8 @@
                   <ul class="flex items-center gap-x-px">
                     <li>
                       <button aria-label='Add to Wishlist'
-                        class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm border border-gray-100'
-                        onclick="addToWishlist(<%= relProd.id %>)" data-product-id="<%= relProd.id %>">
+                        class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm border border-gray-100 js-add-wishlist'
+                        data-product-id="<%= relProd.id %>">
                         <i
                           class="bx text-2xl leading-6 <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(relProd.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
                       </button>
@@ -732,9 +732,30 @@
   <!-- ========== Related Products Section End ========== -->
 
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // Use event delegation for wishlist and image zoom
+      document.body.addEventListener('click', function(e) {
+        // Wishlist
+        const wishlistBtn = e.target.closest('.js-add-wishlist');
+        if (wishlistBtn) {
+          const productId = wishlistBtn.getAttribute('data-product-id');
+          if (typeof addToWishlist === 'function') {
+            addToWishlist(productId);
+          }
+        }
+
+        // Image Zoom
+        const zoomImg = e.target.closest('.js-zoom-image');
+        if (zoomImg) {
+          const src = zoomImg.getAttribute('data-src');
+          if (src) {
+            window.open(src, '_blank');
+          }
+        }
+      });
+
       const stars = document.querySelectorAll('.review-star');
       const ratingInput = document.getElementById('selected-rating');
 

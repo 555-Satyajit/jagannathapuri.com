@@ -288,8 +288,8 @@
                   <ul class="flex items-center gap-x-px">
                     <li>
                       <a aria-label='Add to Wishlist'
-                        class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm before:absolute before:left-[calc(50%-8px)] before:bottom-full before:z-9 before:border-8 before:border-transparent before:border-t-black before:opacity-0 before:invisible before:-mb-3.5 hover:before:opacity-100 hover:before:visible before:transition-all before:duration-300 after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-800 after:whitespace-nowrap after:text-white after:text-xs after:leading-[18px] after:py-[3px] after:px-2 after:content-[attr(aria-label)] after:opacity-0 after:invisible after:transition-all after:duration-300 hover:after:opacity-100 hover:after:visible hover:after:-translate-y-2.5 hover:before:-translate-y-2.5'
-                        href='javascript:void(0)' onclick="addToWishlist(<%= product.id %>)"
+                        class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm before:absolute before:left-[calc(50%-8px)] before:bottom-full before:z-9 before:border-8 before:border-transparent before:border-t-black before:opacity-0 before:invisible before:-mb-3.5 hover:before:opacity-100 hover:before:visible before:transition-all before:duration-300 after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-800 after:whitespace-nowrap after:text-white after:text-xs after:leading-[18px] after:py-[3px] after:px-2 after:content-[attr(aria-label)] after:opacity-0 after:invisible after:transition-all after:duration-300 hover:after:opacity-100 hover:after:visible hover:after:-translate-y-2.5 hover:before:-translate-y-2.5 js-add-wishlist'
+                        href='javascript:void(0)'
                         data-product-id="<%= product.id %>">
                         <i
                           class="bx text-2xl leading-6 <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
@@ -342,8 +342,8 @@
 
                 <div class="btn-section flex items-center gap-x-4">
                   <button
-                    class='wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300'
-                    onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                    class='wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300 js-add-wishlist'
+                    data-product-id="<%= product.id %>">
                     <i
                       class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
                   </button>
@@ -429,8 +429,8 @@
                       <ul class="flex items-center gap-x-px">
                         <li>
                           <a aria-label='Add to Wishlist'
-                            class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm before:absolute before:left-[calc(50%-8px)] before:bottom-full before:z-9 before:border-8 before:border-transparent before:border-t-black before:opacity-0 before:invisible before:-mb-3.5 hover:before:opacity-100 hover:before:visible before:transition-all before:duration-300 after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-800 after:whitespace-nowrap after:text-white after:text-xs after:leading-[18px] after:py-[3px] after:px-2 after:content-[attr(aria-label)] after:opacity-0 after:invisible after:transition-all after:duration-300 hover:after:opacity-100 hover:after:visible hover:after:-translate-y-2.5 hover:before:-translate-y-2.5'
-                            href='javascript:void(0)' onclick="addToWishlist(<%= product.id %>)"
+                            class='wishlist-btn product-btn-action-item relative size-11 bg-white inline-flex items-center justify-center rounded-sm before:absolute before:left-[calc(50%-8px)] before:bottom-full before:z-9 before:border-8 before:border-transparent before:border-t-black before:opacity-0 before:invisible before:-mb-3.5 hover:before:opacity-100 hover:before:visible before:transition-all before:duration-300 after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-800 after:whitespace-nowrap after:text-white after:text-xs after:leading-[18px] after:py-[3px] after:px-2 after:content-[attr(aria-label)] after:opacity-0 after:invisible after:transition-all after:duration-300 hover:after:opacity-100 hover:after:visible hover:after:-translate-y-2.5 hover:before:-translate-y-2.5 js-add-wishlist'
+                            href='javascript:void(0)'
                             data-product-id="<%= product.id %>">
                             <i
                               class="bx text-2xl leading-6 <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
@@ -454,8 +454,8 @@
                     </div>
                     <div class="btn-section flex items-center gap-x-4 mt-auto">
                       <button
-                        class="wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300"
-                        onclick="addToWishlist(<%= product.id %>)" data-product-id="<%= product.id %>">
+                        class="wishlist-btn size-11 flex flex-none items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300 js-add-wishlist"
+                        data-product-id="<%= product.id %>">
                         <i
                           class="bx text-xl <%= (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.id)) ? 'bxs-heart text-error' : 'bx-heart text-light-secondary-text' %>"></i>
                       </button>
@@ -1082,3 +1082,18 @@
   </div>
 </section>
 <!-- ========== Testimonial Section End ========== -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wishlist handling via event delegation
+    document.body.addEventListener('click', function(e) {
+      const wishlistBtn = e.target.closest('.js-add-wishlist');
+      if (wishlistBtn) {
+        const productId = wishlistBtn.getAttribute('data-product-id');
+        if (typeof addToWishlist === 'function') {
+           addToWishlist(productId);
+        }
+      }
+    });
+  });
+</script>

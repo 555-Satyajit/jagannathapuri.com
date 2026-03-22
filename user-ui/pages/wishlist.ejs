@@ -148,7 +148,7 @@
                       </div>
                     </td>
                     <td data-title="Remove" class="capitalize text-center py-4 px-3 lg:px-0 pr-4 product-remove">
-                      <button onclick="removeFromWishlist(<%= item.product.id %>)">
+                      <button class="js-remove-wishlist" data-id="<%= item.product.id %>">
                         <span class="inline-flex items-center justify-center"><i
                             class="hgi hgi-stroke hgi-delete-01 text-2xl leading-6 text-red-500 hover:text-red-700 transition-colors"></i></span>
                       </button>
@@ -169,8 +169,29 @@
     </div>
 
     <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Use event delegation for remove buttons
+        document.body.addEventListener('click', async function(e) {
+          const removeBtn = e.target.closest('.js-remove-wishlist');
+          if (removeBtn) {
+            const productId = removeBtn.getAttribute('data-id');
+            await removeFromWishlist(productId);
+          }
+        });
+      });
+
       async function removeFromWishlist(productId) {
-        if (!confirm('Are you sure you want to remove this item from your wishlist?')) return;
+        const result = await Swal.fire({
+          title: 'Remove from Wishlist?',
+          text: "Are you sure you want to remove this item?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#088178',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, remove it!'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
           const response = await fetch('/api/wishlist/remove', {
@@ -188,16 +209,16 @@
               row.remove();
               // If no row left, show empty message
               const tbody = document.querySelector('tbody');
-              if (tbody.children.length === 0) {
+              if (tbody && tbody.querySelectorAll('tr[id^="wishlist-item-"]').length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-light-secondary-text">Your wishlist is empty.</td></tr>`;
               }
             }
           } else {
-            alert(data.error || 'Failed to remove item');
+            Swal.fire({ icon: 'error', text: data.error || 'Failed to remove item' });
           }
         } catch (error) {
           console.error('Error removing from wishlist:', error);
-          alert('An error occurred. Please try again.');
+          Swal.fire({ icon: 'error', text: 'An error occurred. Please try again.' });
         }
       }
     </script>

@@ -398,14 +398,14 @@
           const result = await response.json();
 
           if (result.success) {
-            alert(result.message);
+            Swal.fire({ icon: 'success', text: result.message });
             form.reset();
           } else {
-            alert(result.message || 'Something went wrong');
+            Swal.fire({ icon: 'error', text: result.message || 'Something went wrong' });
           }
         } catch (error) {
           console.error('Feedback error:', error);
-          alert('Failed to send feedback. Please try again later.');
+          Swal.fire({ icon: 'error', text: 'Failed to send feedback. Please try again later.' });
         } finally {
           submitBtn.innerText = originalText;
           submitBtn.disabled = false;

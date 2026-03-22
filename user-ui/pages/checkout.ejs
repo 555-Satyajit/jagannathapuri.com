@@ -879,13 +879,13 @@
                         // Reload to recalculate all totals securely from the server
                         window.location.reload();
                       } else {
-                        alert(data.error || 'Failed to remove item. Please try again.');
+                        Swal.fire({ icon: 'error', text: data.error || 'Failed to remove item. Please try again.' });
                         this.innerHTML = originalHtml;
                         this.disabled = false;
                       }
                     } catch (error) {
                       console.error('Checkout remove error:', error);
-                      alert('Something went wrong. Please try again.');
+                      Swal.fire({ icon: 'error', text: 'Something went wrong. Please try again.' });
                       this.innerHTML = originalHtml;
                       this.disabled = false;
                     }

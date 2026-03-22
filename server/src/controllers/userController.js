@@ -69,14 +69,14 @@ exports.updateProfile = async (req, res) => {
 exports.addAddress = async (req, res) => {
     try {
         const customerId = req.session.customerId;
-        const { type, street, city, state, zipCode, country, phone } = req.body;
+        const { type, addressLine1, city, state, zipCode, country, phone } = req.body;
         console.log('Adding address for customer:', customerId, req.body);
 
         await prisma.address.create({
             data: {
                 customer_id: customerId,
                 type: type || 'Home',
-                addressLine1: street,
+                addressLine1,
                 city,
                 state,
                 country: country || 'India',
@@ -96,7 +96,7 @@ exports.editAddress = async (req, res) => {
     try {
         const customerId = req.session.customerId;
         const addressId = parseInt(req.params.id);
-        const { type, street, city, state, zipCode, country, phone } = req.body;
+        const { type, addressLine1, city, state, zipCode, country, phone } = req.body;
 
         // Ensure address belongs to customer
         const address = await prisma.address.findFirst({
@@ -111,7 +111,7 @@ exports.editAddress = async (req, res) => {
             where: { id: addressId },
             data: {
                 type: type || 'Home',
-                addressLine1: street,
+                addressLine1,
                 city,
                 state,
                 country: country || 'India',
