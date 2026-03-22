@@ -1,15 +1,21 @@
 const csrf = require('csurf');
 
 // Switch to signed cookies for even better stability and security
-const csrfProtection = csrf({ 
-    cookie: {
-        signed: true,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-    }
-});
+const csrfProtection = (req, res, next) => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    // Only use secure cookies if in production and NOT on localhost (for dev testing)
+    const secure = isProduction && !req.headers.host.includes('localhost') && (req.secure || req.headers['x-forwarded-proto'] === 'https');
+
+    return csrf({ 
+        cookie: {
+            signed: true,
+            httpOnly: true,
+            secure: secure,
+            sameSite: 'lax',
+            path: '/'
+        }
+    })(req, res, next);
+};
 
 const conditionalCsrf = (req, res, next) => {
     // Exclude Supabase session verify route from global CSRF

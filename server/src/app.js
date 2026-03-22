@@ -344,12 +344,21 @@ app.use(async (req, res, next) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
-        console.error(`[CSRF ERROR] ${req.method} ${req.path} - Invalid or missing token`);
+        const isApiRequest = req.path.startsWith('/api') || 
+                            req.xhr || 
+                            req.headers.accept?.includes('application/json');
 
-        return res.status(403).json({
-            success: false,
-            message: 'Invalid or missing CSRF token. Request rejected for security.'
-        });
+        console.error(`[CSRF ERROR] ${req.method} ${req.path}${isApiRequest ? ' (API)' : ''} - Invalid or missing token`);
+
+        if (isApiRequest) {
+            return res.status(403).json({
+                success: false,
+                message: 'Security validation failed (CSRF). Please refresh the page and try again.'
+            });
+        }
+        
+        // For non-API requests, let it fall through or handle appropriately
+        // (Existing behavior: let express render default or next middleware)
     }
     next(err);
 });
