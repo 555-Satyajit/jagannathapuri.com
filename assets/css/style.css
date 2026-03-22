@@ -88,13 +88,13 @@ others css
     --color-light-secondary-text: #495057;
     --color-light-disabled-text: #919eab;
     --color-dark-secondary-text: #919eab;
-    --color-primary-lighter: #FFEBEE;
-    --color-primary-light: #E57373;
-    --color-primary: #800000;
-    --color-primary-dark: #5B0000;
-    --color-primary-darker: #300000;
-    --color-secondary: #3366ff;
-    --color-secondary-dark: #1939b7;
+    --color-primary-lighter: #E8EAF6;
+    --color-primary-light: #534BAE;
+    --color-primary: #1A237E;
+    --color-primary-dark: #000051;
+    --color-primary-darker: #00002F;
+    --color-secondary: #BDC3C7;
+    --color-secondary-dark: #8D99AE;
     --color-info: #1890ff;
     --color-info-dark: #0c53b7;
     --color-info-darker: #04297a;
@@ -2332,7 +2332,7 @@ others css
   }
 
   .bg-\[\#A0E2E0\] {
-    background-color: #FFEBEE;
+    background-color: #E8EAF6;
   }
 
   .bg-\[\#A4F7CC\] {
@@ -7444,11 +7444,11 @@ others css
     }
   }
 
-  .lg\:before\:bg-\[\#FFEBEE\] {
+  .lg\:before\:bg-\[\#E8EAF6\] {
     @media (width >=64rem) {
       &::before {
         content: var(--tw-content);
-        background-color: #FFEBEE;
+        background-color: #E8EAF6;
       }
     }
   }
@@ -7579,11 +7579,11 @@ others css
     }
   }
 
-  .lg\:after\:bg-\[\#FFEBEE\] {
+  .lg\:after\:bg-\[\#E8EAF6\] {
     @media (width >=64rem) {
       &::after {
         content: var(--tw-content);
-        background-color: #FFEBEE;
+        background-color: #E8EAF6;
       }
     }
   }

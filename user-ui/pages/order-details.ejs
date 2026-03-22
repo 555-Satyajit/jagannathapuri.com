@@ -2,11 +2,11 @@
 <div class="bg-gray-50 border-b border-gray-200">
     <div class="container mx-auto px-4 py-4">
         <nav class="flex text-sm text-gray-500 font-medium">
-            <a href="/" class="hover:text-[#800000] transition-colors flex items-center gap-1">
+            <a href="/" class="hover:text-[var(--color-primary)] transition-colors flex items-center gap-1">
                 <i class="hgi hgi-stroke hgi-home-01"></i> Home
             </a>
             <span class="mx-2 text-gray-400">/</span>
-            <a href="/user-account" class="hover:text-[#800000] transition-colors">My Account</a>
+            <a href="/user-account" class="hover:text-[var(--color-primary)] transition-colors">My Account</a>
             <span class="mx-2 text-gray-400">/</span>
             <span class="text-gray-900 font-semibold">Order Details</span>
         </nav>
@@ -17,8 +17,8 @@
 <style>
     /* Custom Styles for Order Details Page */
     :root {
-        --od-primary: #800000;
-        --od-primary-light: #E57373;
+        --od-primary: var(--color-primary);
+        --od-primary-light: var(--color-primary-light);
         --od-bg: #f8f9fa;
         --od-card-bg: #ffffff;
         --od-text-dark: #161c24;
@@ -194,7 +194,7 @@
         top: 0;
         left: 0;
         height: 100%;
-        background: linear-gradient(90deg, var(--od-primary) 0%, #E57373 100%);
+        background: linear-gradient(90deg, var(--od-primary) 0%, var(--color-primary-light) 100%);
         border-radius: 4px;
         transition: width 1s ease-out;
     }
@@ -433,7 +433,7 @@
     }
 
     .od-tag.pending {
-        background: #fef9c3;
+        background: #1A237E;
         color: #854d0e;
     }
 
