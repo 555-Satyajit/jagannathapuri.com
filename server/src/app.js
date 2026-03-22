@@ -172,6 +172,10 @@ app.use(conditionalCsrf);
 app.use((req, res, next) => {
     if (typeof req.csrfToken === 'function') {
         res.locals.csrfToken = req.csrfToken();
+        if (process.env.NODE_ENV === 'production') {
+            const tokenHeader = req.headers['csrf-token'] || req.headers['x-csrf-token'];
+            console.log(`[CSRF Debug] Request: ${req.method} ${req.path}, Header Token: ${tokenHeader ? 'Present' : 'MISSING'}, Generated Token: ${res.locals.csrfToken ? 'YES' : 'NO'}`);
+        }
     }
     next();
 });

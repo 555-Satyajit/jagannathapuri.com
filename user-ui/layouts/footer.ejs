@@ -333,14 +333,18 @@
           submitBtn.disabled = true;
           submitBtn.innerHTML = 'Subscribing...';
 
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+          console.log('[Newsletter Debug] Sending CSRF token:', csrfToken ? 'YES' : 'NONE (Empty)');
+
           const response = await fetch('/api/newsletter/subscribe', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+              'CSRF-Token': csrfToken
             },
             body: JSON.stringify({ email: email })
           });
+          console.log('[Newsletter Debug] Response Status:', response.status);
 
           const data = await response.json();
 

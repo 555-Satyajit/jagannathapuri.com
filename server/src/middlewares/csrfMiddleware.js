@@ -3,8 +3,16 @@ const csrf = require('csurf');
 // Switch to signed cookies for even better stability and security
 const csrfProtection = (req, res, next) => {
     const isProduction = process.env.NODE_ENV === 'production';
+    const host = req.headers.host || '';
+    const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+    
     // Only use secure cookies if in production and NOT on localhost (for dev testing)
-    const secure = isProduction && !req.headers.host.includes('localhost') && (req.secure || req.headers['x-forwarded-proto'] === 'https');
+    const secure = isProduction && !isLocal && (req.secure || req.headers['x-forwarded-proto'] === 'https');
+
+    if (isProduction) {
+        console.log(`[CSRF Debug] Path: ${req.path}, Host: ${host}, isLocal: ${isLocal}, Secure: ${secure}`);
+        console.log(`[CSRF Debug] Cookies: ${req.signedCookies ? Object.keys(req.signedCookies) : 'None'}`);
+    }
 
     return csrf({ 
         cookie: {
