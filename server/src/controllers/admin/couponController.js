@@ -11,12 +11,12 @@ exports.getCouponList = async (req, res) => {
         // Formatting for DataTable (Status mapping etc)
         const formattedCoupons = coupons.map(coupon => ({
             id: coupon.id,
-            coupon_name: coupon.code,
-            coupon_code: coupon.code,
-            discount: `${coupon.discount}${coupon.type === 'PERCENT' ? '%' : ''}`,
-            start_date: coupon.startDate,
-            end_date: coupon.endDate,
-            expiry_date: coupon.endDate,
+            code: coupon.code,
+            type: coupon.discount_type,
+            amount: coupon.discount_amount,
+            expiry: coupon.expiry_date ? coupon.expiry_date.toLocaleDateString() : 'N/A',
+            usage_limit: coupon.usage_limit,
+            used_count: coupon.used_count,
             status: coupon.status
         }));
 
@@ -60,7 +60,7 @@ exports.getCouponList = async (req, res) => {
 
 exports.addCoupon = (req, res) => {
     const staff = req.user;
-    req.app.render('pages/admin-coupon-add', { staff }, (err, html) => {
+    res.render('pages/admin-coupon-add', { staff }, (err, html) => {
         if (err) {
             console.error('Error rendering coupon add:', err);
             return res.status(500).send('Error rendering coupon add');
@@ -83,23 +83,23 @@ exports.addCoupon = (req, res) => {
 
 exports.saveCoupon = async (req, res) => {
     try {
-        const { couponName, couponCode, discount, couponType, startDate, endDate, status } = req.body;
+        const { code, type, amount, expiry, usage_limit, per_user_limit, status } = req.body;
         const newCoupon = await prisma.coupon.create({
             data: {
-                name: couponName,
-                code: couponCode,
-                discount: parseFloat(discount),
-                type: couponType,
-                startDate: new Date(startDate),
-                endDate: new Date(endDate),
-                status: status || 'Scheduled'
+                code: code,
+                discount_type: type,
+                discount_amount: parseFloat(amount),
+                expiry_date: expiry ? new Date(expiry) : null,
+                usage_limit: usage_limit ? parseInt(usage_limit) : null,
+                per_user_limit: per_user_limit ? parseInt(per_user_limit) : null,
+                status: status || 'Active'
             }
         });
-        res.json({ success: true, coupon: newCoupon });
         await logAction(req, 'CREATE_COUPON', 'Coupon', newCoupon.id, `Created coupon: ${newCoupon.code}`);
+        res.redirect('/admin/ecommerce/coupons');
     } catch (error) {
         console.error('Error saving coupon:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).send('Error saving coupon');
     }
 };
 
@@ -107,11 +107,19 @@ exports.editCoupon = async (req, res) => {
     try {
         const staff = req.user;
         const couponId = parseInt(req.params.id);
-        const coupon = await prisma.coupon.findUnique({
+        const couponData = await prisma.coupon.findUnique({
             where: { id: couponId }
         });
 
-        if (!coupon) return res.status(404).send('Coupon not found');
+        if (!couponData) return res.status(404).send('Coupon not found');
+
+        // Format for template
+        const coupon = {
+            ...couponData,
+            type: couponData.discount_type,
+            amount: couponData.discount_amount,
+            expiry: couponData.expiry_date ? couponData.expiry_date.toISOString().split('T')[0] : ''
+        };
 
         res.render('pages/admin-coupon-edit', { coupon, staff }, (err, html) => {
             if (err) {
@@ -141,24 +149,24 @@ exports.editCoupon = async (req, res) => {
 exports.updateCoupon = async (req, res) => {
     try {
         const couponId = parseInt(req.params.id);
-        const { couponName, couponCode, discount, couponType, startDate, endDate, status } = req.body;
+        const { code, type, amount, expiry, usage_limit, per_user_limit, status } = req.body;
         const updatedCoupon = await prisma.coupon.update({
             where: { id: couponId },
             data: {
-                name: couponName,
-                code: couponCode,
-                discount: parseFloat(discount),
-                type: couponType,
-                startDate: new Date(startDate),
-                endDate: new Date(endDate),
-                status: status || 'Scheduled'
+                code: code,
+                discount_type: type,
+                discount_amount: parseFloat(amount),
+                expiry_date: expiry ? new Date(expiry) : null,
+                usage_limit: usage_limit ? parseInt(usage_limit) : null,
+                per_user_limit: per_user_limit ? parseInt(per_user_limit) : null,
+                status: status || 'Active'
             }
         });
-        res.json({ success: true, coupon: updatedCoupon });
         await logAction(req, 'UPDATE_COUPON', 'Coupon', couponId, `Updated coupon: ${updatedCoupon.code}`);
+        res.redirect('/admin/ecommerce/coupons');
     } catch (error) {
         console.error('Error updating coupon:', error);
-        res.status(500).json({ success: false, error: 'Error updating coupon' });
+        res.status(500).send('Error updating coupon');
     }
 };
 

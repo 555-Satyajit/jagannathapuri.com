@@ -69,10 +69,10 @@ router.get('/ecommerce/products/debug/:id', checkPermission('manage_products'), 
 // Coupons
 router.get('/ecommerce/coupons', checkPermission('manage_products'), coupon.getCouponList);
 router.get('/ecommerce/coupons/add', checkPermission('manage_products'), coupon.addCoupon);
-router.post('/ecommerce/coupons/add', checkPermission('manage_products'), coupon.saveCoupon);
+router.post('/ecommerce/coupons/add', checkPermission('manage_products'), csrfProtection, coupon.saveCoupon);
 router.get('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), coupon.editCoupon);
-router.post('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), coupon.updateCoupon);
-router.delete('/ecommerce/coupons/delete/:id', checkPermission('manage_products'), coupon.deleteCoupon);
+router.post('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), csrfProtection, coupon.updateCoupon);
+router.delete('/ecommerce/coupons/delete/:id', checkPermission('manage_products'), csrfProtection, coupon.deleteCoupon);
 
 // Orders
 router.get('/ecommerce/orders', checkPermission('manage_orders'), order.getOrderList);
