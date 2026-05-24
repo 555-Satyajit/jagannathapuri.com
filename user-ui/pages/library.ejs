@@ -22,23 +22,62 @@
 <!-- ========== Blog Grid Section Start ========== -->
 <div class="pb-12">
     <div class="container">
+        <style>
+          @media (max-width: 1023px) {
+            #filter-sidebar {
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 300px !important;
+              max-width: 80vw !important;
+              height: 100vh !important;
+              z-index: 1050 !important;
+              background-color: white !important;
+              transform: translateX(-100%);
+              transition: transform 0.3s ease-in-out;
+              overflow-y: auto !important;
+              padding: 0 !important;
+            }
+            #filter-sidebar.open {
+              transform: translateX(0) !important;
+            }
+            #filter-overlay {
+              position: fixed;
+              inset: 0;
+              background-color: rgba(0, 0, 0, 0.5);
+              z-index: 1040;
+              display: none;
+            }
+            #filter-overlay.open {
+              display: block;
+            }
+            #close-filter-btn {
+              display: block;
+            }
+          }
+          @media (min-width: 1024px) {
+            #filter-overlay {
+              display: none !important;
+            }
+            #close-filter-btn {
+              display: none !important;
+            }
+            #open-filter-btn {
+              display: none !important;
+            }
+          }
+        </style>
+        <div id="filter-overlay"></div>
         <div class="grid grid-cols-12 gap-6">
             <div class="xl:col-span-9 col-span-12">
                 <div class="flex items-center justify-between mb-12 wow animate__animated animate__fadeInUp"
                     data-wow-delay="0.2s">
-                    <div class="flex items-center gap-x-4">
-                        <a class='w-10 h-10 rounded-full inline-flex items-center justify-center btn btn-default outline shadow-none cursor-pointer'
-                            href='blog-list.html'>
+                    <div class="flex items-center gap-x-4 lg:hidden">
+                        <button type="button" id="open-filter-btn" class='w-10 h-10 rounded-full inline-flex items-center justify-center btn btn-default outline shadow-none cursor-pointer'>
                             <span class="inline-flex items-center justify-center">
-                                <i
-                                    class="hgi hgi-stroke hgi-left-to-right-list-bullet text-2xl leading-6 text-light-primary-text"></i>
+                                <i class="hgi hgi-stroke hgi-filter text-2xl leading-6 text-primary"></i>
                             </span>
-                        </a>
-                        <a href="blog-grid.html#"
-                            class="w-10 h-10 rounded-full inline-flex items-center justify-center btn-primary cursor-pointer">
-                            <span class="inline-flex items-center justify-center"><i
-                                    class="hgi hgi-stroke hgi-more-01 text-2xl leading-6 text-white"></i></span>
-                        </a>
+                        </button>
                     </div>
                     <!-- sorting -->
                     <div class="relative min-w-[100px]">
@@ -64,8 +103,7 @@
                                         <div class="mb-6 h-[250px] overflow-hidden rounded-2xl">
                                             <% if (item.image) { %>
                                                 <img src="/uploads/<%= item.image %>" alt="<%= item.title %>"
-                                                    class="rounded-2xl w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    onerror="this.src='https://placehold.co/600x400/FFEB69/white?text=Spiritual+Wisdom'" />
+                                                    class="rounded-2xl w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                                 <% } else { %>
                                                     <img src="https://placehold.co/600x400/FFEB69/white?text=Spiritual+Wisdom"
                                                         alt="Placeholder"
@@ -194,59 +232,72 @@
                     <% } %>
             </div>
             <div class="xl:col-span-3 col-span-12">
-                <div class="sticky top-4">
+                <div class="lg:sticky top-4 p-4 lg:p-0">
                     <div class="flex flex-col gap-y-6">
-                        <!-- Category-content -->
-                        <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
-                            data-wow-delay="0.3s">
-                            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
-                                <div class="flex items-center justify-between">
-                                    <h5 class="text-light-primary-text">Category</h5>
-                                    <a href="/library"
-                                        class="text-primary text-base leading-[26px] font-semibold hover:underline">Clear
-                                        All</a>
-                                </div>
+                        
+                        <!-- Filter Sidebar Wrapper (Becomes fixed offcanvas on mobile) -->
+                        <div id="filter-sidebar" class="flex flex-col gap-y-6">
+                            <div class="lg:hidden flex items-center justify-between px-6 py-4 border-b border-gray-300 bg-gray-200">
+                                <h5 class="text-light-primary-text">Library Menu</h5>
+                                <button type="button" id="close-filter-btn" class="text-gray-500 hover:text-error">
+                                    <i class="hgi hgi-stroke hgi-cancel-01 text-2xl"></i>
+                                </button>
                             </div>
-
-                            <div class="category-content-list p-6">
-                                <div class="max-h-[300px] overflow-y-auto pr-2.5 category-scroll">
-                                    <ul class="flex flex-col gap-y-2">
-                                        <% categories.forEach(cat=> { %>
-                                            <li class="widget-category-content-list-items">
-                                                <a href="/library?category=<%= cat.slug %>"
-                                                    class="group flex items-center justify-between w-full cursor-pointer">
-                                                    <span class="flex items-center gap-x-2">
-                                                        <span
-                                                            class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out">
-                                                            <%= cat.name %>
-                                                        </span>
-                                                    </span>
-                                                    <span
-                                                        class="group-hover:text-primary transition-colors duration-300 ease-in-out">
-                                                        (<%= cat._count.contents %>)
-                                                    </span>
+                            
+                            <div class="p-4 lg:p-0 flex flex-col gap-y-6">
+                                <!-- Category-content -->
+                                <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
+                                    data-wow-delay="0.3s">
+                                    <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
+                                        <div class="flex items-center justify-between">
+                                            <h5 class="text-light-primary-text">Category</h5>
+                                            <a href="/library"
+                                                class="text-primary text-base leading-[26px] font-semibold hover:underline">Clear
+                                                All</a>
+                                        </div>
+                                    </div>
+        
+                                    <div class="category-content-list p-6">
+                                        <div class="max-h-[300px] overflow-y-auto pr-2.5 category-scroll">
+                                            <ul class="flex flex-col gap-y-2">
+                                                <% categories.forEach(cat=> { %>
+                                                    <li class="widget-category-content-list-items">
+                                                        <a href="/library?category=<%= cat.slug %>"
+                                                            class="group flex items-center justify-between w-full cursor-pointer">
+                                                            <span class="flex items-center gap-x-2">
+                                                                <span
+                                                                    class="text-light-primary-text group-hover:text-primary transition-colors duration-300 ease-in-out <%= (typeof pagination !== 'undefined' && pagination.query && pagination.query.category === cat.slug) ? 'text-primary font-bold' : '' %>">
+                                                                    <%= cat.name %>
+                                                                </span>
+                                                            </span>
+                                                            <span
+                                                                class="group-hover:text-primary transition-colors duration-300 ease-in-out <%= (typeof pagination !== 'undefined' && pagination.query && pagination.query.category === cat.slug) ? 'text-primary font-bold' : '' %>">
+                                                                (<%= cat._count.contents %>)
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                    <% }); %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Popular Tags -->
+                                <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
+                                    data-wow-delay="0.4s">
+                                    <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
+                                        <h5 class="text-light-primary-text">Popular Tags</h5>
+                                    </div>
+        
+                                    <div class="popular-tags-content p-6">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <% tags.forEach(tag=> { %>
+                                                <a href="/library?tag=<%= tag.slug %>"
+                                                    class="btn btn-default outline text-xs leading-[20px] font-normal py-1 px-3 rounded-[50px] cursor-pointer shadow-none hover:bg-primary hover:text-white transition-all <%= (typeof pagination !== 'undefined' && pagination.query && pagination.query.tag === tag.slug) ? 'bg-primary text-white border-primary' : '' %>">
+                                                    <%= tag.name %>
                                                 </a>
-                                            </li>
-                                            <% }); %>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Popular Tags -->
-                        <div class="border border-gray-300 rounded-2xl category wow animate__animated animate__fadeInUp"
-                            data-wow-delay="0.4s">
-                            <div class="px-6 py-4 bg-gray-200 rounded-t-2xl sidebar-title">
-                                <h5 class="text-light-primary-text">Popular Tags</h5>
-                            </div>
-
-                            <div class="popular-tags-content p-6">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <% tags.forEach(tag=> { %>
-                                        <a href="/library?tag=<%= tag.slug %>"
-                                            class="btn btn-default outline text-xs leading-[20px] font-normal py-1 px-3 rounded-[50px] cursor-pointer shadow-none hover:bg-primary hover:text-white transition-all">
-                                            <%= tag.name %>
-                                        </a>
-                                        <% }); %>
+                                                <% }); %>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -267,8 +318,7 @@
                                                     <div class="size-16 flex-shrink-0 rounded-lg overflow-hidden">
                                                         <% if (post.image) { %>
                                                             <img src="/uploads/<%= post.image %>" alt="post-image"
-                                                                class="h-full w-full object-cover"
-                                                                onerror="this.src='https://placehold.co/100x100/FFEB69/white?text=JS'" />
+                                                                class="h-full w-full object-cover" />
                                                             <% } else { %>
                                                                 <img src="https://placehold.co/100x100/FFEB69/white?text=JS"
                                                                     alt="post-image"
@@ -299,5 +349,36 @@
         </div>
     </div>
 </div>
+</div>
 <!-- ========== Blog Grid Section End ========== -->
-
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterSidebar = document.getElementById('filter-sidebar');
+    const filterOverlay = document.getElementById('filter-overlay');
+    const openFilterBtn = document.getElementById('open-filter-btn');
+    const closeFilterBtn = document.getElementById('close-filter-btn');
+
+    if (openFilterBtn) {
+      openFilterBtn.addEventListener('click', () => {
+        filterSidebar.classList.add('open');
+        filterOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    const closeFilter = () => {
+      filterSidebar.classList.remove('open');
+      filterOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    if (closeFilterBtn) {
+      closeFilterBtn.addEventListener('click', closeFilter);
+    }
+
+    if (filterOverlay) {
+      filterOverlay.addEventListener('click', closeFilter);
+    }
+  });
+</script>
