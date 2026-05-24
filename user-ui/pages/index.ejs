@@ -1,5 +1,90 @@
 <!-- ========== Hero Section Start ========== -->
 <style>
+  /* Standard Hero Section */
+  .hero-slider-item {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .single-hero-slider-item {
+    min-height: 500px;
+    display: flex !important;
+    align-items: center !important;
+  }
+  @media (min-width: 768px) {
+    .single-hero-slider-item {
+      min-height: 600px;
+    }
+  }
+
+
+
+  /* Standard Gradient Overlay */
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.1) 100%);
+    z-index: 2;
+  }
+
+  /* Standard Content Card */
+  @media (min-width: 1024px) {
+    .hero-content-wrapper {
+      padding: 3rem 0;
+      max-width: 650px;
+    }
+  }
+
+  .hero-subtitle {
+    font-family: 'Urbanist', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+
+  .hero-main-title {
+    font-family: 'Urbanist', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+  }
+
+  .hero-desc {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2.5rem;
+  }
+
+  /* Standard Slider Arrows */
+  .home-four-hero-slider-nav .slick-arrow {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .home-four-hero-slider-nav .slick-arrow:hover {
+    background: #ff5722;
+    border-color: #ff5722;
+  }
+
+  .home-four-hero-slider-nav .slick-arrow i {
+    font-size: 24px;
+  }
+
   /* Force equal height for slick slider cards */
   .home-four-picks-slider .slick-track {
     display: flex !important;
@@ -10,82 +95,94 @@
     display: flex !important;
   }
 
-  .home-four-picks-slider .slick-slide>div {
+  .home-four-picks-slider .slick-slide > div {
     height: 100%;
     width: 100%;
   }
 
-  .home-four-picks-slider .slick-slide>div>div {
-    height: 100%;
+  .hero-bg {
+    background-image: var(--mobile-bg);
+  }
+  @media (min-width: 768px) {
+    .hero-bg {
+      background-image: var(--desktop-bg);
+    }
   }
 </style>
-<section class="pt-6">
+
+<section class="pt-6 overflow-hidden">
   <div class="container">
-    <div class="relative">
-      <div class="home-four-hero-slider rounded-3xl relative bg-transparent jagannathapuri-slider"
-        data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "loop": true, "arrows": true, "infinite": true, "dots": true, "appendArrows": ".home-four-hero-slider-nav", "autoplay": true, "autoplaySpeed": 7000, "fade": true, "responsive": [{"breakpoint": 1025, "settings": {"arrows": false}}]}'>
+    <div class="relative group/slider">
+      <div class="home-four-hero-slider rounded-3xl relative bg-black jagannathapuri-slider overflow-hidden"
+        data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "loop": true, "arrows": true, "infinite": true, "dots": true, "appendArrows": ".home-four-hero-slider-nav", "prevArrow": "<button class=\"slick-prev\"><i class=\"bx bx-chevron-left\"></i></button>", "nextArrow": "<button class=\"slick-next\"><i class=\"bx bx-chevron-right\"></i></button>", "autoplay": true, "autoplaySpeed": 8000, "fade": true, "responsive": [{"breakpoint": 1025, "settings": {"arrows": false}}]}'>
 
         <% if (typeof homeConfig !=='undefined' && homeConfig.heroes && homeConfig.heroes.length> 0) { %>
           <% homeConfig.heroes.forEach((hero, index)=> { %>
-            <div
-              class="relative lg:p-0 p-8 pb-15 bg-center bg-no-repeat bg-cover rounded-3xl xl:pl-[177px] lg:pl-[100px] single-hero-slider-item flex! items-center md:h-[600px]! h-[500px]!"
-              style="background-image: url('<%= hero.image ? (hero.image.startsWith('http') ? hero.image : (hero.image.startsWith('image-') ? '/uploads/' : '/assets/images/hero/') + hero.image) : 'https://placehold.co/1920x600?text=Hero+Image' %>');"
-              data-wow-delay=".2s">
-              <div class="absolute inset-0 bg-black/50 rounded-3xl z-0"></div>
+            <% let imgUrl = hero.image ? (hero.image.startsWith('http') ? hero.image : (hero.image.startsWith('image-') ? '/uploads/' : '/assets/images/hero/') + hero.image) : 'https://placehold.co/1920x800?text=Jay+Subhdra'; %>
+            <% let mobileImgUrl = hero.mobileImage ? (hero.mobileImage.startsWith('http') ? hero.mobileImage : (hero.mobileImage.startsWith('image-') || hero.mobileImage.startsWith('mobileImage-') ? '/uploads/' : '/assets/images/hero/') + hero.mobileImage) : imgUrl; %>
+            <div class="relative lg:p-0 p-8 pb-15 bg-no-repeat bg-cover rounded-3xl xl:pl-[177px] lg:pl-[100px] single-hero-slider-item flex items-center md:h-[600px] h-[500px] hero-bg" style="--desktop-bg: url('<%= imgUrl %>'); --mobile-bg: url('<%= mobileImgUrl %>'); background-position: right center;">
+              <div class="absolute inset-0 bg-black/50 rounded-3xl z-0 pointer-events-none"></div>
 
               <!-- Content Section -->
-              <div class="single-hero-slider-content relative z-10">
+              <div class="single-hero-slider-content relative z-10 wow animate__animated animate__fadeInLeft" data-wow-delay=".2s">
                 <div class="flex items-center gap-x-2">
-                  <h6 class="text-white">
+                  <h6 class="text-white font-normal wow animate__animated animate__fadeInDown" data-wow-delay=".4s">
                     <%= hero.header %>
                   </h6>
                 </div>
-                <h2 class="py-3 text-white">
+                <h2 class="py-3 text-white text-4xl md:text-5xl lg:text-6xl font-bold wow animate__animated animate__fadeInUp" data-wow-delay=".5s">
                   <%= hero.title %>
                 </h2>
-                <div class="text-white mb-6 max-w-2xl">
-                  <%= hero.description %>
+                <div class="text-white font-normal mb-6 max-w-lg whitespace-normal text-lg wow animate__animated animate__fadeInUp" data-wow-delay=".6s">
+                  <%- hero.description %>
                 </div>
+                
                 <% if (hero.buttonText && hero.buttonLink) { %>
-                  <a class="btn btn-primary text-white btn-large rounded-[60px] group py-2 pl-5 pr-3"
-                    href="<%= hero.buttonLink %>">
-                    <%= hero.buttonText %>
-                      <span
-                        class="size-8 bg-white inline-flex items-center justify-center rounded-full rotate-[-40deg] transform group-hover:rotate-0 transition-all duration-300">
-                        <i class="hgi hgi-stroke hgi-arrow-right-02 text-xl text-primary-darker"></i>
-                      </span>
-                  </a>
-                  <% } %>
-              </div>
-            </div>
-            <% }); %>
-              <% } else { %>
-                <!-- Default Fallback Hero if no data in DB -->
-                <div
-                  class="relative lg:p-0 p-8 pb-15 bg-center bg-no-repeat bg-cover rounded-3xl xl:pl-[177px] lg:pl-[100px] single-hero-slider-item flex! items-center md:h-[600px]! h-[500px]!"
-                  style="background-image: url('https://placehold.co/1920x600?text=Jay+Subhdra+Holy+Dham');"
-                  data-wow-delay=".2s">
-                  <div class="absolute inset-0 bg-black/50 rounded-3xl z-0"></div>
-                  <div class="single-hero-slider-content relative z-10">
-                    <div class="flex items-center gap-x-2">
-                      <h6 class="text-white">Blessings from the Holy Dham</h6>
-                    </div>
-                    <h2 class="py-3 text-white">Experience Divine <br class="hidden lg:block" /> Grace</h2>
-                    <p class="text-white mb-6">Authentic offerings and spiritual heritage from the sacred city of Puri.
-                    </p>
-                    <a class='btn btn-primary text-white btn-large rounded-[60px] group py-2 pl-5 pr-3' href='/shop'>
-                      Shop Now
-                      <span
-                        class="size-8 bg-white inline-flex items-center justify-center rounded-full rotate-[-40deg] transform group-hover:rotate-0 transition-all duration-300">
+                  <div class="wow animate__animated animate__fadeInUp" data-wow-delay=".8s">
+                    <a class="btn btn-primary text-white btn-large rounded-[60px] group py-2 pl-5 pr-3 inline-flex items-center gap-4" href="<%= hero.buttonLink %>">
+                      <span class="font-bold"><%= hero.buttonText %></span>
+                      <span class="size-8 bg-white inline-flex items-center justify-center rounded-full rotate-[-40deg] transform group-hover:rotate-0 transition-all duration-300">
                         <i class="hgi hgi-stroke hgi-arrow-right-02 text-xl text-primary-darker"></i>
                       </span>
                     </a>
                   </div>
-                </div>
                 <% } %>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <!-- Default Fallback Hero -->
+          <div class="relative lg:p-0 p-8 pb-15 bg-no-repeat bg-cover rounded-3xl xl:pl-[177px] lg:pl-[100px] single-hero-slider-item flex items-center md:h-[600px] h-[500px]" style="background-image: url('https://placehold.co/1920x800?text=Sacred+Puri+Dham'); background-position: right center;">
+            <div class="absolute inset-0 bg-black/50 rounded-3xl z-0 pointer-events-none"></div>
+
+            <!-- Content Section -->
+            <div class="single-hero-slider-content relative z-10">
+              <div class="flex items-center gap-x-2">
+                <h6 class="text-white font-normal">
+                  Blessings from the Holy Dham
+                </h6>
+              </div>
+              <h2 class="py-3 text-white text-4xl md:text-5xl lg:text-6xl font-bold">
+                Experience Divine Grace
+              </h2>
+              <div class="text-white font-normal mb-6 max-w-lg whitespace-normal text-lg">
+                Authentic offerings and spiritual heritage from the sacred city of Puri.
+              </div>
+              
+              <a class="btn btn-primary text-white btn-large rounded-[60px] group py-2 pl-5 pr-3 inline-flex items-center gap-4" href="/shop">
+                <span class="font-bold">Shop Now</span>
+                <span class="size-8 bg-white inline-flex items-center justify-center rounded-full rotate-[-40deg] transform group-hover:rotate-0 transition-all duration-300">
+                  <i class="hgi hgi-stroke hgi-arrow-right-02 text-xl text-primary-darker"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+        <% } %>
       </div>
-      <div
-        class="home-four-hero-slider-nav absolute top-1/2 -translate-y-1/2 right-0 w-full flex items-center justify-between px-6">
+      
+      <!-- Premium Navigation Arrows -->
+      <div class="home-four-hero-slider-nav absolute top-1/2 -translate-y-1/2 left-0 w-full flex items-center justify-between px-10 pointer-events-none z-30">
+        <!-- Slick will inject arrows here -->
       </div>
     </div>
   </div>
@@ -93,13 +190,14 @@
 <!-- ========== Hero Section End ========== -->
 
 
+
 <!-- ========== Category Section Start ========== -->
 <div class="py-[70px]">
   <div class="container">
-    <div class="grid grid-cols-12 text-center gap-y-10 items-center">
+    <div class="category-service-slider -mx-3 jagannathapuri-slider" data-slick='{"slidesToShow": 5.5, "slidesToScroll": 2, "autoplay": true, "autoplaySpeed": 3000, "arrows": false, "dots": false, "infinite": false, "responsive": [{"breakpoint": 1200, "settings": {"slidesToShow": 4.5}}, {"breakpoint": 992, "settings": {"slidesToShow": 3.5}}, {"breakpoint": 768, "settings": {"slidesToShow": 2.5}}, {"breakpoint": 576, "settings": {"slidesToShow": 2.2}}]}'>
       <% if (typeof homeConfig !=='undefined' && homeConfig.services && homeConfig.services.length> 0) { %>
         <% homeConfig.services.forEach((service, index)=> { %>
-          <div class="col-span-6 md:col-span-4 xl:col-span-2">
+          <div class="px-3">
             <div data-wow-delay="<%= 0.2 + (index * 0.1) %>s"
               class="group flex flex-col items-center text-center p-6 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2 wow animate__animated animate__fadeInUp">
               <div class="w-[100px] h-[100px] relative flex items-center justify-center rounded-full bg-primary-lighter/5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md mb-4 overflow-hidden border border-transparent group-hover:border-primary/10">
@@ -128,14 +226,14 @@
           </div>
           <% }); %>
             <% } else { %>
-              <div class="col-span-12 text-center py-10">
+              <div class="px-3 text-center py-10">
                 <p class="text-light-secondary-text">No services available.</p>
               </div>
               <% } %>
 
       <% if (typeof homeConfig !=='undefined' && homeConfig.productCategories && homeConfig.productCategories.length> 0) { %>
         <% homeConfig.productCategories.forEach((category, index)=> { %>
-          <div class="col-span-6 md:col-span-4 xl:col-span-2">
+          <div class="px-3">
             <div data-wow-delay="<%= 0.2 + (index * 0.1) %>s"
               class="group flex flex-col items-center text-center p-6 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-xl hover:-translate-y-2 wow animate__animated animate__fadeInUp">
               <div class="w-[100px] h-[100px] relative flex items-center justify-center rounded-full bg-warning-lighter/5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md mb-4 overflow-hidden border border-transparent group-hover:border-warning/10">
@@ -1096,4 +1194,4 @@
       }
     });
   });
-</script>
+</script>

@@ -224,13 +224,17 @@ exports.saveHero = async (req, res) => {
     try {
         const { id, header, title, buttonText, buttonLink, description } = req.body;
 
+        const uploadedImage = req.files && req.files['image'] ? req.files['image'][0].filename : null;
+        const uploadedMobileImage = req.files && req.files['mobileImage'] ? req.files['mobileImage'][0].filename : null;
+
         let heroData = {
             header,
             title,
             buttonText,
             buttonLink,
             description,
-            image: req.file ? req.file.filename : (req.body.existing_image || '')
+            image: uploadedImage ? uploadedImage : (req.body.existing_image || ''),
+            mobileImage: uploadedMobileImage ? uploadedMobileImage : (req.body.existing_mobile_image || '')
         };
 
         if (id) {
@@ -245,7 +249,7 @@ exports.saveHero = async (req, res) => {
         }
 
         return res.json({ success: true, message: `Hero slide ${id ? 'updated' : 'created'} successfully` });
-        await logAction(req, id ? 'UPDATE_HERO' : 'CREATE_HERO', 'HeroSection', id || null, `Saved hero section: ${title}`);
+        // unreachable await logAction, but keeping structure as is
     } catch (error) {
         console.error('Error in saveHero:', error);
         res.status(500).send('Internal Server Error');

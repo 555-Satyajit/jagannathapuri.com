@@ -7,6 +7,7 @@
         <% if (hero) { %>
             <input type="hidden" name="id" value="<%= hero.id %>">
             <input type="hidden" name="existing_image" value="<%= hero.image %>">
+            <input type="hidden" name="existing_mobile_image" value="<%= hero.mobileImage %>">
             <% } %>
 
         <div class="row">
@@ -17,17 +18,31 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="heroImage" class="form-label" style="font-weight: 600;">Slide Image</label>
+                                <label for="heroImage" class="form-label" style="font-weight: 600;">Desktop Slide Image</label>
                                 <input type="file" class="form-control" name="image" id="heroImage">
                                 <% if (hero && hero.image) { %>
                                     <div class="mt-2 text-center border rounded p-2 bg-light">
                                         <img src="<%= (hero.image.startsWith('image-') ? '/uploads/' : '/assets/images/hero/') + hero.image %>"
-                                            alt="Current Image" class="img-fluid rounded shadow-sm"
+                                            alt="Current Desktop Image" class="img-fluid rounded shadow-sm"
                                             style="max-height: 200px;">
-                                        <div class="mt-1 small text-muted">Current Slide Image</div>
+                                        <div class="mt-1 small text-muted">Current Desktop Slide Image</div>
                                     </div>
                                 <% } %>
                                 <small class="text-muted">Recommended size: 1920x800px</small>
+
+                                <div class="mt-4">
+                                    <label for="heroMobileImage" class="form-label" style="font-weight: 600;">Mobile Slide Image (Optional)</label>
+                                    <input type="file" class="form-control" name="mobileImage" id="heroMobileImage">
+                                    <% if (hero && hero.mobileImage) { %>
+                                        <div class="mt-2 text-center border rounded p-2 bg-light">
+                                            <img src="<%= ((hero.mobileImage.startsWith('image-') || hero.mobileImage.startsWith('mobileImage-')) ? '/uploads/' : '/assets/images/hero/') + hero.mobileImage %>"
+                                                alt="Current Mobile Image" class="img-fluid rounded shadow-sm"
+                                                style="max-height: 200px;">
+                                            <div class="mt-1 small text-muted">Current Mobile Slide Image</div>
+                                        </div>
+                                    <% } %>
+                                    <small class="text-muted">Recommended size: 800x1200px (Vertical)</small>
+                                </div>
                             </div>
 
                             <div class="col-md-6">

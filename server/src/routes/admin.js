@@ -129,7 +129,7 @@ router.get('/settings/audit-logs/data', checkPermission('manage_settings'), dash
 router.get('/store/home/hero/list', checkPermission('manage_store_config'), home.getHeroList);
 router.get('/store/home/hero/add', checkPermission('manage_store_config'), home.getAddHero);
 router.get('/store/home/hero/edit/:id', checkPermission('manage_store_config'), home.getEditHero);
-router.post('/store/home/hero/save', checkPermission('manage_store_config'), upload.single('image'), csrfProtection, home.saveHero);
+router.post('/store/home/hero/save', checkPermission('manage_store_config'), upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), csrfProtection, home.saveHero);
 router.delete('/store/home/hero/delete/:id', checkPermission('manage_store_config'), home.deleteHero);
 
 // Promo Banner

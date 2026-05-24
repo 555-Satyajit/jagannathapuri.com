@@ -462,6 +462,7 @@ model HeroSection {
   buttonText  String?
   buttonLink  String?
   image       String?
+  mobileImage String?
   order       Int      @default(0)
   status      String   @default("Active")
   created_at  DateTime @default(now())
