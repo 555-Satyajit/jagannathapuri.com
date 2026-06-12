@@ -171,7 +171,7 @@ export default async function PanchangPage({
                 
                 <div className="flex-1 flex flex-col gap-2">
                   {upcomingFestivals.length > 0 ? (
-                    upcomingFestivals.map((fest) => {
+                    upcomingFestivals.map((fest: any) => {
                       const festDateStr = fest.date.toISOString().split('T')[0];
                       const selDateStr = selectedDate.toISOString().split('T')[0];
                       const isToday = festDateStr === selDateStr;
