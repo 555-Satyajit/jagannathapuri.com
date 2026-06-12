@@ -109,7 +109,7 @@ export default async function LibraryPage({
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8 mb-12">
-                {articles.map((article) => (
+                {articles.map((article: any) => (
                   <Link 
                     href={`/library/${article.slug}`} 
                     key={article.id}
@@ -132,7 +132,7 @@ export default async function LibraryPage({
                     
                     <div className="p-3 md:p-6 flex flex-col flex-1">
                       <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-4 flex-wrap">
-                        {article.categories.slice(0, 1).map(cat => (
+                        {article.categories.slice(0, 1).map((cat: any) => (
                           <span key={cat.id} className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-1.5 py-0.5 md:px-2 md:py-1 rounded-sm line-clamp-1">
                             {cat.name}
                           </span>
@@ -204,7 +204,7 @@ export default async function LibraryPage({
                     All Articles
                   </Link>
                 </li>
-                {categories.map(cat => (
+                {categories.map((cat: any) => (
                   <li key={cat.id}>
                     <Link 
                       href={`/library?category=${cat.slug}`}
@@ -223,7 +223,7 @@ export default async function LibraryPage({
                 Newly Arrived
               </h3>
               <div className="space-y-4">
-                {newlyArrived.map(item => (
+                {newlyArrived.map((item: any) => (
                   <Link href={`/library/${item.slug}`} key={item.id} className="group flex gap-3 items-start">
                     {item.image ? (
                       <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-zinc-100">
