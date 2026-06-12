@@ -61,7 +61,7 @@ export default async function DailyRitualsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {rituals.map((ritual) => (
+              {rituals.map((ritual: any) => (
                 <div key={ritual.id} className="bg-white border border-zinc-200 rounded-xl p-4 flex items-center gap-4 shadow-sm hover:border-orange-300 hover:shadow-md transition-all">
                   <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
                     {getIcon(ritual.icon)}
@@ -93,7 +93,7 @@ export default async function DailyRitualsPage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {darshans.map((darshan) => (
+              {darshans.map((darshan: any) => (
                 <div key={darshan.id} className="bg-white rounded-2xl p-4 md:p-5 border border-zinc-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-amber-300 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 shrink-0 hidden sm:flex">
@@ -133,7 +133,7 @@ export default async function DailyRitualsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {facts.map((fact) => (
+              {facts.map((fact: any) => (
                 <div key={fact.id} className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm flex gap-4">
                   <div className="w-12 h-12 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-600 shrink-0">
                     {getIcon(fact.icon)}
