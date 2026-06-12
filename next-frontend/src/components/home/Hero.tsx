@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import HeroCarouselClient from "./HeroCarouselClient";
 
 export default async function Hero() {
-  let heroes: string | any[] = [];
+  let heroes: any[] = [];
   try {
     heroes = await prisma.heroSection.findMany({ 
       where: { status: 'Active' }, 
