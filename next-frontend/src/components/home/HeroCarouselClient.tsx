@@ -53,6 +53,7 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      style={{ touchAction: 'pan-y' }}
     >
       
       {/* Background Images */}
