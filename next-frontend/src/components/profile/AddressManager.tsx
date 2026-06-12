@@ -104,7 +104,7 @@ export default function AddressManager() {
       });
       const data = await res.json();
       if (data.success) {
-        setAddresses(prev => prev.filter(a => a.id !== id));
+        setAddresses(prev => prev.filter((a: any) => a.id !== id));
       }
     } catch (err) {
       console.error("Failed to delete address", err);

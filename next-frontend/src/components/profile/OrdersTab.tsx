@@ -107,7 +107,7 @@ export default function OrdersTab() {
 
           {/* Tracking Timeline */}
           {(() => {
-            const activeOrder = orders.find(o => o.id === trackingOrder);
+            const activeOrder = orders.find((o: any) => o.id === trackingOrder);
             const statusStr = getStatusString(activeOrder?.status || 1);
             const statusNum = activeOrder?.status || 1;
             

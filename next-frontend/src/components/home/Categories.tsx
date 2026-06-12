@@ -19,13 +19,13 @@ export default async function Categories() {
     ]);
 
     items = [
-      ...services.map(s => ({
+      ...services.map((s: any) => ({
         id: `srv-${s.id}`,
         name: s.title,
         image: s.image,
         link: s.link || `/services/${s.slug}`
       })),
-      ...categories.map(c => ({
+      ...categories.map((c: any) => ({
         id: `cat-${c.id}`,
         name: c.name,
         image: c.image,

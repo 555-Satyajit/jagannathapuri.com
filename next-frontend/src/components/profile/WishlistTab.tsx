@@ -31,7 +31,7 @@ export default function WishlistTab() {
 
   const removeFromWishlist = async (productId: number) => {
     // Optimistically remove from UI
-    setWishlistItems(prev => prev.filter(item => item.productId !== productId));
+    setWishlistItems(prev => prev.filter((item: any) => item.productId !== productId));
 
     try {
       const res = await fetch("/api/auth/api/wishlist/remove", {
@@ -51,7 +51,7 @@ export default function WishlistTab() {
     }
   };
 
-  const filteredItems = wishlistItems.filter(item => 
+  const filteredItems = wishlistItems.filter((item: any) => 
     item.product?.product_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -95,7 +95,7 @@ export default function WishlistTab() {
         </div>
       ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map(item => (
+          {filteredItems.map((item: any) => (
             <div key={item.id} className="relative group/wishlist">
               <ProductCard product={item.product} />
               <button 

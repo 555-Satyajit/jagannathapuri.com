@@ -126,7 +126,7 @@ async function ShopContent({ searchParams }: { searchParams: any }) {
         {products.length > 0 ? (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 gap-y-8 sm:gap-y-12">
-              {products.map((product) => (
+              {products.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

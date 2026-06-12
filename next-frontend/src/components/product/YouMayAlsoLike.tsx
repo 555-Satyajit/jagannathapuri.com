@@ -28,7 +28,7 @@ export default async function YouMayAlsoLike({ currentProductId, categoryId }: Y
       const moreProducts = await prisma.product.findMany({
         where: {
           status: 1,
-          id: { notIn: [currentProductId, ...relatedProducts.map(p => p.id)] }
+          id: { notIn: [currentProductId, ...relatedProducts.map((p: any) => p.id)] }
         },
         include: { category: true },
         take: 4 - relatedProducts.length,
@@ -49,7 +49,7 @@ export default async function YouMayAlsoLike({ currentProductId, categoryId }: Y
         <h2 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight mb-10">You May Also Like</h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProducts.map((product) => (
+          {relatedProducts.map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
