@@ -41,18 +41,44 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
   };
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (touchStart === null || touchEnd === null) return;
     const distance = touchStart - touchEnd;
-    if (distance > 50) nextSlide(); // Swipe left -> next
-    if (distance < -50) prevSlide(); // Swipe right -> prev
+    if (distance > 50) nextSlide();
+    if (distance < -50) prevSlide();
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (touchStart !== null) {
+      setTouchEnd(e.clientX);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (touchStart === null || touchEnd === null) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) nextSlide();
+    if (distance < -50) prevSlide();
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   return (
     <section 
-      className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden group"
+      className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden group select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
       style={{ touchAction: 'pan-y' }}
     >
       
