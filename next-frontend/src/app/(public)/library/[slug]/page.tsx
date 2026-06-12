@@ -46,8 +46,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </Link>
         
         <div className="flex items-center gap-2 mb-6 flex-wrap">
-          {article.categories.map(cat => (
-            <span key={cat.id} className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+          {article.categories.map((cat: any) => (
+            <span key={cat.id} className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-100/50 px-3 py-1 rounded-full border border-orange-200/50">
               {cat.name}
             </span>
           ))}

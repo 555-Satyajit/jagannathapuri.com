@@ -20,7 +20,8 @@ export default function LibraryMobileFilter({ categories }: { categories: Catego
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get("category") || "all";
 
-  const handleCategoryChange = (val: string) => {
+  const handleCategoryChange = (val: string | null) => {
+    if (!val) return;
     if (val === "all") {
       router.push("/library");
     } else {
