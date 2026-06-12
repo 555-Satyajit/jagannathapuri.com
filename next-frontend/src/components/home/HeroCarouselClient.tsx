@@ -21,10 +21,9 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
   const activeHero = heroes[currentIndex];
 
   const getImageUrl = (img?: string | null) => {
-    if (!img) return "https://placehold.co/600x600?text=Jay+Subhdra";
-    if (img.startsWith('http')) return img;
-    if (img.startsWith('image-') || img.startsWith('mobileImage-') || img.startsWith('product_images-')) return `/uploads/${img}`;
-    return `/admin-assets/img/ecommerce-images/${img}`;
+    if (!img) return "https://placehold.co/1920x800?text=Jay+Subhdra";
+    if (img.startsWith('http') || img.startsWith('/')) return img;
+    return `/uploads/${img}`;
   };
 
   const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % heroes.length);

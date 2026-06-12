@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans text-zinc-900 bg-zinc-50">
+      <body className="min-h-full flex flex-col font-sans text-zinc-900 bg-zinc-50 overflow-x-hidden">
         <NextTopLoader color="#ea580c" showSpinner={false} shadow="0 0 10px #ea580c,0 0 5px #ea580c" />
         {children}
       </body>

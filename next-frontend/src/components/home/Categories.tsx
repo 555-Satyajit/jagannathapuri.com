@@ -38,9 +38,8 @@ export default async function Categories() {
 
   const getImageUrl = (img?: string | null) => {
     if (!img) return "https://placehold.co/600x800?text=Jay+Subhdra";
-    if (img.startsWith('http')) return img;
-    if (img.startsWith('image-') || img.startsWith('mobileImage-') || img.startsWith('product_images-')) return `/uploads/${img}`;
-    return `/admin-assets/img/ecommerce-images/${img}`;
+    if (img.startsWith('http') || img.startsWith('/')) return img;
+    return `/uploads/${img}`;
   };
 
   if (items.length === 0) return null;
