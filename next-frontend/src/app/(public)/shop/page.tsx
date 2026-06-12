@@ -6,7 +6,7 @@ import Pagination from "@/components/shop/Pagination";
 import ShopSkeleton from "@/components/shop/ShopSkeleton";
 import { SearchX, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { Prisma } from "@prisma/client";
+// import { Prisma } from "@prisma/client";
 
 export const metadata = {
   title: "Shop | Jay Subhdra",
@@ -54,7 +54,7 @@ async function ShopContent({ searchParams }: { searchParams: any }) {
   const skip = (page - 1) * ITEMS_PER_PAGE;
   
   // Build Prisma Where clause
-  const where: Prisma.ProductWhereInput = { status: 1 }; // Only active products
+  const where: any = { status: 1 }; // Only active products
   
   if (searchParams.search) {
     const searchTerms = (searchParams.search as string).split(' ').filter(term => term.trim().length > 0);
@@ -80,7 +80,7 @@ async function ShopContent({ searchParams }: { searchParams: any }) {
   }
 
   // Build Prisma OrderBy
-  let orderBy: Prisma.ProductOrderByWithRelationInput = { created_at: 'desc' };
+  let orderBy: any = { created_at: 'desc' };
   if (searchParams.sort === 'price_asc') orderBy = { price_amount: 'asc' };
   if (searchParams.sort === 'price_desc') orderBy = { price_amount: 'desc' };
   if (searchParams.sort === 'name_asc') orderBy = { product_name: 'asc' };
