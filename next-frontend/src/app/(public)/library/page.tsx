@@ -86,7 +86,7 @@ export default async function LibraryPage({
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <h1 className="text-3xl font-serif font-bold text-zinc-900">
-            {categorySlug ? `Category: ${categories.find(c => c.slug === categorySlug)?.name || categorySlug}` : 'Library Articles'}
+            {categorySlug ? `Category: ${categories.find((c: any) => c.slug === categorySlug)?.name || categorySlug}` : 'Library Articles'}
           </h1>
           {categorySlug && (
             <Link href="/library" className="text-sm font-semibold text-orange-600 hover:underline hidden lg:block">
