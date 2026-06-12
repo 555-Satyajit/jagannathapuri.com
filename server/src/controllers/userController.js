@@ -66,6 +66,22 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
+exports.getAddresses = async (req, res) => {
+    try {
+        const customerId = req.session.customerId;
+        if (!customerId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+        const addresses = await prisma.address.findMany({
+            where: { customer_id: customerId }
+        });
+
+        res.json({ success: true, addresses });
+    } catch (error) {
+        console.error('Error fetching addresses:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch addresses' });
+    }
+};
+
 exports.addAddress = async (req, res) => {
     try {
         const customerId = req.session.customerId;
@@ -252,6 +268,43 @@ exports.downloadInvoice = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+exports.getOrderDetailsApi = async (req, res) => {
+    try {
+        const customerId = req.session.customerId;
+        const orderId = parseInt(req.params.id);
+
+        if (isNaN(orderId)) {
+            return res.status(400).json({ success: false, error: 'Invalid order ID' });
+        }
+
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                items: {
+                    include: { product: true }
+                },
+                customer: true
+            }
+        });
+
+        if (!order || order.customer_id !== customerId) {
+            return res.status(404).json({ success: false, error: 'Order not found or unauthorized' });
+        }
+
+        let shippingAddress = null;
+        if (order.shippingAddressId) {
+            shippingAddress = await prisma.address.findUnique({
+                where: { id: order.shippingAddressId }
+            });
+        }
+        order.shippingAddress = shippingAddress;
+
+        res.json({ success: true, order });
+    } catch (error) {
+        console.error('Error fetching order details API:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};
 
 exports.getOrderDetails = async (req, res) => {
     try {
@@ -318,5 +371,29 @@ exports.getOrderDetails = async (req, res) => {
     } catch (error) {
         console.error('Error in getOrderDetails:', error);
         res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getOrdersApi = async (req, res) => {
+    try {
+        const customerId = req.session.customerId;
+        if (!customerId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+        const orders = await prisma.order.findMany({
+            where: { customer_id: customerId },
+            include: {
+                items: {
+                    include: { product: true }
+                }
+            },
+            orderBy: {
+                date: 'desc'
+            }
+        });
+
+        res.json({ success: true, orders });
+    } catch (error) {
+        console.error('Error fetching orders api:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch orders' });
     }
 };

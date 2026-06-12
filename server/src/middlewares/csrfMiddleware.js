@@ -47,6 +47,18 @@ const conditionalCsrf = (req, res, next) => {
         return next();
     }
     
+    // Allow Next.js API proxy requests (JSON) to bypass CSRF, using CORS/SameSite for protection
+    const nextjsEndpoints = [
+        '/login', '/register', '/checkout', '/cart/add-bulk',
+        '/api/wishlist/items', '/api/wishlist/add', '/api/wishlist/remove',
+        '/user-update-profile', '/user-change-password',
+        '/user-addresses', '/user-address-add', '/user-address-edit', '/user-address-delete',
+        '/user-orders', '/user-order-details-api'
+    ];
+    if (nextjsEndpoints.some(endpoint => req.path.startsWith(endpoint)) && (req.method === 'GET' || contentType.includes('application/json'))) {
+        return next();
+    }
+    
     return csrfProtection(req, res, next);
 };
 

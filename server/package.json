@@ -30,7 +30,8 @@
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
     "pg": "^8.18.0",
-    "puppeteer": "^24.37.3"
+    "puppeteer": "^24.37.3",
+    "razorpay": "^2.9.6"
   },
   "devDependencies": {
     "prisma": "^5.22.0",

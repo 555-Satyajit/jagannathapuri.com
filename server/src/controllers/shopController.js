@@ -2,6 +2,8 @@ const prisma = require('../lib/prisma');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 // Configure Multer for Review Images
 const storage = multer.diskStorage({
@@ -1168,6 +1170,36 @@ exports.postCheckout = async (req, res) => {
         // Clear cart
         req.session.cart = [];
 
+        if (paymentMethod === 'Razorpay') {
+            const instance = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET,
+            });
+
+            const options = {
+                amount: Math.round(total * 100), // amount in the smallest currency unit
+                currency: "INR",
+                receipt: result.orderNumber
+            };
+            const rzpOrder = await instance.orders.create(options);
+
+            await prisma.order.update({
+                where: { id: result.id },
+                data: { razorpayOrderId: rzpOrder.id }
+            });
+
+            if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+                return res.json({ 
+                    success: true, 
+                    isRazorpay: true, 
+                    razorpayOrderId: rzpOrder.id, 
+                    orderNumber: result.orderNumber, 
+                    amount: options.amount, 
+                    keyId: process.env.RAZORPAY_KEY_ID 
+                });
+            }
+        }
+
         // Redirect or return JSON
         if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
             return res.json({ success: true, orderNumber: result.orderNumber });
@@ -1598,4 +1630,59 @@ exports.getTermsConditionsPage = (req, res) => {
 
 exports.getReturnPolicyPage = (req, res) => {
     renderPolicyPage(req, res, 'Return Policy', 'return_policy');
+};
+
+exports.verifyRazorpayPayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderNumber } = req.body;
+
+        const body = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(body.toString())
+            .digest("hex");
+
+        if (expectedSignature === razorpay_signature) {
+            await prisma.order.update({
+                where: { orderNumber },
+                data: {
+                    paymentStatus: 1, // Paid
+                    razorpayPaymentId: razorpay_payment_id,
+                    razorpaySignature: razorpay_signature
+                }
+            });
+            res.json({ success: true, message: "Payment verified successfully", orderNumber });
+        } else {
+            res.status(400).json({ success: false, message: "Invalid signature" });
+        }
+    } catch (error) {
+        console.error('Error verifying payment:', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+exports.getWishlistApi = async (req, res) => {
+    try {
+        const customerId = req.session.customerId;
+        if (!customerId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+        const wishlistItems = await prisma.wishlistItem.findMany({
+            where: { customerId: customerId },
+            include: {
+                product: {
+                    include: {
+                        category: true
+                    }
+                }
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+
+        res.json({ success: true, items: wishlistItems });
+    } catch (error) {
+        console.error('Error fetching wishlist via API:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch wishlist' });
+    }
 };

@@ -45,12 +45,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "localhost:*", "127.0.0.1:*", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "https://*.google-analytics.com", "https://www.googletagmanager.com", "https://translate.google.com", "https://www.gstatic.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "localhost:*", "127.0.0.1:*", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://code.jquery.com", "https://unpkg.com", "https://*.google-analytics.com", "https://www.googletagmanager.com", "https://translate.google.com", "https://www.gstatic.com", "https://checkout.razorpay.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "localhost:*", "127.0.0.1:*", "https://cdn.jsdelivr.net", "https://*.googleapis.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://www.gstatic.com"],
-            imgSrc: ["'self'", "data:", "blob:", "localhost:*", "127.0.0.1:*", "https:", "http:", "https://*.googleapis.com", "https://translate.google.com", "https://www.gstatic.com"],
+            imgSrc: ["'self'", "data:", "blob:", "localhost:*", "127.0.0.1:*", "https:", "http:", "https://*.googleapis.com", "https://translate.google.com", "https://www.gstatic.com", "https://*.razorpay.com"],
             fontSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://unpkg.com", "data:"],
-            connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://*.supabase.co", "https://*.google-analytics.com", "https://www.google-analytics.com", "https://*.googleapis.com", "https://cdn.jsdelivr.net"],
-            frameSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://www.google.com", "https://translate.google.com", "https://*.googleapis.com"],
+            connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://*.supabase.co", "https://*.google-analytics.com", "https://www.google-analytics.com", "https://*.googleapis.com", "https://cdn.jsdelivr.net", "https://*.razorpay.com"],
+            frameSrc: ["'self'", "localhost:*", "127.0.0.1:*", "https://www.google.com", "https://translate.google.com", "https://*.googleapis.com", "https://*.razorpay.com"],
             mediaSrc: ["'self'", "localhost:*", "127.0.0.1:*", "data:", "blob:"],
             objectSrc: ["'none'"],
             ...(process.env.NODE_ENV === 'production' ? { upgradeInsecureRequests: [] } : {}),
@@ -299,7 +299,6 @@ app.use(categoryMiddleware);
 
 app.set('view engine', 'ejs');
 app.set('views', [
-    path.join(__dirname, '../../user-ui'),
     path.join(__dirname, '../../admin-panel/Ui')
 ]);
 
@@ -330,18 +329,8 @@ app.use(async (req, res, next) => {
             });
         });
     } else {
-        let wishlistIds = [];
-        res.status(404).render('pages/404', {}, (err, html) => {
-            if (err) {
-                console.error('Error rendering 404 page content:', err);
-                return res.status(404).send('Page not found');
-            }
-            res.render('layouts/master', {
-                body: html,
-                wishlistIds,
-                title: '404 - Page Not Found'
-            });
-        });
+        // Return JSON 404 for public routes, as Next.js handles frontend 404s natively
+        res.status(404).json({ error: 'Endpoint not found' });
     }
 });
 

@@ -1918,60 +1918,7 @@
     }
   });
 
-  /*------ Checkout Form Submission ----*/
-  $body.on("submit", "#checkout-form", async function (e) {
-    e.preventDefault();
-    const $form = $(this);
-    const $submitBtn = $form.find('button[type="submit"]');
-    const originalBtnText = $submitBtn.text();
-
-    // specific validation can go here if needed
-
-    try {
-      $submitBtn.prop('disabled', true).text('Processing Order...');
-
-      // Collect form data
-      const formData = new FormData($form[0]);
-      // Convert FormData to JSON object if backend expects JSON, or send as URL-encoded
-      // The controller uses req.body, so JSON is usually best if body-parser is set up.
-      // app.js likely has express.json() and express.urlencoded()
-      // Let's use URLSearchParams for standard form submission compatibility or JSON.
-      // Given other handlers use JSON, let's try JSON. 
-      // BUT checkout might have complex data?
-      // existing forms (login/register) used JSON.
-      // Let's check if the controller expects JSON or urlencoded. 
-      // Standard form submit is urlencoded.
-      // Let's safe bet: send as JSON.
-
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
-
-      const response = await fetch("/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-          "CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        window.location.href = `/order-successful?orderNumber=${result.orderNumber}`;
-      } else {
-        alert(result.error || "Order failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      $submitBtn.prop('disabled', false).text(originalBtnText);
-    }
-  });
+  /*------ Checkout Form Submission (Moved to checkout.ejs for Razorpay integration) ----*/
 
   /*------ Live Product Search ------*/
   let searchTimeout = null;

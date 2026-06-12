@@ -58,7 +58,11 @@ exports.postLogin = async (req, res) => {
                 req.session.cart = [];
             }
 
-            return res.json({ success: true, message: 'Login successful' });
+            return res.json({ 
+                success: true, 
+                message: 'Login successful',
+                user: { id: customer.id, email: customer.email, fullName: customer.fullName }
+            });
         }
 
         // Fallback: Check Local Database for Password (for Google users who set a password)
@@ -76,7 +80,11 @@ exports.postLogin = async (req, res) => {
                     req.session.cart = [];
                 }
 
-                return res.json({ success: true, message: 'Login successful' });
+                return res.json({ 
+                    success: true, 
+                    message: 'Login successful',
+                    user: { id: customer.id, email: customer.email, fullName: customer.fullName }
+                });
             }
         }
 
@@ -163,7 +171,11 @@ exports.postRegister = async (req, res) => {
                 req.session.cart = [];
             }
 
-            return res.json({ success: true, message: 'Registration successful' });
+            return res.json({ 
+                success: true, 
+                message: 'Registration successful',
+                user: { id: customer.id, email: customer.email, fullName: customer.fullName }
+            });
         } else {
             return res.json({
                 success: true,
@@ -301,7 +313,10 @@ exports.postSessionVerify = async (req, res) => {
             where: { email }
         });
 
+        let isNewOrNoPassword = false;
+
         if (!customer) {
+            isNewOrNoPassword = true;
             customer = await prisma.customer.create({
                 data: {
                     email,
@@ -311,6 +326,9 @@ exports.postSessionVerify = async (req, res) => {
                 }
             });
         } else {
+            if (!customer.password) {
+                isNewOrNoPassword = true;
+            }
             customer = await prisma.customer.update({
                 where: { email },
                 data: {
@@ -335,7 +353,7 @@ exports.postSessionVerify = async (req, res) => {
                 console.error('Session save error:', err);
                 return res.status(500).json({ success: false, error: 'Session save error' });
             }
-            res.json({ success: true, message: 'Session synced' });
+            res.json({ success: true, message: 'Session synced', isNewOrNoPassword });
         });
     } catch (error) {
         console.error('Error in postSessionVerify:', error);
