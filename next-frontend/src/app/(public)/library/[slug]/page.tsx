@@ -105,8 +105,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {article.tags && article.tags.length > 0 && (
           <div className="mt-16 pt-8 border-t border-zinc-100 flex items-center gap-3 flex-wrap">
             <span className="text-sm font-semibold text-zinc-900 mr-2">Tags:</span>
-            {article.tags.map(tag => (
-              <span key={tag.id} className="text-sm text-zinc-500 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-full">
+            {article.tags.map((tag: any) => (
+              <span key={tag.id} className="text-sm text-zinc-500 bg-zinc-50 border border-zinc-200 px-3 py-1 rounded-full hover:bg-zinc-100 transition-colors">
                 #{tag.name}
               </span>
             ))}
