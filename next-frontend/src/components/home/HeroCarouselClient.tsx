@@ -7,6 +7,8 @@ import { ArrowRight, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   useEffect(() => {
     if (heroes.length <= 1) return;
@@ -29,8 +31,29 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
   const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % heroes.length);
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + heroes.length) % heroes.length);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) nextSlide(); // Swipe left -> next
+    if (distance < -50) prevSlide(); // Swipe right -> prev
+  };
+
   return (
-    <section className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden group">
+    <section 
+      className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden group"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       
       {/* Background Images */}
       {heroes.map((hero, index) => (
@@ -112,13 +135,13 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
         <>
           <button 
             onClick={prevSlide}
-            className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-xl border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-black/40 hover:scale-110 shadow-2xl"
+            className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 items-center justify-center rounded-full bg-black/20 backdrop-blur-xl border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-black/40 hover:scale-110 shadow-2xl"
           >
             <ChevronLeft className="w-7 h-7 ml-[-2px]" />
           </button>
           <button 
             onClick={nextSlide}
-            className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-xl border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-black/40 hover:scale-110 shadow-2xl"
+            className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 items-center justify-center rounded-full bg-black/20 backdrop-blur-xl border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-black/40 hover:scale-110 shadow-2xl"
           >
             <ChevronRight className="w-7 h-7 mr-[-2px]" />
           </button>
