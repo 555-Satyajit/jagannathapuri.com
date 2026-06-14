@@ -1,6 +1,7 @@
 const prisma = require('../../lib/prisma');
 const { logAction } = require('../../lib/auditLogger');
 const invoiceService = require('../../services/invoiceService');
+const { clearDashboardCache } = require('../api/adminApiDashboardController');
 
 exports.getOrderList = async (req, res) => {
     try {
@@ -172,6 +173,9 @@ exports.updateOrderStatus = async (req, res) => {
             data: updateData
         });
 
+        // Invalidate dashboard cache so stats update instantly
+        clearDashboardCache();
+
         res.json({ success: true, message: 'Order status updated successfully' });
         await logAction(req, 'UPDATE_ORDER_STATUS', 'Order', orderId, `Updated order status/payment. Data: ${JSON.stringify(updateData)}`);
     } catch (error) {
@@ -267,3 +271,39 @@ exports.getInvoice = async (req, res) => {
     }
 };
 
+exports.apiGetOrderDetails = async (req, res) => {
+    try {
+        const orderId = parseInt(req.params.id);
+        if (isNaN(orderId)) {
+            return res.status(400).json({ success: false, error: 'Invalid order ID' });
+        }
+        
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                customer: {
+                    include: {
+                        addresses: true
+                    }
+                },
+                shippingAddress: true,
+                billingAddress: true,
+                items: {
+                    include: {
+                        product: true
+                    }
+                },
+                transactions: true
+            }
+        });
+
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found' });
+        }
+
+        res.json({ success: true, order });
+    } catch (error) {
+        console.error('Error fetching order details via API:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};

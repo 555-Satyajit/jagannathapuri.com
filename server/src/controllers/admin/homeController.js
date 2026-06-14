@@ -543,7 +543,7 @@ exports.deletePopup = async (req, res) => {
         const popup = await prisma.popup.findUnique({ where: { id: parseInt(id) } });
 
         if (popup && popup.image) {
-            const imagePath = path.join(__dirname, '../../../admin-panel/assets/uploads', popup.image);
+            const imagePath = path.join(__dirname, '../../../admin-frontend/public/uploads', popup.image);
             if (fs.existsSync(imagePath)) {
                 fs.unlinkSync(imagePath);
             }

@@ -436,6 +436,63 @@ exports.viewProduct = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+exports.apiViewProduct = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const product = await prisma.product.findUnique({
+            where: { id: productId },
+            include: { category: true }
+        });
+
+        if (!product) return res.status(404).json({ success: false, error: 'Product not found' });
+
+        // Inject Mock Rating
+        product.mockRating = (product.id % 5) + 1;
+
+        // Fetch Related Products
+        let relatedProducts = [];
+        try {
+            relatedProducts = await prisma.product.findMany({
+                where: {
+                    category_id: product.category_id,
+                    id: { not: product.id },
+                    status: 1
+                },
+                take: 4,
+                select: {
+                    id: true,
+                    product_name: true,
+                    slug: true,
+                    price: true,
+                    images: true,
+                    category: { select: { name: true } }
+                }
+            });
+        } catch (e) {
+            console.error('Error related:', e);
+        }
+
+        // Fetch real reviews
+        const reviewsData = await prisma.review.findMany({
+            where: { productId: productId },
+            include: { customer: true },
+            orderBy: { created_at: 'desc' }
+        });
+
+        const reviews = reviewsData.map(r => ({
+            ...r,
+            date: moment(r.created_at).format('DD MMM, YYYY')
+        }));
+
+        if (!product.images || !Array.isArray(product.images)) product.images = [];
+        if (!product.specifications || !Array.isArray(product.specifications)) product.specifications = [];
+
+        res.json({ success: true, product, reviews, relatedProducts });
+    } catch (error) {
+        console.error('Error in apiViewProduct:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};
 
 exports.deleteProduct = async (req, res) => {
     try {
@@ -525,5 +582,24 @@ exports.bulkDeleteProducts = async (req, res) => {
     } catch (error) {
         console.error('Error bulk deleting products:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.apiToggleStatus = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+        if (!product) return res.status(404).json({ success: false, error: 'Product not found' });
+        
+        const newStatus = product.status === 1 ? 2 : 1;
+        const updatedProduct = await prisma.product.update({
+            where: { id: productId },
+            data: { status: newStatus }
+        });
+        
+        res.json({ success: true, data: updatedProduct });
+    } catch (error) {
+        console.error('Error toggling product status:', error);
+        res.status(500).json({ success: false, error: 'Error toggling product status' });
     }
 };

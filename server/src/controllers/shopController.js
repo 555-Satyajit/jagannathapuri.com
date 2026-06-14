@@ -8,7 +8,7 @@ const crypto = require('crypto');
 // Configure Multer for Review Images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../../../admin-panel/assets/uploads/reviews');
+        const dir = path.join(__dirname, '../../../admin-frontend/public/uploads/reviews');
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
@@ -1643,7 +1643,7 @@ exports.verifyRazorpayPayment = async (req, res) => {
             .digest("hex");
 
         if (expectedSignature === razorpay_signature) {
-            await prisma.order.update({
+            const order = await prisma.order.update({
                 where: { orderNumber },
                 data: {
                     paymentStatus: 1, // Paid
@@ -1651,6 +1651,19 @@ exports.verifyRazorpayPayment = async (req, res) => {
                     razorpaySignature: razorpay_signature
                 }
             });
+
+            // Create Transaction Record
+            await prisma.transaction.create({
+                data: {
+                    transactionId: razorpay_payment_id,
+                    customer_id: order.customer_id,
+                    order_id: order.id,
+                    amount: order.totalAmount,
+                    paymentMethod: 'Razorpay',
+                    status: 'Success'
+                }
+            });
+
             res.json({ success: true, message: "Payment verified successfully", orderNumber });
         } else {
             res.status(400).json({ success: false, message: "Invalid signature" });

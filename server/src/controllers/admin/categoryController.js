@@ -72,6 +72,7 @@ exports.getCategoryData = async (req, res) => {
             total_earnings: "$0", // Placeholder for now
             status: cat.status,
             slug: cat.slug,
+            parentId: cat.parentId,
             meta_title: cat.meta_title || '',
             meta_description: cat.meta_description || '',
             meta_keywords: cat.meta_keywords || ''
@@ -152,7 +153,7 @@ exports.updateCategory = async (req, res) => {
             if (oldCategory && oldCategory.image) {
                 const fs = require('fs');
                 const path = require('path');
-                const oldImagePath = path.join(__dirname, '../../../../admin-panel/assets/img/ecommerce-images', oldCategory.image);
+                const oldImagePath = path.join(__dirname, '../../../../admin-frontend/public/uploads', oldCategory.image);
                 if (fs.existsSync(oldImagePath)) {
                     try { fs.unlinkSync(oldImagePath); } catch (e) { console.error('Error deleting image:', e); }
                 }
@@ -208,7 +209,7 @@ exports.deleteCategory = async (req, res) => {
         if (category && category.image) {
             const fs = require('fs');
             const path = require('path');
-            const imagePath = path.join(__dirname, '../../../../admin-panel/assets/img/ecommerce-images', category.image);
+            const imagePath = path.join(__dirname, '../../../../admin-frontend/public/uploads', category.image);
             if (fs.existsSync(imagePath)) {
                 try { fs.unlinkSync(imagePath); } catch (e) { console.error('Error deleting image:', e); }
             }
@@ -253,7 +254,7 @@ exports.bulkDeleteCategories = async (req, res) => {
             if (category.image) {
                 const fs = require('fs');
                 const path = require('path');
-                const imagePath = path.join(__dirname, '../../../../admin-panel/assets/img/ecommerce-images', category.image);
+                const imagePath = path.join(__dirname, '../../../../admin-frontend/public/uploads', category.image);
                 if (fs.existsSync(imagePath)) {
                     try { fs.unlinkSync(imagePath); } catch (e) { console.error('Error deleting image:', e); }
                 }
@@ -276,5 +277,24 @@ exports.bulkDeleteCategories = async (req, res) => {
     } catch (error) {
         console.error('Error bulk deleting categories:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.apiToggleStatus = async (req, res) => {
+    try {
+        const categoryId = parseInt(req.params.id);
+        const category = await prisma.category.findUnique({ where: { id: categoryId } });
+        if (!category) return res.status(404).json({ success: false, error: 'Category not found' });
+        
+        const newStatus = category.status === 'Publish' || category.status === 'Active' ? 'Inactive' : 'Active';
+        const updatedCategory = await prisma.category.update({
+            where: { id: categoryId },
+            data: { status: newStatus }
+        });
+        
+        res.json({ success: true, data: updatedCategory });
+    } catch (error) {
+        console.error('Error toggling category status:', error);
+        res.status(500).json({ success: false, error: 'Error toggling category status' });
     }
 };

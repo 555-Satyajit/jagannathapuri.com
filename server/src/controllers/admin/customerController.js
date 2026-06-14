@@ -68,7 +68,13 @@ exports.getCustomerData = async (req, res) => {
                     maximumFractionDigits: 0
                 }),
                 email: c.email,
-                image: c.avatar || ''
+                image: c.avatar || '',
+                phone: c.phone || '',
+                addressLine1: displayAddress?.addressLine1 || '',
+                addressLine2: displayAddress?.addressLine2 || '',
+                city: displayAddress?.city || '',
+                state: displayAddress?.state || '',
+                zipCode: displayAddress?.zipCode || ''
             };
         });
 
@@ -242,5 +248,111 @@ exports.deleteCustomer = async (req, res) => {
     } catch (error) {
         console.error('Error deleting customer:', error);
         res.status(500).json({ success: false, error: 'Failed to delete customer' });
+    }
+};
+
+exports.updateCustomer = async (req, res) => {
+    try {
+        const customerId = parseInt(req.params.id);
+        const { customerName, customerEmail, customerContact, customerAddress1, customerAddress2, customerTown, customerState, pin } = req.body;
+
+        const updatedCustomer = await prisma.customer.update({
+            where: { id: customerId },
+            data: {
+                fullName: customerName,
+                email: customerEmail,
+                phone: customerContact,
+            }
+        });
+
+        // Update default shipping address if it exists, otherwise create it
+        const defaultAddress = await prisma.address.findFirst({
+            where: { customer_id: customerId, isDefault: true, type: 'Shipping' }
+        });
+
+        if (defaultAddress) {
+            await prisma.address.update({
+                where: { id: defaultAddress.id },
+                data: {
+                    addressLine1: customerAddress1,
+                    addressLine2: customerAddress2,
+                    city: customerTown,
+                    state: customerState,
+                    zipCode: pin,
+                }
+            });
+        } else {
+            await prisma.address.create({
+                data: {
+                    customer_id: customerId,
+                    addressLine1: customerAddress1,
+                    addressLine2: customerAddress2,
+                    city: customerTown,
+                    state: customerState,
+                    zipCode: pin,
+                    country: 'India',
+                    isDefault: true,
+                    type: 'Shipping'
+                }
+            });
+        }
+
+        res.json({ success: true, customer: updatedCustomer });
+    } catch (error) {
+        console.error('Error updating customer:', error);
+        if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+            return res.status(400).json({ success: false, error: 'A customer with this email already exists.' });
+        }
+        res.status(500).json({ success: false, error: 'Failed to update customer' });
+    }
+};
+
+exports.getCustomerById = async (req, res) => {
+    try {
+        const customerId = parseInt(req.params.id);
+        if (isNaN(customerId)) {
+            return res.status(400).json({ success: false, error: 'Invalid customer ID' });
+        }
+        const customer = await prisma.customer.findUnique({
+            where: { id: customerId },
+            include: {
+                addresses: true,
+                orders: {
+                    orderBy: { created_at: 'desc' },
+                    include: {
+                        items: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!customer) {
+            return res.status(404).json({ success: false, error: 'Customer not found' });
+        }
+
+        // Calculate aggregated stats
+        const paidOrders = customer.orders.filter(o => o.paymentStatus === 1);
+        const totalSpent = paidOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+        const avgOrderValue = paidOrders.length > 0 ? totalSpent / paidOrders.length : 0;
+
+        res.json({
+            success: true,
+            customer: {
+                ...customer,
+                stats: {
+                    totalSpent,
+                    avgOrderValue,
+                    totalOrders: customer.orders.length,
+                    paidOrders: paidOrders.length
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching customer by id:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };

@@ -213,3 +213,83 @@ exports.deleteStaff = async (req, res) => {
         res.status(500).json({ success: false, error: 'Error deleting staff' });
     }
 };
+
+exports.apiGetStaffData = async (req, res) => {
+    try {
+        const staffList = await prisma.staff.findMany({
+            orderBy: { created_at: 'desc' },
+            include: { role: true }
+        });
+
+        const formattedStaff = staffList.map(staff => ({
+            id: staff.id,
+            name: staff.full_name,
+            email: staff.email,
+            role: staff.role ? staff.role.name : 'N/A',
+            roleId: staff.roleId,
+            contact: staff.contact,
+            joiningDate: staff.joining_date || new Date(staff.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+            status: staff.status,
+            avatar: staff.avatar || ''
+        }));
+
+        res.json({ data: formattedStaff });
+    } catch (error) {
+        console.error('Error fetching staff list:', error);
+        res.status(500).json({ error: 'Error fetching staff list' });
+    }
+};
+
+exports.apiUpdateStaff = async (req, res) => {
+    try {
+        const staffId = parseInt(req.params.id);
+        const { userFullname, userEmail, userContact, userRole, userPassword } = req.body;
+
+        const updateData = {
+            full_name: userFullname,
+            email: userEmail,
+            username: userEmail,
+            contact: userContact
+        };
+
+        if (userRole) {
+            const role = await prisma.role.findUnique({ where: { name: userRole } });
+            if (role) updateData.roleId = role.id;
+        }
+
+        if (userPassword && userPassword.trim() !== '') {
+            updateData.password = await bcrypt.hash(userPassword, 10);
+        }
+
+        const updatedStaff = await prisma.staff.update({
+            where: { id: staffId },
+            data: updateData
+        });
+
+        res.json({ success: true, data: updatedStaff });
+        await logAction(req, 'UPDATE_STAFF', 'Staff', staffId, `Updated staff member: ${updateData.full_name}`);
+    } catch (error) {
+        console.error('Error updating staff:', error);
+        res.status(500).json({ success: false, error: 'Error updating staff' });
+    }
+};
+
+exports.apiToggleStatus = async (req, res) => {
+    try {
+        const staffId = parseInt(req.params.id);
+        const staff = await prisma.staff.findUnique({ where: { id: staffId } });
+        if (!staff) return res.status(404).json({ success: false, error: 'Staff not found' });
+        
+        const newStatus = staff.status === 'Active' ? 'Inactive' : 'Active';
+        const updatedStaff = await prisma.staff.update({
+            where: { id: staffId },
+            data: { status: newStatus }
+        });
+        
+        await logAction(req, 'UPDATE_STAFF_STATUS', 'Staff', staffId, `Toggled staff status to ${newStatus}`);
+        res.json({ success: true, data: updatedStaff });
+    } catch (error) {
+        console.error('Error toggling staff status:', error);
+        res.status(500).json({ success: false, error: 'Error toggling staff status' });
+    }
+};

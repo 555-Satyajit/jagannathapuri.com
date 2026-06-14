@@ -4,7 +4,6 @@ const upload = require('../middlewares/uploadMiddleware');
 const authMiddleware = require('../middlewares/adminAuth');
 const checkPermission = require('../middlewares/checkPermission');
 const notificationMiddleware = require('../middlewares/notificationMiddleware');
-const { csrfProtection } = require('../middlewares/csrfMiddleware');
 
 // Import Modular Controllers
 const auth = require('../controllers/admin/adminAuthController');
@@ -45,8 +44,8 @@ router.get('/engagement', dashboard.getEngagementAnalytics);
 // eCommerce
 router.get('/ecommerce/categories', checkPermission('manage_products'), category.getCategoryList);
 router.get('/ecommerce/categories/data', checkPermission('manage_products'), category.getCategoryData);
-router.post('/ecommerce/categories/save', checkPermission('manage_products'), upload.single('categoryImage'), csrfProtection, category.saveCategory);
-router.post('/ecommerce/categories/update/:id', checkPermission('manage_products'), upload.single('categoryImage'), csrfProtection, category.updateCategory);
+router.post('/ecommerce/categories/save', checkPermission('manage_products'), upload.single('categoryImage'), category.saveCategory);
+router.post('/ecommerce/categories/update/:id', checkPermission('manage_products'), upload.single('categoryImage'), category.updateCategory);
 router.delete('/ecommerce/categories/delete/:id', checkPermission('manage_products'), category.deleteCategory);
 router.post('/ecommerce/categories/bulk-delete', checkPermission('manage_products'), category.bulkDeleteCategories);
 
@@ -58,9 +57,9 @@ router.delete('/ecommerce/attributes/delete/:id', checkPermission('manage_produc
 router.get('/ecommerce/products', checkPermission('manage_products'), product.getProductList);
 router.get('/ecommerce/products/data', checkPermission('manage_products'), product.getProductData);
 router.get('/ecommerce/products/add', checkPermission('manage_products'), product.addProduct);
-router.post('/ecommerce/products/add', checkPermission('manage_products'), upload.array('product_images', 10), csrfProtection, product.saveProduct);
+router.post('/ecommerce/products/add', checkPermission('manage_products'), upload.array('product_images', 10), product.saveProduct);
 router.get('/ecommerce/products/edit/:id', checkPermission('manage_products'), product.editProduct);
-router.post('/ecommerce/products/edit/:id', checkPermission('manage_products'), upload.array('product_images', 10), csrfProtection, product.updateProduct);
+router.post('/ecommerce/products/edit/:id', checkPermission('manage_products'), upload.array('product_images', 10), product.updateProduct);
 router.delete('/ecommerce/products/delete/:id', checkPermission('manage_products'), product.deleteProduct);
 router.post('/ecommerce/products/bulk-delete', checkPermission('manage_products'), product.bulkDeleteProducts);
 router.get('/ecommerce/products/view/:id', checkPermission('manage_products'), product.viewProduct);
@@ -69,10 +68,10 @@ router.get('/ecommerce/products/debug/:id', checkPermission('manage_products'), 
 // Coupons
 router.get('/ecommerce/coupons', checkPermission('manage_products'), coupon.getCouponList);
 router.get('/ecommerce/coupons/add', checkPermission('manage_products'), coupon.addCoupon);
-router.post('/ecommerce/coupons/add', checkPermission('manage_products'), csrfProtection, coupon.saveCoupon);
+router.post('/ecommerce/coupons/add', checkPermission('manage_products'), coupon.saveCoupon);
 router.get('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), coupon.editCoupon);
-router.post('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), csrfProtection, coupon.updateCoupon);
-router.delete('/ecommerce/coupons/delete/:id', checkPermission('manage_products'), csrfProtection, coupon.deleteCoupon);
+router.post('/ecommerce/coupons/edit/:id', checkPermission('manage_products'), coupon.updateCoupon);
+router.delete('/ecommerce/coupons/delete/:id', checkPermission('manage_products'), coupon.deleteCoupon);
 
 // Orders
 router.get('/ecommerce/orders', checkPermission('manage_orders'), order.getOrderList);
@@ -107,16 +106,16 @@ router.post('/staff/update', checkPermission('manage_staff'), staff.updateStaff)
 // Tickets
 router.get('/tickets/list', checkPermission('manage_customers'), ticket.getTicketList);
 router.get('/tickets/data', checkPermission('manage_customers'), ticket.getTicketData);
-router.post('/tickets/add', checkPermission('manage_customers'), upload.array('attachments', 10), csrfProtection, ticket.saveTicket);
+router.post('/tickets/add', checkPermission('manage_customers'), upload.array('attachments', 10), ticket.saveTicket);
 router.get('/tickets/view/:id', checkPermission('manage_customers'), ticket.getTicketView);
-router.post('/tickets/action', checkPermission('manage_customers'), upload.array('attachments', 10), csrfProtection, ticket.performTicketAction);
+router.post('/tickets/action', checkPermission('manage_customers'), upload.array('attachments', 10), ticket.performTicketAction);
 
 // Settings
 router.get('/settings/general', checkPermission('manage_store_config'), settings.getGeneralSettings);
 router.post('/settings/general', checkPermission('manage_store_config'), upload.fields([
     { name: 'logo', maxCount: 1 },
     { name: 'favicon', maxCount: 1 }
-]), csrfProtection, settings.saveGeneralSettings);
+]), settings.saveGeneralSettings);
 router.get('/settings/shipping-payment', checkPermission('manage_store_config'), settings.getShippingPaymentSettings);
 router.post('/settings/shipping-payment', checkPermission('manage_store_config'), settings.saveShippingPaymentSettings);
 
@@ -129,7 +128,7 @@ router.get('/settings/audit-logs/data', checkPermission('manage_settings'), dash
 router.get('/store/home/hero/list', checkPermission('manage_store_config'), home.getHeroList);
 router.get('/store/home/hero/add', checkPermission('manage_store_config'), home.getAddHero);
 router.get('/store/home/hero/edit/:id', checkPermission('manage_store_config'), home.getEditHero);
-router.post('/store/home/hero/save', checkPermission('manage_store_config'), upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), csrfProtection, home.saveHero);
+router.post('/store/home/hero/save', checkPermission('manage_store_config'), upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), home.saveHero);
 router.delete('/store/home/hero/delete/:id', checkPermission('manage_store_config'), home.deleteHero);
 
 // Promo Banner
@@ -143,7 +142,7 @@ router.delete('/store/home/promo/delete/:id', checkPermission('manage_store_conf
 router.get('/store/home/service/list', checkPermission('manage_store_config'), home.getServiceList);
 router.get('/store/home/service/add', checkPermission('manage_store_config'), home.getAddService);
 router.get('/store/home/service/edit/:id', checkPermission('manage_store_config'), home.getEditService);
-router.post('/store/home/service/save', checkPermission('manage_store_config'), upload.single('image'), csrfProtection, home.saveService);
+router.post('/store/home/service/save', checkPermission('manage_store_config'), upload.single('image'), home.saveService);
 router.delete('/store/home/service/delete/:id', checkPermission('manage_store_config'), home.deleteService);
 
 // Home Tabs
@@ -156,7 +155,7 @@ router.delete('/store/home/tabs/delete/:id', checkPermission('manage_store_confi
 // Categories
 router.get('/library/categories', checkPermission('manage_store_config'), library.getLibCategoryList);
 router.get('/library/categories/data', checkPermission('manage_store_config'), library.getLibCategoryData);
-router.post('/library/categories/save', checkPermission('manage_store_config'), upload.single('image'), csrfProtection, library.saveLibCategory);
+router.post('/library/categories/save', checkPermission('manage_store_config'), upload.single('image'), library.saveLibCategory);
 router.delete('/library/categories/delete/:id', checkPermission('manage_store_config'), library.deleteLibCategory);
 
 // Content
@@ -164,7 +163,7 @@ router.get('/library/content', checkPermission('manage_store_config'), library.g
 router.get('/library/content/data', checkPermission('manage_store_config'), library.getLibContentData);
 router.get('/library/content/add', checkPermission('manage_store_config'), library.getAddLibContent);
 router.get('/library/content/edit/:id', checkPermission('manage_store_config'), library.getEditLibContent);
-router.post('/library/content/save', checkPermission('manage_store_config'), upload.single('image'), csrfProtection, library.saveLibContent);
+router.post('/library/content/save', checkPermission('manage_store_config'), upload.single('image'), library.saveLibContent);
 router.delete('/library/content/delete/:id', checkPermission('manage_store_config'), library.deleteLibContent);
 
 // Manage Contact
@@ -210,11 +209,11 @@ router.delete('/festivals/delete/:id', checkPermission('manage_store_config'), t
 
 // Manage Popups
 router.get('/store/popup/list', checkPermission('manage_store_config'), home.getPopupList);
-router.post('/store/popup/save', checkPermission('manage_store_config'), upload.single('popupImage'), csrfProtection, home.savePopup);
+router.post('/store/popup/save', checkPermission('manage_store_config'), upload.single('popupImage'), home.savePopup);
 router.delete('/store/popup/delete/:id', checkPermission('manage_store_config'), home.deletePopup);
 
 // Quill Image Upload
-router.post('/library/content/upload-image', checkPermission('manage_store_config'), upload.single('image'), csrfProtection, library.uploadLibraryImage);
+router.post('/library/content/upload-image', checkPermission('manage_store_config'), upload.single('image'), library.uploadLibraryImage);
 
 // Tags API (for select2)
 router.get('/library/tags/search', checkPermission('manage_store_config'), library.searchLibTags);

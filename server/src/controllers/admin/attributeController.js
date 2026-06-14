@@ -30,6 +30,22 @@ exports.getAttributeList = async (req, res) => {
         res.status(500).send('Error fetching attribute list');
     }
 };
+exports.getAttributeData = async (req, res) => {
+    try {
+        const attributes = await prisma.attribute.findMany({
+            orderBy: { created_at: 'desc' }
+        });
+        const formattedData = attributes.map(attr => ({
+            id: attr.id,
+            name: attr.name,
+            description: attr.description || ''
+        }));
+        res.json({ data: formattedData });
+    } catch (error) {
+        console.error('Error fetching attribute data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 exports.saveAttribute = async (req, res) => {
     try {
@@ -65,9 +81,37 @@ exports.deleteAttribute = async (req, res) => {
         await prisma.attribute.delete({
             where: { id: parseInt(id) }
         });
-        res.status(200).json({ message: 'Attribute deleted successfully' });
+        res.status(200).json({ success: true, message: 'Attribute deleted successfully' });
     } catch (error) {
         console.error('Error deleting attribute:', error);
-        res.status(500).json({ error: 'Error deleting attribute' });
+        res.status(500).json({ success: false, error: 'Error deleting attribute' });
+    }
+};
+
+exports.apiSaveAttribute = async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const attr = await prisma.attribute.create({
+            data: { name, description }
+        });
+        res.json({ success: true, data: attr });
+    } catch (error) {
+        console.error('Error saving attribute:', error);
+        res.status(500).json({ success: false, error: 'Error saving attribute' });
+    }
+};
+
+exports.apiUpdateAttribute = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description } = req.body;
+        const attr = await prisma.attribute.update({
+            where: { id: parseInt(id) },
+            data: { name, description }
+        });
+        res.json({ success: true, data: attr });
+    } catch (error) {
+        console.error('Error updating attribute:', error);
+        res.status(500).json({ success: false, error: 'Error updating attribute' });
     }
 };

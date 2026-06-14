@@ -10,7 +10,6 @@ const app = express();
 
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const csrf = require('csurf');
 const pg = require('pg');
 const pgSession = require('connect-pg-simple')(session);
 
@@ -156,29 +155,16 @@ app.use((req, res, next) => {
     const host = (req.get('host') || '').toLowerCase().split(':')[0];
     const adminDomain = (process.env.ADMIN_DOMAIN || '').toLowerCase().split(':')[0];
     
-    // Check if the host matches the admin domain
-    if (adminDomain && host === adminDomain) {
+    // Check if the host matches the admin domain OR the path explicitly belongs to admin
+    if ((adminDomain && host === adminDomain) || req.path.startsWith('/admin') || req.path.startsWith('/api/admin')) {
         adminSession(req, res, next);
     } else {
         shopSession(req, res, next);
     }
 });
 
-// CSRF Protection
-const { conditionalCsrf } = require('./middlewares/csrfMiddleware');
-app.use(conditionalCsrf);
-
-// Provide CSRF Token to all views as a stable value assigned once per request
-app.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-        res.locals.csrfToken = req.csrfToken();
-        if (process.env.NODE_ENV === 'production') {
-            const tokenHeader = req.headers['csrf-token'] || req.headers['x-csrf-token'];
-            console.log(`[CSRF Debug] Request: ${req.method} ${req.path}, Header Token: ${tokenHeader ? 'Present' : 'MISSING'}, Generated Token: ${res.locals.csrfToken ? 'YES' : 'NO'}`);
-        }
-    }
-    next();
-});
+// CSRF protection has been removed as the app migrates to Next.js
+// Default empty csrfToken is injected in the diagnostic middleware at the top
 
 // Domain-based Routing Restriction Middleware
 app.use((req, res, next) => {
@@ -307,6 +293,7 @@ app.post('/api/send-otp', authLimiter);
 app.post('/login', authLimiter);
 
 app.use('/', routes);
+app.use('/api/admin', require('./routes/adminApi'));
 app.use('/api', require('./routes/api'));
 
 // 404 Error Handler
@@ -336,23 +323,7 @@ app.use(async (req, res, next) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    if (err.code === 'EBADCSRFTOKEN') {
-        const isApiRequest = req.path.startsWith('/api') || 
-                            req.xhr || 
-                            req.headers.accept?.includes('application/json');
-
-        console.error(`[CSRF ERROR] ${req.method} ${req.path}${isApiRequest ? ' (API)' : ''} - Invalid or missing token`);
-
-        if (isApiRequest) {
-            return res.status(403).json({
-                success: false,
-                message: 'Security validation failed (CSRF). Please refresh the page and try again.'
-            });
-        }
-        
-        // For non-API requests, let it fall through or handle appropriately
-        // (Existing behavior: let express render default or next middleware)
-    }
+    console.error(`[Server Error] ${req.method} ${req.path} - ${err.message}`);
     next(err);
 });
 

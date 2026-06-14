@@ -184,3 +184,92 @@ exports.deleteCoupon = async (req, res) => {
         res.status(500).json({ success: false, error: 'Error deleting coupon' });
     }
 };
+
+exports.apiGetCouponData = async (req, res) => {
+    try {
+        const coupons = await prisma.coupon.findMany({
+            orderBy: { created_at: 'desc' }
+        });
+        const formattedCoupons = coupons.map(coupon => ({
+            id: coupon.id,
+            code: coupon.code,
+            type: coupon.discount_type,
+            amount: coupon.discount_amount,
+            expiry: coupon.expiry_date ? coupon.expiry_date.toISOString().split('T')[0] : '',
+            usage_limit: coupon.usage_limit || '',
+            per_user_limit: coupon.per_user_limit || '',
+            used_count: coupon.used_count,
+            status: coupon.status
+        }));
+        res.json({ success: true, data: formattedCoupons });
+    } catch (error) {
+        console.error('Error fetching coupon data:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};
+
+exports.apiSaveCoupon = async (req, res) => {
+    try {
+        const { code, type, amount, expiry, usage_limit, per_user_limit, status } = req.body;
+        const newCoupon = await prisma.coupon.create({
+            data: {
+                code: code,
+                discount_type: type,
+                discount_amount: parseFloat(amount),
+                expiry_date: expiry ? new Date(expiry) : null,
+                usage_limit: usage_limit ? parseInt(usage_limit) : null,
+                per_user_limit: per_user_limit ? parseInt(per_user_limit) : null,
+                status: status || 'Active'
+            }
+        });
+        await logAction(req, 'CREATE_COUPON', 'Coupon', newCoupon.id, `Created coupon: ${newCoupon.code}`);
+        res.json({ success: true, data: newCoupon });
+    } catch (error) {
+        console.error('Error saving coupon:', error);
+        res.status(500).json({ success: false, error: 'Error saving coupon' });
+    }
+};
+
+exports.apiUpdateCoupon = async (req, res) => {
+    try {
+        const couponId = parseInt(req.params.id);
+        const { code, type, amount, expiry, usage_limit, per_user_limit, status } = req.body;
+        const updatedCoupon = await prisma.coupon.update({
+            where: { id: couponId },
+            data: {
+                code: code,
+                discount_type: type,
+                discount_amount: parseFloat(amount),
+                expiry_date: expiry ? new Date(expiry) : null,
+                usage_limit: usage_limit ? parseInt(usage_limit) : null,
+                per_user_limit: per_user_limit ? parseInt(per_user_limit) : null,
+                status: status || 'Active'
+            }
+        });
+        await logAction(req, 'UPDATE_COUPON', 'Coupon', couponId, `Updated coupon: ${updatedCoupon.code}`);
+        res.json({ success: true, data: updatedCoupon });
+    } catch (error) {
+        console.error('Error updating coupon:', error);
+        res.status(500).json({ success: false, error: 'Error updating coupon' });
+    }
+};
+
+exports.apiToggleStatus = async (req, res) => {
+    try {
+        const couponId = parseInt(req.params.id);
+        const coupon = await prisma.coupon.findUnique({ where: { id: couponId } });
+        if (!coupon) return res.status(404).json({ success: false, error: 'Coupon not found' });
+        
+        const newStatus = coupon.status === 'Active' ? 'Inactive' : 'Active';
+        const updatedCoupon = await prisma.coupon.update({
+            where: { id: couponId },
+            data: { status: newStatus }
+        });
+        
+        await logAction(req, 'UPDATE_COUPON_STATUS', 'Coupon', couponId, `Toggled coupon status to ${newStatus}`);
+        res.json({ success: true, data: updatedCoupon });
+    } catch (error) {
+        console.error('Error toggling coupon status:', error);
+        res.status(500).json({ success: false, error: 'Error toggling coupon status' });
+    }
+};

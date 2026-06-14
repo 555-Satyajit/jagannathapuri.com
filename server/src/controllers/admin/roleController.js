@@ -184,24 +184,84 @@ exports.savePermission = async (req, res) => {
             return res.status(400).json({ error: 'Permission name is required' });
         }
 
-        const existingPermission = await prisma.permission.findUnique({
-            where: { name: modalPermissionName }
-        });
+        const actions = ['Read', 'Create', 'Edit', 'Delete'];
+        const permissionsToCreate = actions.map(action => ({
+            name: `${modalPermissionName}:${action}`
+        }));
 
-        if (existingPermission) {
-            return res.status(400).json({ error: 'Permission already exists' });
-        }
-
-        const newPermission = await prisma.permission.create({
-            data: {
-                name: modalPermissionName
+        // Check if ANY of these already exist
+        const existingPermissions = await prisma.permission.findMany({
+            where: {
+                name: { in: permissionsToCreate.map(p => p.name) }
             }
         });
 
-        res.status(200).json({ message: 'Permission created successfully', permission: newPermission });
+        if (existingPermissions.length > 0) {
+            return res.status(400).json({ error: 'One or more permissions for this module already exist' });
+        }
+
+        // We use createMany for bulk insert
+        await prisma.permission.createMany({
+            data: permissionsToCreate
+        });
+
+        res.status(200).json({ message: 'Permissions created successfully' });
 
     } catch (error) {
         console.error('Error saving permission:', error);
         res.status(500).json({ error: 'Error saving permission' });
+    }
+};
+
+exports.apiGetPermissionsData = async (req, res) => {
+    try {
+        const permissions = await prisma.permission.findMany({
+            orderBy: { id: 'desc' }
+        });
+        res.json({ data: permissions });
+    } catch (error) {
+        console.error('Error fetching permissions:', error);
+        res.status(500).json({ error: 'Error fetching permissions' });
+    }
+};
+
+exports.deletePermissionModule = async (req, res) => {
+    try {
+        const { moduleName } = req.body;
+        if (!moduleName) return res.status(400).json({ success: false, error: 'Module name is required' });
+        
+        await prisma.permission.deleteMany({ 
+            where: { 
+                name: { startsWith: moduleName } 
+            } 
+        });
+        res.json({ success: true, message: 'Permission module deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting permission module:', error);
+        res.status(500).json({ success: false, error: 'Error deleting permission module' });
+    }
+};
+
+exports.apiGetRolesData = async (req, res) => {
+    try {
+        const roles = await prisma.role.findMany({
+            include: {
+                permissions: true,
+                staff: true
+            }
+        });
+
+        const formattedRoles = roles.map(role => ({
+            id: role.id,
+            name: role.name,
+            users: role.staff.length,
+            avatars: role.staff.filter(s => s.avatar).map(s => s.avatar),
+            permissions: role.permissions.map(p => p.name)
+        }));
+
+        res.json({ data: formattedRoles });
+    } catch (error) {
+        console.error('Error fetching roles:', error);
+        res.status(500).json({ error: 'Error fetching roles' });
     }
 };
