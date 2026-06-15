@@ -8,7 +8,7 @@ const crypto = require('crypto');
 // Configure Multer for Review Images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../../../admin-frontend/public/uploads/reviews');
+        const dir = path.join(__dirname, '../uploads/reviews');
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
