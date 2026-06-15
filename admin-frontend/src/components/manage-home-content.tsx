@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  Plus, Edit, Trash2, Image as ImageIcon, Link as LinkIcon, Star, MoreVertical, Eye, Trash
-} from "lucide-react"
+import { Plus, Edit, Trash, Image as ImageIcon, Link as LinkIcon, Star, MoreVertical } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -16,14 +14,6 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -45,38 +35,477 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { DataTable } from "./data-table"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { toast, Toaster } from "sonner"
 
-// --- Mock Data mapping to actual legacy schema ---
-const heroes = [
-  { id: 1, image: "hero1.jpg", mobileImage: "hero1-m.jpg", header: "Adorn Your Walls", title: "Authentic Pattachitra", buttonText: "Shop Now", buttonLink: "/shop", description: "Experience Divine Grace" }
-]
+// --- SCHEMAS ---
+const heroSchema = z.object({
+  header: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  buttonText: z.string().optional(),
+  buttonLink: z.string().optional(),
+  order: z.any(),
+  status: z.enum(["Active", "Inactive"]),
+  image: z.any().optional(),
+  mobileImage: z.any().optional(),
+})
+type HeroFormValues = z.infer<typeof heroSchema>
 
-const promos = [
-  { id: 1, icon: "bx bx-truck", title: "Free Shipping", subtitle: "On orders over ₹999" }
-]
+const promoSchema = z.object({
+  icon: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  subtitle: z.string().optional(),
+  order: z.any(),
+  status: z.enum(["Active", "Inactive"]),
+})
+type PromoFormValues = z.infer<typeof promoSchema>
 
-const homeTabs = [
-  { id: 1, title: "Pooja Samagri", categoryId: 10, order: 1, status: "Active" }
-]
+const homeTabSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  categoryId: z.string().min(1, "Category is required"),
+  order: z.any(),
+  status: z.enum(["Active", "Inactive"]),
+})
+type HomeTabFormValues = z.infer<typeof homeTabSchema>
 
-const services = [
-  { id: 1, image: "service1.jpg", icon: "bx bx-support", title: "24/7 Support", subtitle: "Always here for you", rating: 5.0, reviewsCount: 120, status: "Active" }
-]
+const serviceSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
+  icon: z.string().optional(),
+  phone: z.string().optional(),
+  link: z.string().optional(),
+  rating: z.any(),
+  reviewsCount: z.any(),
+  status: z.enum(["Active", "Inactive"]),
+  image: z.any().optional(),
+})
+type ServiceFormValues = z.infer<typeof serviceSchema>
 
 export function ManageHomeContent() {
   const [activeTab, setActiveTab] = React.useState("hero")
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  const [heroes, setHeroes] = React.useState<any[]>([])
+  const [promos, setPromos] = React.useState<any[]>([])
+  const [homeTabs, setHomeTabs] = React.useState<any[]>([])
+  const [services, setServices] = React.useState<any[]>([])
+  const [categories, setCategories] = React.useState<any[]>([])
+
+  // Sheet states
+  const [isHeroOpen, setIsHeroOpen] = React.useState(false)
+  const [editingHero, setEditingHero] = React.useState<any>(null)
+
+  const [isPromoOpen, setIsPromoOpen] = React.useState(false)
+  const [editingPromo, setEditingPromo] = React.useState<any>(null)
+
+  const [isTabOpen, setIsTabOpen] = React.useState(false)
+  const [editingTab, setEditingTab] = React.useState<any>(null)
+
+  const [isServiceOpen, setIsServiceOpen] = React.useState(false)
+  const [editingService, setEditingService] = React.useState<any>(null)
+
+  // Forms
+  const heroForm = useForm<HeroFormValues>({ resolver: zodResolver(heroSchema), defaultValues: { status: "Active", order: 0 } })
+  const promoForm = useForm<PromoFormValues>({ resolver: zodResolver(promoSchema), defaultValues: { status: "Active", order: 0 } })
+  const tabForm = useForm<HomeTabFormValues>({ resolver: zodResolver(homeTabSchema), defaultValues: { status: "Active", order: 0 } })
+  const serviceForm = useForm<ServiceFormValues>({ resolver: zodResolver(serviceSchema), defaultValues: { status: "Active", rating: 5, reviewsCount: 0 } })
+
+  const getImageUrl = (path: string | null | undefined, type: 'hero' | 'services') => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    let cleanPath = path;
+    if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');
+    if (cleanPath.startsWith('/uploads/services/')) cleanPath = cleanPath.replace('/uploads/services/', '/uploads/');
+    if (!cleanPath.startsWith('/')) cleanPath = `/uploads/${cleanPath}`;
+    return `http://localhost:5000${cleanPath}`;
+  }
+
+  const fetchData = async () => {
+    setIsLoading(true)
+    try {
+      const [hRes, pRes, tRes, sRes, cRes] = await Promise.all([
+        fetch('/api/admin/store/home/hero/data'),
+        fetch('/api/admin/store/home/promo/data'),
+        fetch('/api/admin/store/home/hometab/data'),
+        fetch('/api/admin/store/home/service/data'),
+        fetch('/api/admin/store/home/hometab/categories')
+      ])
+      
+      const hData = await hRes.json()
+      const pData = await pRes.json()
+      const tData = await tRes.json()
+      const sData = await sRes.json()
+      const cData = await cRes.json()
+
+      if (hData.success) setHeroes(hData.data)
+      if (pData.success) setPromos(pData.data)
+      if (tData.success) setHomeTabs(tData.data)
+      if (sData.success) setServices(sData.data)
+      if (cData.success) setCategories(cData.data)
+    } catch (err) {
+      toast.error('Failed to load manage home data')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  React.useEffect(() => {
+    fetchData()
+  }, [])
+
+  // --- Handlers: Hero ---
+  const handleHeroSubmit = async (data: HeroFormValues) => {
+    try {
+      const formData = new FormData()
+      Object.keys(data).forEach(key => {
+        if (key !== 'image' && key !== 'mobileImage' && data[key as keyof HeroFormValues] !== undefined) {
+          formData.append(key, data[key as keyof HeroFormValues] as any)
+        }
+      })
+      if (data.image && data.image.length > 0) formData.append('image', data.image[0])
+      if (data.mobileImage && data.mobileImage.length > 0) formData.append('mobileImage', data.mobileImage[0])
+
+      const url = editingHero ? `/api/admin/store/home/hero/update/${editingHero.id}` : '/api/admin/store/home/hero/save'
+      const res = await fetch(url, { method: 'POST', body: formData })
+      const result = await res.json()
+      
+      if (result.success) {
+        toast.success(editingHero ? 'Hero updated' : 'Hero added')
+        setIsHeroOpen(false)
+        fetchData()
+      } else {
+        toast.error(result.error || 'Operation failed')
+      }
+    } catch (err) {
+      toast.error('Operation failed')
+    }
+  }
+
+  const handleDeleteHero = async (id: number) => {
+    if (!confirm('Are you sure?')) return
+    const res = await fetch(`/api/admin/store/home/hero/delete/${id}`)
+    const result = await res.json()
+    if (result.success) {
+      toast.success('Hero deleted')
+      fetchData()
+    }
+  }
+
+  const toggleHeroStatus = async (id: number) => {
+    const res = await fetch(`/api/admin/store/home/hero/toggle-status/${id}`, { method: 'POST' })
+    const result = await res.json()
+    if (result.success) {
+      toast.success('Status updated')
+      fetchData()
+    }
+  }
+
+  const openEditHero = (hero: any) => {
+    setEditingHero(hero)
+    heroForm.reset({
+      header: hero.header || '',
+      title: hero.title || '',
+      description: hero.description || '',
+      buttonText: hero.buttonText || '',
+      buttonLink: hero.buttonLink || '',
+      order: hero.order,
+      status: hero.status,
+    })
+    setIsHeroOpen(true)
+  }
+
+  // --- Handlers: Promo ---
+  const handlePromoSubmit = async (data: PromoFormValues) => {
+    try {
+      const url = editingPromo ? `/api/admin/store/home/promo/update/${editingPromo.id}` : '/api/admin/store/home/promo/save'
+      const res = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      const result = await res.json()
+      if (result.success) {
+        toast.success(editingPromo ? 'Promo updated' : 'Promo added')
+        setIsPromoOpen(false)
+        fetchData()
+      } else {
+        toast.error(result.error)
+      }
+    } catch (err) {
+      toast.error('Operation failed')
+    }
+  }
+
+  const openEditPromo = (promo: any) => {
+    setEditingPromo(promo)
+    promoForm.reset({
+      icon: promo.icon || '',
+      title: promo.title,
+      subtitle: promo.subtitle || '',
+      order: promo.order,
+      status: promo.status
+    })
+    setIsPromoOpen(true)
+  }
+
+  // --- Handlers: Tab ---
+  const handleTabSubmit = async (data: HomeTabFormValues) => {
+    try {
+      const url = editingTab ? `/api/admin/store/home/hometab/update/${editingTab.id}` : '/api/admin/store/home/hometab/save'
+      const res = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      const result = await res.json()
+      if (result.success) {
+        toast.success(editingTab ? 'Tab updated' : 'Tab added')
+        setIsTabOpen(false)
+        fetchData()
+      } else {
+        toast.error(result.error)
+      }
+    } catch (err) {
+      toast.error('Operation failed')
+    }
+  }
+
+  const openEditTab = (tab: any) => {
+    setEditingTab(tab)
+    tabForm.reset({
+      title: tab.title,
+      categoryId: tab.categoryId.toString(),
+      order: tab.order,
+      status: tab.status
+    })
+    setIsTabOpen(true)
+  }
+
+  // --- Handlers: Service ---
+  const handleServiceSubmit = async (data: ServiceFormValues) => {
+    try {
+      const formData = new FormData()
+      Object.keys(data).forEach(key => {
+        if (key !== 'image' && data[key as keyof ServiceFormValues] !== undefined) {
+          formData.append(key, data[key as keyof ServiceFormValues] as any)
+        }
+      })
+      if (data.image && data.image.length > 0) formData.append('image', data.image[0])
+
+      const url = editingService ? `/api/admin/store/home/service/update/${editingService.id}` : '/api/admin/store/home/service/save'
+      const res = await fetch(url, { method: 'POST', body: formData })
+      const result = await res.json()
+      
+      if (result.success) {
+        toast.success(editingService ? 'Service updated' : 'Service added')
+        setIsServiceOpen(false)
+        fetchData()
+      } else {
+        toast.error(result.error || 'Operation failed')
+      }
+    } catch (err) {
+      toast.error('Operation failed')
+    }
+  }
+
+  const openEditService = (service: any) => {
+    setEditingService(service)
+    serviceForm.reset({
+      title: service.title,
+      subtitle: service.subtitle || '',
+      description: service.description || '',
+      icon: service.icon || '',
+      phone: service.phone || '',
+      link: service.link || '',
+      rating: service.rating,
+      reviewsCount: service.reviewsCount,
+      status: service.status
+    })
+    setIsServiceOpen(true)
+  }
+
+
+  // --- Columns ---
+  const heroColumns = [
+    {
+      header: "Image",
+      cell: (hero: any) => (
+        hero.image ? <img src={getImageUrl(hero.image, 'hero')} alt={hero.title} className="h-12 w-20 object-cover rounded" /> 
+        : <div className="h-12 w-20 bg-muted rounded flex items-center justify-center"><ImageIcon className="h-4 w-4" /></div>
+      )
+    },
+    { accessorKey: "title", header: "Title" },
+    { accessorKey: "order", header: "Order" },
+    {
+      header: "Status",
+      cell: (hero: any) => (
+        <Badge 
+          className="cursor-pointer" 
+          variant={hero.status === "Active" ? "default" : "secondary"}
+          onClick={() => toggleHeroStatus(hero.id)}
+        >
+          {hero.status}
+        </Badge>
+      )
+    },
+    {
+      header: "Actions",
+      cell: (hero: any) => (
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <MoreVertical className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link href={`/admin/store/home/hero/${hero.id}`}>
+                <DropdownMenuItem><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem onClick={() => handleDeleteHero(hero.id)} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )
+    }
+  ]
+
+  const promoColumns = [
+    { accessorKey: "icon", header: "Icon" },
+    { accessorKey: "title", header: "Title" },
+    { accessorKey: "subtitle", header: "Subtitle" },
+    { accessorKey: "order", header: "Order" },
+    {
+      header: "Status",
+      cell: (promo: any) => (
+        <Badge 
+          className="cursor-pointer" 
+          variant={promo.status === "Active" ? "default" : "secondary"}
+          onClick={async () => {
+            const res = await fetch(`/api/admin/store/home/promo/toggle-status/${promo.id}`, { method: 'POST' })
+            if ((await res.json()).success) { toast.success('Status updated'); fetchData(); }
+          }}
+        >
+          {promo.status}
+        </Badge>
+      )
+    },
+    {
+      header: "Actions",
+      cell: (promo: any) => (
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <MoreVertical className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => openEditPromo(promo)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={async () => {
+                if(!confirm('Are you sure?')) return;
+                const res = await fetch(`/api/admin/store/home/promo/delete/${promo.id}`)
+                if ((await res.json()).success) { toast.success('Deleted'); fetchData() }
+              }} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )
+    }
+  ]
+
+  const tabColumns = [
+    { accessorKey: "title", header: "Tab Title" },
+    { header: "Category", cell: (t: any) => t.category?.name || t.categoryId },
+    { accessorKey: "order", header: "Order" },
+    {
+      header: "Status",
+      cell: (tab: any) => (
+        <Badge 
+          className="cursor-pointer" 
+          variant={tab.status === "Active" ? "default" : "secondary"}
+          onClick={async () => {
+            const res = await fetch(`/api/admin/store/home/hometab/toggle-status/${tab.id}`, { method: 'POST' })
+            if ((await res.json()).success) { toast.success('Status updated'); fetchData(); }
+          }}
+        >
+          {tab.status}
+        </Badge>
+      )
+    },
+    {
+      header: "Actions",
+      cell: (tab: any) => (
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <MoreVertical className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => openEditTab(tab)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={async () => {
+                if(!confirm('Are you sure?')) return;
+                const res = await fetch(`/api/admin/store/home/hometab/delete/${tab.id}`)
+                if ((await res.json()).success) { toast.success('Deleted'); fetchData() }
+              }} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )
+    }
+  ]
+
+  const serviceColumns = [
+    {
+      header: "Image",
+      cell: (s: any) => (
+        s.image ? <img src={getImageUrl(s.image, 'services')} alt={s.title} className="h-10 w-10 object-cover rounded" /> 
+        : <div className="h-10 w-10 bg-muted rounded flex items-center justify-center text-xs">{s.icon}</div>
+      )
+    },
+    { accessorKey: "title", header: "Title" },
+    { accessorKey: "subtitle", header: "Subtitle" },
+    {
+      header: "Status",
+      cell: (s: any) => (
+        <Badge 
+          className="cursor-pointer" 
+          variant={s.status === "Active" ? "default" : "secondary"}
+          onClick={async () => {
+            const res = await fetch(`/api/admin/store/home/service/toggle-status/${s.id}`, { method: 'POST' })
+            if ((await res.json()).success) { toast.success('Status updated'); fetchData(); }
+          }}
+        >
+          {s.status}
+        </Badge>
+      )
+    },
+    {
+      header: "Actions",
+      cell: (s: any) => (
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <MoreVertical className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link href={`/admin/store/home/service/${s.id}`}>
+                <DropdownMenuItem><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem onClick={async () => {
+                if(!confirm('Are you sure?')) return;
+                const res = await fetch(`/api/admin/store/home/service/delete/${s.id}`)
+                if ((await res.json()).success) { toast.success('Deleted'); fetchData() }
+              }} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )
+    }
+  ]
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
+      <Toaster position="top-center" richColors />
       <div>
         <h2 className="text-2xl font-bold tracking-tight mb-2">Store Configuration / Manage Home</h2>
         <p className="text-muted-foreground">
@@ -101,79 +530,13 @@ export function ManageHomeContent() {
                 <CardDescription>Manage main carousel banners.</CardDescription>
               </div>
               <Link href="/admin/store/home/hero/add">
-                <Button><Plus className="mr-2 h-4 w-4" /> Add Hero</Button>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Add Hero
+                </Button>
               </Link>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Sub-Title (Header)</TableHead>
-                    <TableHead>Button</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {heroes.map((hero) => (
-                    <TableRow key={hero.id}>
-                      <TableCell>
-                        <div className="h-12 w-20 bg-muted rounded border flex items-center justify-center">
-                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{hero.title}</TableCell>
-                      <TableCell className="text-muted-foreground">{hero.header}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <LinkIcon className="mr-1 h-3 w-3" /> {hero.buttonText} ({hero.buttonLink})
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
-                            <MoreVertical className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                              <Edit className="h-4 w-4 text-muted-foreground" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer hover:!text-destructive hover:!bg-destructive/10">
-                              <Trash className="h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-                <div>Showing 1-10 of 10 items</div>
-                <Pagination className="mx-0 w-auto">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <DataTable data={heroes} columns={heroColumns} keyExtractor={(item) => item.id} isLoading={isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -186,98 +549,60 @@ export function ManageHomeContent() {
                 <CardTitle>Promo Banners</CardTitle>
                 <CardDescription>Manage small promotional callouts.</CardDescription>
               </div>
-              <Sheet>
-                <SheetTrigger className={buttonVariants({ variant: "default" })}>
+              <Sheet open={isPromoOpen} onOpenChange={setIsPromoOpen}>
+                <SheetTrigger render={<Button onClick={() => { setEditingPromo(null); promoForm.reset({ status: "Active", order: 0, title: "", subtitle: "", icon: "" }) }} />}>
                   <Plus className="mr-2 h-4 w-4" /> Add Promo
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
-                    <SheetTitle>Add Promo Banner</SheetTitle>
+                    <SheetTitle>{editingPromo ? 'Edit Promo' : 'Add Promo Banner'}</SheetTitle>
                     <SheetDescription>Small text banners, usually displayed under the hero section.</SheetDescription>
                   </SheetHeader>
-                  <div className="flex flex-col gap-5 px-4 py-2">
+                  <form onSubmit={promoForm.handleSubmit(handlePromoSubmit)} className="flex flex-col gap-5 px-4 py-4">
                     <div className="space-y-2">
-                      <Label htmlFor="promo-icon" className="font-medium">Icon Class (e.g., Boxicons)</Label>
-                      <Input id="promo-icon" placeholder="bx bx-truck" className="h-10" />
+                      <Label>Icon Class</Label>
+                      <Input placeholder="bx bx-truck" {...promoForm.register("icon")} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="promo-title" className="font-medium">Title</Label>
-                      <Input id="promo-title" placeholder="Free Shipping" className="h-10" />
+                      <Label>Title</Label>
+                      <Input {...promoForm.register("title")} />
+                      {promoForm.formState.errors.title && <p className="text-xs text-destructive">{promoForm.formState.errors.title.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="promo-subtitle" className="font-medium">Subtitle</Label>
-                      <Input id="promo-subtitle" placeholder="On orders over ₹999" className="h-10" />
+                      <Label>Subtitle</Label>
+                      <Input {...promoForm.register("subtitle")} />
                     </div>
-                  </div>
-                  <SheetFooter className="pt-4 flex flex-col sm:flex-row gap-3 sm:justify-end">
-                    <SheetClose render={<Button variant="outline" className="w-full sm:w-auto" />}>
-                      Cancel
-                    </SheetClose>
-                    <Button type="submit" className="w-full sm:w-auto">Save Promo</Button>
-                  </SheetFooter>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Order</Label>
+                        <Input type="number" {...promoForm.register("order")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Status</Label>
+                        <Controller
+                          control={promoForm.control}
+                          name="status"
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <SheetFooter className="mt-4">
+                      <Button type="submit">Save Promo</Button>
+                    </SheetFooter>
+                  </form>
                 </SheetContent>
               </Sheet>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead>Icon Class</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Subtitle</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {promos.map((promo) => (
-                    <TableRow key={promo.id}>
-                      <TableCell className="font-mono text-xs">{promo.icon}</TableCell>
-                      <TableCell className="font-medium">{promo.title}</TableCell>
-                      <TableCell className="text-muted-foreground">{promo.subtitle}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
-                            <MoreVertical className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                              <Edit className="h-4 w-4 text-muted-foreground" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer hover:!text-destructive hover:!bg-destructive/10">
-                              <Trash className="h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-                <div>Showing 1-10 of 10 items</div>
-                <Pagination className="mx-0 w-auto">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <DataTable data={promos} columns={promoColumns} keyExtractor={(item) => item.id} isLoading={isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -290,125 +615,70 @@ export function ManageHomeContent() {
                 <CardTitle>Home Tabs</CardTitle>
                 <CardDescription>Manage category tabs displayed on the homepage.</CardDescription>
               </div>
-              <Sheet>
-                <SheetTrigger className={buttonVariants({ variant: "default" })}>
+              <Sheet open={isTabOpen} onOpenChange={setIsTabOpen}>
+                <SheetTrigger render={<Button onClick={() => { setEditingTab(null); tabForm.reset({ status: "Active", order: 0, title: "", categoryId: "" }) }} />}>
                   <Plus className="mr-2 h-4 w-4" /> Add Tab
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
-                    <SheetTitle>Add Home Tab</SheetTitle>
+                    <SheetTitle>{editingTab ? 'Edit Tab' : 'Add Home Tab'}</SheetTitle>
                     <SheetDescription>Add a category tab to the homepage showcase.</SheetDescription>
                   </SheetHeader>
-                  <div className="flex flex-col gap-5 px-4 py-2">
+                  <form onSubmit={tabForm.handleSubmit(handleTabSubmit)} className="flex flex-col gap-5 px-4 py-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tab-title" className="font-medium">Tab Title</Label>
-                      <Input id="tab-title" placeholder="Pooja Samagri" className="h-10" />
+                      <Label>Tab Title</Label>
+                      <Input {...tabForm.register("title")} />
+                      {tabForm.formState.errors.title && <p className="text-xs text-destructive">{tabForm.formState.errors.title.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="tab-category" className="font-medium">Category</Label>
-                      <Select>
-                        <SelectTrigger id="tab-category" className="w-full h-10">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="10">Pooja Samagri</SelectItem>
-                          <SelectItem value="11">Idols & Murtis</SelectItem>
-                          <SelectItem value="12">Spiritual Books</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Category</Label>
+                      <Controller
+                          control={tabForm.control}
+                          name="categoryId"
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                              <SelectContent>
+                                {categories.map(c => (
+                                  <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        {tabForm.formState.errors.categoryId && <p className="text-xs text-destructive">{tabForm.formState.errors.categoryId.message}</p>}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="tab-order" className="font-medium">Display Order</Label>
-                        <Input id="tab-order" type="number" defaultValue="0" className="h-10" />
+                        <Label>Order</Label>
+                        <Input type="number" {...tabForm.register("order")} />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="tab-status" className="font-medium">Status</Label>
-                        <Select defaultValue="Active">
-                          <SelectTrigger id="tab-status" className="w-full h-10">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Label>Status</Label>
+                        <Controller
+                          control={tabForm.control}
+                          name="status"
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
                       </div>
                     </div>
-                  </div>
-                  <SheetFooter className="pt-4 flex flex-col sm:flex-row gap-3 sm:justify-end">
-                    <SheetClose render={<Button variant="outline" className="w-full sm:w-auto" />}>
-                      Cancel
-                    </SheetClose>
-                    <Button type="submit" className="w-full sm:w-auto">Save Tab</Button>
-                  </SheetFooter>
+                    <SheetFooter className="mt-4">
+                      <Button type="submit">Save Tab</Button>
+                    </SheetFooter>
+                  </form>
                 </SheetContent>
               </Sheet>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Tab Title</TableHead>
-                    <TableHead>Category ID</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {homeTabs.map((tab) => (
-                    <TableRow key={tab.id}>
-                      <TableCell>{tab.order}</TableCell>
-                      <TableCell className="font-medium">{tab.title}</TableCell>
-                      <TableCell className="text-muted-foreground">ID: {tab.categoryId}</TableCell>
-                      <TableCell>
-                        <Badge variant={tab.status === 'Active' ? 'default' : 'secondary'}>{tab.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
-                            <MoreVertical className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                              <Edit className="h-4 w-4 text-muted-foreground" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer hover:!text-destructive hover:!bg-destructive/10">
-                              <Trash className="h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-                <div>Showing 1-10 of 10 items</div>
-                <Pagination className="mx-0 w-auto">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <DataTable data={homeTabs} columns={tabColumns} keyExtractor={(item) => item.id} isLoading={isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -422,84 +692,13 @@ export function ManageHomeContent() {
                 <CardDescription>Manage store services and feature highlights.</CardDescription>
               </div>
               <Link href="/admin/store/home/service/add">
-                <Button><Plus className="mr-2 h-4 w-4" /> Add Service</Button>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Add Service
+                </Button>
               </Link>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead>Image/Icon</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Subtitle</TableHead>
-                    <TableHead>Rating</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {services.map((service) => (
-                    <TableRow key={service.id}>
-                      <TableCell>
-                        <div className="h-10 w-10 bg-muted rounded border flex items-center justify-center text-xs">
-                          {service.icon}
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{service.title}</TableCell>
-                      <TableCell className="text-muted-foreground">{service.subtitle}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <Star className="h-3 w-3 text-amber-500 mr-1 fill-amber-500" /> 
-                          {service.rating} ({service.reviewsCount})
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={service.status === 'Active' ? 'default' : 'secondary'}>{service.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
-                            <MoreVertical className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                              <Edit className="h-4 w-4 text-muted-foreground" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer hover:!text-destructive hover:!bg-destructive/10">
-                              <Trash className="h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-                <div>Showing 1-10 of 10 items</div>
-                <Pagination className="mx-0 w-auto">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <DataTable data={services} columns={serviceColumns} keyExtractor={(item) => item.id} isLoading={isLoading} />
             </CardContent>
           </Card>
         </TabsContent>

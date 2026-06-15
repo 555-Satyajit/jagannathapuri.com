@@ -53,11 +53,11 @@ exports.getAuditLogs = async (req, res) => {
 
 exports.getAuditLogsData = async (req, res) => {
     try {
-        const { adminId, action, entity, search, startDate, endDate, ipAddress } = req.query;
+        const { adminId, action, entity, search, startDate, endDate, ipAddress, status } = req.query;
         let where = {};
 
         if (adminId) where.adminId = parseInt(adminId);
-        if (action) where.action = action;
+        if (action) where.action = { contains: action, mode: 'insensitive' };
         if (entity) where.entity = entity;
         if (ipAddress) where.ipAddress = { contains: ipAddress, mode: 'insensitive' };
 
@@ -73,6 +73,12 @@ exports.getAuditLogsData = async (req, res) => {
             }
         }
     
+        if (status === 'failed') {
+            where.action = 'LOGIN_FAILED'; // or other failed states
+        } else if (status === 'success') {
+            where.action = { not: 'LOGIN_FAILED' };
+        }
+
         // Combined filters (admin, action, entity, date, ip)
         let finalWhere = { ...where };
 
@@ -83,22 +89,67 @@ exports.getAuditLogsData = async (req, res) => {
                     where,
                     {
                         OR: [
-                            { oldValues: { contains: search, mode: 'insensitive' } },
-                            { newValues: { contains: search, mode: 'insensitive' } },
-                            { metadata: { contains: search, mode: 'insensitive' } }
+                            { entity: { contains: search, mode: 'insensitive' } },
+                            { details: { contains: search, mode: 'insensitive' } },
+                            { ipAddress: { contains: search, mode: 'insensitive' } },
+                            { admin: { full_name: { contains: search, mode: 'insensitive' } } },
+                            { admin: { email: { contains: search, mode: 'insensitive' } } }
                         ]
                     }
                 ]
             };
         }
 
-        const logs = await prisma.auditLog.findMany({
-            where: finalWhere,
-            orderBy: { createdAt: 'desc' },
-            include: { admin: { select: { full_name: true } } }
-        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-        res.json({ data: logs });
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const [
+            logs, 
+            total,
+            totalEvents,
+            systemChanges,
+            failedLogins,
+            uniqueIpsResult
+        ] = await Promise.all([
+            prisma.auditLog.findMany({
+                where: finalWhere,
+                orderBy: { createdAt: 'desc' },
+                include: { admin: { select: { full_name: true, email: true } } },
+                skip,
+                take: limit
+            }),
+            prisma.auditLog.count({ where: finalWhere }),
+            prisma.auditLog.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+            prisma.auditLog.count({ where: { createdAt: { gte: thirtyDaysAgo }, action: { notIn: ['LOGIN', 'LOGIN_FAILED', 'LOGOUT'] } } }),
+            prisma.auditLog.count({ where: { createdAt: { gte: thirtyDaysAgo }, action: 'LOGIN_FAILED' } }),
+            prisma.auditLog.findMany({
+                where: { createdAt: { gte: thirtyDaysAgo }, ipAddress: { not: null } },
+                select: { ipAddress: true },
+                distinct: ['ipAddress']
+            })
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        res.json({ 
+            data: logs,
+            stats: {
+                totalEvents,
+                systemChanges,
+                failedLogins,
+                uniqueIps: uniqueIpsResult.length
+            },
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages
+            }
+        });
     } catch (error) {
         console.error('Error fetching audit logs data:', error);
         res.status(500).json({ error: 'Internal Server Error' });

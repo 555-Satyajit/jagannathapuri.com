@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, Save, Image as ImageIcon, Type, Link as LinkIcon, Upload, X } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,13 +27,27 @@ const heroSchema = z.object({
 
 type HeroFormValues = z.infer<typeof heroSchema>
 
-export function AdminHeroAdd() {
+export function AdminHeroEdit({ id }: { id: string }) {
   const router = useRouter()
   const [desktopImage, setDesktopImage] = useState<File | null>(null)
   const [mobileImage, setMobileImage] = useState<File | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
+  
+  const [existingDesktop, setExistingDesktop] = useState<string | null>(null)
+  const [existingMobile, setExistingMobile] = useState<string | null>(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<HeroFormValues>({
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const getImageUrl = (path: string | null | undefined) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    let cleanPath = path;
+    if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');
+    if (!cleanPath.startsWith('/')) cleanPath = `/uploads/${cleanPath}`;
+    return `http://localhost:5000${cleanPath}`;
+  }
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<HeroFormValues>({
     resolver: zodResolver(heroSchema),
     defaultValues: {
       title: "",
@@ -43,26 +58,60 @@ export function AdminHeroAdd() {
     }
   })
 
+  useEffect(() => {
+    const fetchHero = async () => {
+      try {
+        const res = await fetch('/api/admin/store/home/hero/data')
+        const json = await res.json()
+        const hero = json.data?.find((h: any) => h.id === parseInt(id))
+        
+        if (hero) {
+          reset({
+            title: hero.title || "",
+            header: hero.header || "",
+            description: hero.description || "",
+            buttonText: hero.buttonText || "",
+            buttonLink: hero.buttonLink || ""
+          })
+          if (hero.image) setExistingDesktop(hero.image)
+          if (hero.mobileImage) setExistingMobile(hero.mobileImage)
+        } else {
+          toast.error("Hero not found")
+          router.push("/admin/store/home")
+        }
+      } catch (err) {
+        toast.error("Failed to load hero data")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchHero()
+  }, [id, reset, router])
+
   const handleDesktopChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setDesktopImage(e.target.files[0])
+      setExistingDesktop(null)
     }
   }
 
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setMobileImage(e.target.files[0])
+      setExistingMobile(null)
     }
   }
 
   const removeDesktopImage = (e: React.MouseEvent) => {
     e.preventDefault()
     setDesktopImage(null)
+    setExistingDesktop(null)
   }
 
   const removeMobileImage = (e: React.MouseEvent) => {
     e.preventDefault()
     setMobileImage(null)
+    setExistingMobile(null)
   }
 
   const onSubmit = async (data: HeroFormValues) => {
@@ -74,33 +123,65 @@ export function AdminHeroAdd() {
       if (data.description) formData.append("description", data.description)
       if (data.buttonText) formData.append("buttonText", data.buttonText)
       if (data.buttonLink) formData.append("buttonLink", data.buttonLink)
-      formData.append("status", "Active") // default to active for new additions
-      formData.append("order", "0") // default order to 0
 
       if (desktopImage) {
         formData.append("image", desktopImage)
-      }
-      if (mobileImage) {
-        formData.append("mobileImage", mobileImage)
+      } else if (existingDesktop) {
+        formData.append("existingImage", existingDesktop)
       }
 
-      const response = await fetch('/api/admin/store/home/hero/save', {
+      if (mobileImage) {
+        formData.append("mobileImage", mobileImage)
+      } else if (existingMobile) {
+        formData.append("existingMobileImage", existingMobile)
+      }
+
+      const response = await fetch(`/api/admin/store/home/hero/update/${id}`, {
         method: 'POST',
         body: formData,
       })
 
       const result = await response.json()
       if (result.success) {
-        toast.success("Hero slide added successfully!")
+        toast.success("Hero slide updated successfully!")
         router.push("/admin/store/home")
       } else {
-        toast.error(result.message || "Failed to add hero slide")
+        toast.error(result.message || "Failed to update hero slide")
       }
     } catch (error) {
       toast.error("An error occurred while saving.")
     } finally {
       setIsSaving(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 p-4 md:p-8 max-w-[1200px] mx-auto w-full">
+        <div className="flex items-center justify-between gap-4 pb-6 border-b border-border">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-9 w-9 rounded-lg" />
+            <div>
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Skeleton className="h-10 w-24 rounded-lg" />
+            <Skeleton className="h-10 w-32 rounded-lg" />
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-3 gap-8 pt-2">
+          <div className="lg:col-span-2 space-y-8">
+            <Skeleton className="h-[300px] w-full rounded-xl" />
+            <Skeleton className="h-[400px] w-full rounded-xl" />
+          </div>
+          <div className="space-y-8">
+            <Skeleton className="h-[250px] w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -115,8 +196,8 @@ export function AdminHeroAdd() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Add Hero Slide</h1>
-            <p className="text-sm text-muted-foreground mt-1">Configure a new banner for your homepage carousel.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Edit Hero Slide</h1>
+            <p className="text-sm text-muted-foreground mt-1">Update your homepage banner.</p>
           </div>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -124,7 +205,7 @@ export function AdminHeroAdd() {
             <Button type="button" variant="outline" className="w-full sm:w-auto rounded-lg">Cancel</Button>
           </Link>
           <Button type="submit" disabled={isSaving} className="flex-1 sm:flex-none rounded-lg shadow-sm">
-            <Save className="mr-2 h-4 w-4" /> {isSaving ? "Saving..." : "Save Slide"}
+            <Save className="mr-2 h-4 w-4" /> {isSaving ? "Saving..." : "Update Slide"}
           </Button>
         </div>
       </div>
@@ -159,6 +240,15 @@ export function AdminHeroAdd() {
                         </Button>
                       </div>
                     </div>
+                  ) : existingDesktop ? (
+                    <div className="relative h-32 rounded-lg border border-border overflow-hidden bg-muted/20 group">
+                      <img src={getImageUrl(existingDesktop)} alt="Desktop preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button type="button" variant="destructive" size="sm" className="h-8 rounded-md" onClick={removeDesktopImage}>
+                          <X className="h-4 w-4 mr-1" /> Remove
+                        </Button>
+                      </div>
+                    </div>
                   ) : (
                     <Label htmlFor="hero-image" className="flex flex-col items-center justify-center h-32 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-muted/30 cursor-pointer transition-colors">
                       <Upload className="h-5 w-5 text-muted-foreground mb-2" />
@@ -178,6 +268,15 @@ export function AdminHeroAdd() {
                   {mobileImage ? (
                     <div className="relative h-32 rounded-lg border border-border overflow-hidden bg-muted/20 group">
                       <img src={URL.createObjectURL(mobileImage)} alt="Mobile preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button type="button" variant="destructive" size="sm" className="h-8 rounded-md" onClick={removeMobileImage}>
+                          <X className="h-4 w-4 mr-1" /> Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ) : existingMobile ? (
+                    <div className="relative h-32 rounded-lg border border-border overflow-hidden bg-muted/20 group">
+                      <img src={getImageUrl(existingMobile)} alt="Mobile preview" className="h-full w-full object-cover" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <Button type="button" variant="destructive" size="sm" className="h-8 rounded-md" onClick={removeMobileImage}>
                           <X className="h-4 w-4 mr-1" /> Remove

@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -78,7 +79,7 @@ const ToolbarButton = ({ icon: Icon, active = false, onClick, disabled = false }
   </Button>
 )
 
-const RichTextEditor = ({ initialContent }: { initialContent: string }) => {
+const RichTextEditor = ({ initialContent, onChange }: { initialContent: string, onChange?: (html: string) => void }) => {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -103,6 +104,11 @@ const RichTextEditor = ({ initialContent }: { initialContent: string }) => {
       attributes: {
         class: 'min-h-[400px] border-0 focus-visible:outline-none p-0 text-base bg-transparent [&_p]:mb-4 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:mb-3 [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_blockquote]:border-l-4 [&_blockquote]:border-muted-foreground [&_blockquote]:pl-4 [&_blockquote]:italic',
       },
+    },
+    onUpdate({ editor }) {
+      if (onChange) {
+        onChange(editor.getHTML())
+      }
     },
   })
 
@@ -266,18 +272,49 @@ const RichTextEditor = ({ initialContent }: { initialContent: string }) => {
 
 export function PoliciesContent() {
   const [isSaving, setIsSaving] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(true)
   const [activeTab, setActiveTab] = React.useState("privacy")
+  const [content, setContent] = React.useState("")
+  const [editorKey, setEditorKey] = React.useState(0) // Used to force remount of editor when content loads
 
-  const handleSave = () => {
-    setIsSaving(true)
-    setTimeout(() => setIsSaving(false), 800)
-  }
-
-  const getInitialContent = (id: string) => {
-    if (id === "privacy") {
-      return `<h1>Privacy Policy</h1><p>We collect information from you when you register on our site, place an order, subscribe to our newsletter or fill out a form.</p><h2>1. Information Usage</h2><p>Any of the information we collect from you may be used in one of the following ways:</p><ul><li>To personalize your experience</li><li>To improve our website</li><li>To process transactions</li></ul>`
+  React.useEffect(() => {
+    const fetchPolicy = async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(`/api/admin/settings/policies/${activeTab}`)
+        if (res.ok) {
+          const data = await res.json()
+          setContent(data.data?.content || "")
+          setEditorKey(prev => prev + 1)
+        }
+      } catch (error) {
+        console.error("Failed to fetch policy:", error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-    return `<h1>${policyTypes.find(p => p.id === id)?.label}</h1><p>Start writing your policy content here...</p>`
+    fetchPolicy()
+  }, [activeTab])
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      const res = await fetch(`/api/admin/settings/policies/${activeTab}/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      })
+      if (res.ok) {
+        alert('Policy saved successfully!')
+      } else {
+        alert('Failed to save policy.')
+      }
+    } catch (error) {
+      console.error("Failed to save policy:", error)
+      alert('An error occurred while saving.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -314,7 +351,17 @@ export function PoliciesContent() {
               </CardHeader>
               
               <CardContent className="p-0">
-                <RichTextEditor initialContent={getInitialContent(policy.id)} />
+                {isLoading ? (
+                  <div className="p-6 h-[400px]">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                ) : (
+                  <RichTextEditor 
+                    key={editorKey} 
+                    initialContent={content} 
+                    onChange={setContent} 
+                  />
+                )}
               </CardContent>
               
               <CardFooter className="p-4 border-t bg-muted/20 flex justify-end gap-3">

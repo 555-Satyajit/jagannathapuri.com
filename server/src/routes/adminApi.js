@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminApiAuthController = require('../controllers/api/adminApiAuthController');
 const adminAuth = require('../middlewares/adminAuth');
+const checkPermission = require('../middlewares/checkPermission');
 
 // API Controllers
 const { apiGetEngagementAnalytics, apiGetDashboardOverview } = require('../controllers/api/adminApiDashboardController');
@@ -14,6 +15,12 @@ const roleController = require('../controllers/admin/roleController');
 const customerController = require('../controllers/admin/customerController');
 const orderController = require('../controllers/admin/orderController');
 const transactionController = require('../controllers/admin/transactionController');
+const dashboardController = require('../controllers/admin/dashboardController');
+const adminApiSettingsController = require('../controllers/api/adminApiSettingsController');
+const popupController = require('../controllers/api/popupController');
+const newsletterController = require('../controllers/api/newsletterController');
+const dailyRitualsController = require('../controllers/api/dailyRitualsController');
+const manageHomeController = require('../controllers/api/manageHomeController');
 
 // Authentication routes
 router.post('/auth/login', adminApiAuthController.apiPostLogin);
@@ -90,5 +97,73 @@ router.get('/ecommerce/orders/view/:id', adminAuth, orderController.apiGetOrderD
 
 // Transactions
 router.get('/transactions/data', adminAuth, transactionController.getTransactionData);
+
+// Settings
+router.get('/settings/general', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetGeneralSettings);
+router.post('/settings/general', adminAuth, checkPermission('manage_settings'), upload.fields([{ name: 'logo', maxCount: 1 }, { name: 'favicon', maxCount: 1 }]), adminApiSettingsController.apiSaveGeneralSettings);
+router.get('/settings/audit-logs/data', adminAuth, checkPermission('manage_settings'), dashboardController.getAuditLogsData);
+router.get('/settings/policies/:type', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetPolicy);
+router.post('/settings/policies/:type/save', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiSavePolicy);
+
+// Popups
+router.get('/store/popups/data', adminAuth, popupController.getPopupsData);
+router.post('/store/popups/save', adminAuth, upload.single('image'), popupController.savePopup);
+router.post('/store/popups/update/:id', adminAuth, upload.single('image'), popupController.updatePopup);
+router.post('/store/popups/toggle-status/:id', adminAuth, popupController.toggleStatusPopup);
+router.get('/store/popups/delete/:id', adminAuth, popupController.deletePopup);
+
+// Newsletter Routes
+router.get('/store/newsletter/data', adminAuth, newsletterController.getNewsletters);
+router.post('/store/newsletter/toggle-status/:id', adminAuth, newsletterController.toggleStatus);
+router.get('/store/newsletter/delete/:id', adminAuth, newsletterController.deleteNewsletter);
+
+// ==========================================
+// STORE CONFIGURATION: DAILY RITUALS, DARSHAN & FACTS
+// ==========================================
+router.get('/store/rituals/data', adminAuth, dailyRitualsController.getRituals);
+router.post('/store/rituals/save', adminAuth, dailyRitualsController.saveRitual);
+router.post('/store/rituals/update/:id', adminAuth, dailyRitualsController.updateRitual);
+router.get('/store/rituals/delete/:id', adminAuth, dailyRitualsController.deleteRitual);
+router.post('/store/rituals/toggle-status/:id', adminAuth, dailyRitualsController.toggleRitualStatus);
+
+router.get('/store/darshans/data', adminAuth, dailyRitualsController.getDarshans);
+router.post('/store/darshans/save', adminAuth, dailyRitualsController.saveDarshan);
+router.post('/store/darshans/update/:id', adminAuth, dailyRitualsController.updateDarshan);
+router.get('/store/darshans/delete/:id', adminAuth, dailyRitualsController.deleteDarshan);
+router.post('/store/darshans/toggle-status/:id', adminAuth, dailyRitualsController.toggleDarshanStatus);
+
+router.get('/store/facts/data', adminAuth, dailyRitualsController.getFacts);
+router.post('/store/facts/save', adminAuth, dailyRitualsController.saveFact);
+router.post('/store/facts/update/:id', adminAuth, dailyRitualsController.updateFact);
+router.get('/store/facts/delete/:id', adminAuth, dailyRitualsController.deleteFact);
+router.post('/store/facts/toggle-status/:id', adminAuth, dailyRitualsController.toggleFactStatus);
+
+// ==========================================
+// STORE CONFIGURATION: MANAGE HOME
+// ==========================================
+router.get('/store/home/hero/data', adminAuth, manageHomeController.getHeroes);
+router.post('/store/home/hero/save', adminAuth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), manageHomeController.saveHero);
+router.post('/store/home/hero/update/:id', adminAuth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), manageHomeController.updateHero);
+router.get('/store/home/hero/delete/:id', adminAuth, manageHomeController.deleteHero);
+router.post('/store/home/hero/toggle-status/:id', adminAuth, manageHomeController.toggleHeroStatus);
+
+router.get('/store/home/promo/data', adminAuth, manageHomeController.getPromos);
+router.post('/store/home/promo/save', adminAuth, manageHomeController.savePromo);
+router.post('/store/home/promo/update/:id', adminAuth, manageHomeController.updatePromo);
+router.get('/store/home/promo/delete/:id', adminAuth, manageHomeController.deletePromo);
+router.post('/store/home/promo/toggle-status/:id', adminAuth, manageHomeController.togglePromoStatus);
+
+router.get('/store/home/hometab/data', adminAuth, manageHomeController.getHomeTabs);
+router.post('/store/home/hometab/save', adminAuth, manageHomeController.saveHomeTab);
+router.post('/store/home/hometab/update/:id', adminAuth, manageHomeController.updateHomeTab);
+router.get('/store/home/hometab/delete/:id', adminAuth, manageHomeController.deleteHomeTab);
+router.post('/store/home/hometab/toggle-status/:id', adminAuth, manageHomeController.toggleHomeTabStatus);
+router.get('/store/home/hometab/categories', adminAuth, manageHomeController.getCategories);
+
+router.get('/store/home/service/data', adminAuth, manageHomeController.getServices);
+router.post('/store/home/service/save', adminAuth, upload.single('image'), manageHomeController.saveService);
+router.post('/store/home/service/update/:id', adminAuth, upload.single('image'), manageHomeController.updateService);
+router.get('/store/home/service/delete/:id', adminAuth, manageHomeController.deleteService);
+router.post('/store/home/service/toggle-status/:id', adminAuth, manageHomeController.toggleServiceStatus);
 
 module.exports = router;

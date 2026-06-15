@@ -457,42 +457,7 @@ model SiteConfig {
   updated_at DateTime @updatedAt
 }
 
-model HeroSection {
-  id          Int      @id @default(autoincrement())
-  header      String?
-  title       String?
-  description String?
-  buttonText  String?
-  buttonLink  String?
-  image       String?
-  mobileImage String?
-  order       Int      @default(0)
-  status      String   @default("Active")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-}
 
-model PromoBanner {
-  id         Int      @id @default(autoincrement())
-  icon       String?
-  title      String?
-  subtitle   String?
-  order      Int      @default(0)
-  status     String   @default("Active")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
-model HomeTab {
-  id         Int      @id @default(autoincrement())
-  title      String
-  categoryId Int
-  order      Int      @default(0)
-  status     String   @default("Active")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  category   Category @relation(fields: [categoryId], references: [id])
-}
 
 model AuditLog {
   id        Int      @id @default(autoincrement())
@@ -544,4 +509,58 @@ model VisitorLog {
 
   @@index([sessionId])
   @@index([customerId])
+}
+
+model HeroSection {
+  id          Int      @id @default(autoincrement())
+  title       String
+  header      String?
+  description String?
+  buttonText  String?
+  buttonLink  String?
+  order       Int      @default(0)
+  status      String   @default("Active")
+  image       String?
+  mobileImage String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model PromoBanner {
+  id          Int      @id @default(autoincrement())
+  title       String
+  subtitle    String?
+  code        String?
+  link        String?
+  status      String   @default("Active")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model HomeTab {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String?  @unique
+  categoryId  Int?
+  status      String   @default("Active")
+  order       Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  category    Category? @relation(fields: [categoryId], references: [id])
+}
+
+model ServiceBlock {
+  id           Int      @id @default(autoincrement())
+  title        String
+  subtitle     String?
+  description  String?
+  icon         String?
+  link         String?
+  phone        String?
+  rating       Float?
+  reviewsCount Int?
+  status       String   @default("Active")
+  image        String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }

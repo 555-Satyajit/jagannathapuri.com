@@ -33,6 +33,9 @@ module.exports = (requiredPermission) => {
 
             if (!staff || !staff.role) {
                 console.warn(`User ${staff.id} has no role assigned.`);
+                if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                    return res.status(403).json({ error: 'Access Denied: No role assigned' });
+                }
                 return res.status(403).render('pages/admin-denied', {}, (err, html) => {
                     if (err) return res.status(403).send('Access Denied');
                     res.render('layouts/admin-master', {
@@ -51,6 +54,9 @@ module.exports = (requiredPermission) => {
                 return next();
             } else {
                 console.warn(`User ${staff.username} denied access to ${req.originalUrl}. Missing permission: ${requiredPermission}`);
+                if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                    return res.status(403).json({ error: `Access Denied: Missing permission: ${requiredPermission}` });
+                }
                 return res.status(403).render('pages/admin-denied', {}, (err, html) => {
                     if (err) {
                         console.error('Error rendering Admin Denied page content:', err);

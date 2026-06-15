@@ -15,6 +15,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { TableSkeleton } from "@/components/ui/table-skeleton"
 
 export interface ColumnDef<T> {
   header: React.ReactNode
@@ -32,6 +33,7 @@ interface DataTableProps<T> {
   totalItems?: number
   currentPage?: number
   itemsPerPage?: number
+  isLoading?: boolean
 }
 
 export function DataTable<T>({ 
@@ -40,7 +42,8 @@ export function DataTable<T>({
   keyExtractor,
   totalItems,
   currentPage = 1,
-  itemsPerPage = 10
+  itemsPerPage = 10,
+  isLoading = false
 }: DataTableProps<T>) {
   
   // Calculate display range for dummy data, falling back to data.length if totalItems not provided
@@ -61,7 +64,9 @@ export function DataTable<T>({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.length === 0 ? (
+          {isLoading ? (
+            <TableSkeleton columns={columns.length} rows={Math.max(3, itemsPerPage)} />
+          ) : data.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results found.
