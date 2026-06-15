@@ -48,9 +48,11 @@ export default async function YouMayAlsoLike({ currentProductId, categoryId }: Y
       <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight mb-10">You May Also Like</h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0 scrollbar-hide">
           {relatedProducts.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="w-[calc(50%-0.5rem)] min-w-[calc(50%-0.5rem)] shrink-0 snap-start md:w-auto md:min-w-0 md:shrink">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       </div>
