@@ -115,11 +115,11 @@ exports.apiSaveGeneralSettings = async (req, res) => {
         if (req.files) {
             if (req.files.logo && req.files.logo[0]) {
                 if (!settings.header) settings.header = {};
-                settings.header.logo = req.files.logo[0].filename; // multer saves directly to public/uploads
+                settings.header.logo = '/uploads/' + req.files.logo[0].filename;
             }
             if (req.files.favicon && req.files.favicon[0]) {
                 if (!settings.seo) settings.seo = {};
-                settings.seo.favicon = req.files.favicon[0].filename;
+                settings.seo.favicon = '/uploads/' + req.files.favicon[0].filename;
             }
         }
 
