@@ -82,7 +82,7 @@ const authLimiter = rateLimit({
 // 2. Serve static files FIRST (High priority for performance)
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/admin-assets', express.static(path.join(__dirname, '../../admin-panel/assets')));
-app.use('/uploads', express.static(path.join(__dirname, '../../admin-panel/assets/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Apply rate limiting AFTER static files
 app.use(limiter);
