@@ -23,7 +23,7 @@ export default async function Categories() {
         id: `srv-${s.id}`,
         name: s.title,
         image: s.image,
-        link: s.link || `/services/${s.slug}`
+        link: s.link || `/services`
       })),
       ...categories.map((c: any) => ({
         id: `cat-${c.id}`,

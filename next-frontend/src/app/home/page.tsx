@@ -43,9 +43,9 @@ export default function HomePage() {
         <SpiritualResources />
       </Suspense>
 
-      <Suspense fallback={<TestimonialsSkeleton />}>
+      {/* <Suspense fallback={<TestimonialsSkeleton />}>
         <Testimonials />
-      </Suspense>
+      </Suspense> */}
     </main>
   );
 }

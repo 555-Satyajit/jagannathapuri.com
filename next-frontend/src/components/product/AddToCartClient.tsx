@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
 
 interface AddToCartClientProps {
   productId: number;
@@ -16,6 +17,7 @@ export default function AddToCartClient({ productId, productName, price, maxQuan
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const { addItem, setCartOpen } = useCartStore();
+  const router = useRouter();
 
   const handleDecrease = () => setQuantity((prev) => Math.max(1, prev - 1));
   const handleIncrease = () => setQuantity((prev) => Math.min(maxQuantity, prev + 1));
@@ -34,6 +36,18 @@ export default function AddToCartClient({ productId, productName, price, maxQuan
       setIsAdding(false);
       setCartOpen(true);
     }, 400);
+  };
+
+  const handleBuyNow = () => {
+    setIsAdding(true);
+    addItem({
+      id: productId,
+      name: productName,
+      price,
+      quantity,
+      image
+    });
+    router.push('/checkout');
   };
 
   return (
@@ -77,6 +91,7 @@ export default function AddToCartClient({ productId, productName, price, maxQuan
 
         {/* Buy Now Button */}
         <button 
+          onClick={handleBuyNow}
           disabled={isAdding || maxQuantity === 0}
           className="relative overflow-hidden w-full h-14 bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20 rounded-full font-bold text-lg transition-all duration-300 disabled:bg-zinc-300 disabled:shadow-none flex items-center justify-center gap-3"
         >

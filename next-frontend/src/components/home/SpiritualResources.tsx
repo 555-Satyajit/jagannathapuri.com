@@ -51,7 +51,7 @@ export default async function SpiritualResources() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((category: any) => (
             <Link 
-              href={`/library/category/${category.slug}`} 
+              href={`/library?category=${category.slug}`} 
               key={category.id}
               className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-zinc-100"
             >
