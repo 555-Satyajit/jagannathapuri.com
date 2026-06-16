@@ -104,7 +104,10 @@ export default function ProductReviews({
   });
 
   const onSubmit = async (data: ReviewFormValues) => {
-    if (!productId) return;
+    if (!productId) {
+      setSubmitError("Product ID is missing. Please refresh the page.");
+      return;
+    }
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
