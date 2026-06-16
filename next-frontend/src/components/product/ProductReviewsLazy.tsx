@@ -24,6 +24,7 @@ export default async function ProductReviewsLazy({ productId, averageRating, rev
       reviews={(product?.reviews || []) as any[]} 
       averageRating={averageRating} 
       reviewCount={reviewCount} 
+      productId={productId}
     />
   );
 }
