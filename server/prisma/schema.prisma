@@ -530,6 +530,8 @@ model PromoBanner {
   id          Int      @id @default(autoincrement())
   title       String
   subtitle    String?
+  icon        String?
+  order       Int      @default(0)
   code        String?
   link        String?
   status      String   @default("Active")
