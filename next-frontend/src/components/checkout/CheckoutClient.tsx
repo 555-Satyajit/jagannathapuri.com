@@ -149,6 +149,11 @@ export default function CheckoutClient() {
         credentials: 'include'
       });
       const data = await res.json();
+      if (res.status === 401 || data.error === 'Please login to continue.') {
+        // Session expired on backend but Zustand still thinks we are logged in
+        useAuthStore.getState().logout();
+        return;
+      }
       if (data.success && data.addresses) {
         setAddresses(data.addresses);
         if (data.addresses.length > 0) {
@@ -229,7 +234,10 @@ export default function CheckoutClient() {
       if (showAddressForm) {
         const addrRes = await fetch('/api/auth/user-address-add', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           credentials: 'include',
           body: JSON.stringify({
             type: 'Home',
