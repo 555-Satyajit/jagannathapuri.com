@@ -24,8 +24,12 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
 
   const getImageUrl = (img?: string | null) => {
     if (!img) return "https://placehold.co/1920x800?text=Jay+Subhdra";
-    if (img.startsWith('http') || img.startsWith('/')) return img;
-    return `/uploads/${img}`;
+    if (img.startsWith('http')) return img;
+    let cleanPath = img;
+    if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');
+    if (cleanPath.startsWith('/uploads/services/')) cleanPath = cleanPath.replace('/uploads/services/', '/uploads/');
+    if (!cleanPath.startsWith('/')) cleanPath = `/uploads/${cleanPath}`;
+    return cleanPath;
   };
 
   const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % heroes.length);

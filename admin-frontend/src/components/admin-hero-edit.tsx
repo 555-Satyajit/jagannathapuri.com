@@ -44,7 +44,7 @@ export function AdminHeroEdit({ id }: { id: string }) {
     let cleanPath = path;
     if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');
     if (!cleanPath.startsWith('/')) cleanPath = `/uploads/${cleanPath}`;
-    return `http://localhost:5000${cleanPath}`;
+    return cleanPath;
   }
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<HeroFormValues>({
