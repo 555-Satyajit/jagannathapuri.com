@@ -122,7 +122,8 @@ export function ManageHomeContent() {
     if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');
     if (cleanPath.startsWith('/uploads/services/')) cleanPath = cleanPath.replace('/uploads/services/', '/uploads/');
     if (!cleanPath.startsWith('/')) cleanPath = `/uploads/${cleanPath}`;
-    return `http://localhost:5000${cleanPath}`;
+    // Use relative path so Next.js or Nginx proxy handles it, avoiding Mixed Content errors on HTTPS
+    return cleanPath;
   }
 
   const fetchData = async () => {
