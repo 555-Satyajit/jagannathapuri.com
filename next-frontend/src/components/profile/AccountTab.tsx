@@ -46,7 +46,10 @@ export default function AccountTab({ user }: { user: User }) {
     try {
       const res = await fetch("/api/auth/user-update-profile", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         credentials: "include",
         body: JSON.stringify({
           fullName: data.fullName,

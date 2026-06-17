@@ -37,10 +37,19 @@ export default function AddressManager() {
 
   const fetchAddresses = async () => {
     try {
-      const res = await fetch("/api/auth/user-addresses", { credentials: "include" });
-      const data = await res.json();
-      if (data.success) {
+      const res = await fetch("/api/auth/user-addresses", { 
+        headers: { "Accept": "application/json" },
+        credentials: "include" 
+      });
+      if (res.ok) {
+        const data = await res.json();
         setAddresses(data.addresses);
+      } else {
+        const errorText = await res.text();
+        console.error("Failed to fetch addresses. Status:", res.status, errorText);
+        if (res.status === 401) {
+          console.warn("Session invalid or expired");
+        }
       }
     } catch (err) {
       console.error("Failed to fetch addresses", err);
@@ -79,7 +88,10 @@ export default function AddressManager() {
     try {
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         credentials: "include",
         body: JSON.stringify(data)
       });
@@ -87,6 +99,8 @@ export default function AddressManager() {
       if (result.success) {
         setIsDialogOpen(false);
         fetchAddresses();
+      } else if (res.status === 401) {
+        console.warn("Session invalid or expired");
       }
     } catch (err) {
       console.error("Failed to save address", err);
@@ -100,6 +114,7 @@ export default function AddressManager() {
     try {
       const res = await fetch(`/api/auth/user-address-delete/${id}`, {
         method: "POST",
+        headers: { "Accept": "application/json" },
         credentials: "include"
       });
       const data = await res.json();
