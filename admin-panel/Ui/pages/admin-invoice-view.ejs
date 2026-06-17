@@ -131,8 +131,8 @@
                                 <span class="fw-medium">₹<%= subtotal.toFixed(2) %></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="w-px-100 text-heading">Tax:</span>
-                                <span class="fw-medium">₹<%= tax.toFixed(2) %></span>
+                                <span class="w-px-150 text-heading">Includes 18% Tax:</span>
+                                <span class="fw-medium">₹<%= typeof tax !== 'undefined' && tax > 0 ? tax.toFixed(2) : (total * 18 / 118).toFixed(2) %></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="w-px-100 text-heading">Shipping:</span>

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Printer, Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function InvoicePage() {
+export default function AdminInvoicePage() {
   const params = useParams();
   const [order, setOrder] = useState<any>(null);
   const [siteConfig, setSiteConfig] = useState<any>(null);
@@ -15,7 +15,8 @@ export default function InvoicePage() {
   useEffect(() => {
     if (!params.id) return;
     
-    fetch(`/api/auth/user-order-details-api/${params.id}`, { credentials: "include" })
+    // Uses the admin API to get the order
+    fetch(`/api/admin/ecommerce/orders/view/${params.id}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -27,7 +28,7 @@ export default function InvoicePage() {
         setLoading(false);
       })
       .catch(err => {
-        console.error("Error fetching order invoice:", err);
+        console.error("Error fetching admin invoice:", err);
         setError("Failed to load invoice");
         setLoading(false);
       });

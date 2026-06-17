@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { 
   MoreVertical, Search, Eye, 
   CalendarClock, CheckCircle2, XCircle, AlertCircle, 
-  CreditCard, Truck, RefreshCcw, Trash
+  CreditCard, Truck, RefreshCcw, Trash, Download
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -328,7 +328,7 @@ export function OrdersContent() {
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground capitalize">
                       <CreditCard className="h-4 w-4" />
-                      {order.method_number === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
+                      {order.paymentMethod || 'Cash on Delivery'}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -344,6 +344,9 @@ export function OrdersContent() {
                           <Link href={`/admin/ecommerce/orders/${order.id}`} className="flex w-full items-center px-2 py-1.5">
                             <Eye className="mr-2 h-4 w-4" /> View Details
                           </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer" onClick={(e) => { e.stopPropagation(); window.open(`/admin/ecommerce/orders/invoice/${order.id}`, '_blank'); }}>
+                          <Download className="mr-2 h-4 w-4" /> Download Invoice
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 

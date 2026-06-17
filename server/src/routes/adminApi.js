@@ -94,6 +94,7 @@ router.get('/ecommerce/orders/data', adminAuth, orderController.getOrderData);
 router.get('/ecommerce/orders/delete/:id', adminAuth, orderController.deleteOrder);
 router.post('/ecommerce/orders/update-status/:id', adminAuth, orderController.updateOrderStatus);
 router.get('/ecommerce/orders/view/:id', adminAuth, orderController.apiGetOrderDetails);
+router.get('/ecommerce/orders/invoice/:id', adminAuth, orderController.downloadInvoice);
 
 // Transactions
 router.get('/transactions/data', adminAuth, transactionController.getTransactionData);

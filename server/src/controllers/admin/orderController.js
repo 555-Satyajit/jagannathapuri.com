@@ -76,7 +76,8 @@ exports.getOrderData = async (req, res) => {
                 payment: order.paymentStatus,
                 status: order.status,
                 method: methodIcon,
-                method_number: order.methodNumber || 'COD'
+                method_number: order.methodNumber,
+                paymentMethod: order.paymentMethod
             };
         });
 
@@ -301,7 +302,10 @@ exports.apiGetOrderDetails = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Order not found' });
         }
 
-        res.json({ success: true, order });
+        const configStore = require('../../lib/configStore');
+        const siteConfig = await configStore.getConfig();
+
+        res.json({ success: true, order, siteConfig });
     } catch (error) {
         console.error('Error fetching order details via API:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });

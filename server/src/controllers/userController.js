@@ -299,7 +299,15 @@ exports.getOrderDetailsApi = async (req, res) => {
         }
         order.shippingAddress = shippingAddress;
 
-        res.json({ success: true, order });
+        const siteConfigs = await prisma.siteConfig.findMany({
+            where: { key: { in: ['header', 'contact'] } }
+        });
+        let siteConfig = {};
+        siteConfigs.forEach(c => {
+            siteConfig[c.key] = c.value;
+        });
+
+        res.json({ success: true, order, siteConfig });
     } catch (error) {
         console.error('Error fetching order details API:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });

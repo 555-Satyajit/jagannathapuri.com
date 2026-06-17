@@ -265,7 +265,7 @@ export function TransactionsContent() {
                         <DropdownMenuItem className="cursor-pointer">
                           <Eye className="mr-2 h-4 w-4" /> View Receipt
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem className="cursor-pointer" onClick={() => window.open(`/admin/ecommerce/orders/invoice/${trx.id}`, '_blank')}>
                           <Download className="mr-2 h-4 w-4" /> Download Invoice
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />

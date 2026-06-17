@@ -165,8 +165,8 @@ export function OrderViewContent({ orderId }: { orderId: string }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" /> Export
+          <Button variant="outline" onClick={() => window.open(`/admin/ecommerce/orders/invoice/${orderId}`, '_blank')}>
+            <Download className="mr-2 h-4 w-4" /> Export Invoice
           </Button>
 
           <DropdownMenu>

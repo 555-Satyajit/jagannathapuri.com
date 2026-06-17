@@ -54,152 +54,120 @@
 
 <body>
 
-    <div class="invoice-print p-5">
+    <div class="invoice-print p-5" style="font-family: 'IBM Plex Sans', sans-serif; max-width: 900px; margin: 0 auto; background: #fff;">
 
-        <div class="d-flex justify-content-between flex-row">
-            <div class="mb-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <img src="/admin-assets/img/logo/jp-icon-logo.png" alt="Jagannathapuri" style="max-height: 70px; width: auto;">
-                    <span class="app-brand-text h3 mb-0 fw-bold" style="line-height: 1;">Jagannathapuri</span>
-                </div>
-                <p class="mb-1">123, Puri Temple Road, Odisha, India</p>
-                <p class="mb-1">Phone: +91 98765 43210</p>
-                <p class="mb-0">Email: support@jagannathapuri.com</p>
-            </div>
+        <!-- Header -->
+        <div class="d-flex justify-content-between border-bottom pb-4 mb-4">
             <div>
-                <h4 class="fw-medium">INVOICE #<%= order.orderNumber %>
-                </h4>
-                <div class="mb-2">
-                    <span class="text-muted">Date Issued:</span>
-                    <span class="fw-medium">
-                        <%= new Date(order.date).toLocaleDateString() %>
-                    </span>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <h1 class="display-6 fw-bold mb-0 text-dark" style="letter-spacing: -1px;">Invoice</h1>
                 </div>
-                <!--
-      <div>
-        <span class="text-muted">Date Due:</span>
-        <span class="fw-medium">May 25, 2021</span>
-      </div>
-      -->
-            </div>
-        </div>
-
-        <hr />
-
-        <div class="row d-flex justify-content-between mb-4">
-            <div class="col-sm-6 w-50">
-                <h6>Invoice To:</h6>
-                <p class="mb-1">
-                    <%= order.customer.fullName %>
-                </p>
-                <% if (order.shippingAddress) { %>
-                    <p class="mb-1">
-                        <%= order.shippingAddress.addressLine1 %>
-                    </p>
-                    <p class="mb-1">
-                        <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
-                                <%= order.shippingAddress.zipCode %>
-                    </p>
-                    <p class="mb-1">
-                        <%= order.shippingAddress.country %>
-                    </p>
+                <div class="d-flex align-items-center gap-2">
+                    <% if (locals.siteConfig && locals.siteConfig.header && locals.siteConfig.header.logo) { %>
+                        <img src="<%= locals.siteConfig.header.logo %>" alt="Logo" style="max-height: 24px; width: auto;">
+                    <% } else { %>
+                        <img src="/admin-assets/img/logo/jp-icon-logo.png" alt="Jagannathapuri" style="max-height: 24px; width: auto;">
                     <% } %>
-                        <p class="mb-1">
-                            <%= order.customer.phone || 'N/A' %>
-                        </p>
-                        <p class="mb-0">
-                            <%= order.customer.email %>
-                        </p>
+                    <p class="text-muted mb-0 fs-6"><%= (locals.siteConfig && locals.siteConfig.contact && locals.siteConfig.contact.brand_description) ? locals.siteConfig.contact.brand_description : 'Jagannathapuri E-commerce' %></p>
+                </div>
             </div>
-            <div class="col-sm-6 w-50">
-                <h6>Bill To:</h6>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td class="pe-3">Total Due:</td>
-                            <td class="fw-medium">₹<%= order.totalAmount.toLocaleString() %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="pe-3">Payment Method:</td>
-                            <td>
-                                <%= (order.paymentMethod || 'N/A' ).split('_')[0].toUpperCase() %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="pe-3">Bank name:</td>
-                            <td>State Bank of India</td>
-                        </tr>
-                    </tbody>
+            <div class="border-start ps-4">
+                <table class="text-end text-dark fs-6" style="border-spacing: 0 8px; border-collapse: separate;">
+                    <tr><td class="pe-4 fw-medium text-muted">Invoice #</td><td class="text-dark"><%= order.orderNumber %></td></tr>
+                    <tr><td class="pe-4 fw-medium text-muted">Issue Date</td><td class="text-dark"><%= new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></td></tr>
+                    <tr><td class="pe-4 fw-medium text-muted">Due Date</td><td class="text-dark"><%= new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></td></tr>
                 </table>
             </div>
         </div>
 
-        <div class="table-responsive">
-            <table class="table border-top m-0">
-                <thead>
+        <!-- Bill To & Total Due -->
+        <div class="d-flex justify-content-between mb-5 mt-5">
+            <div>
+                <h6 class="fw-bold text-dark mb-2">Bill To:</h6>
+                <p class="mb-1 text-dark"><%= order.customer.fullName %></p>
+                <% if (order.shippingAddress) { %>
+                    <p class="mb-1 text-dark"><%= order.shippingAddress.addressLine1 %></p>
+                    <p class="mb-1 text-dark"><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></p>
+                <% } %>
+            </div>
+            <div class="text-end">
+                <h6 class="fw-bold text-dark mb-2">Total Due:</h6>
+                <h2 class="display-5 fw-bold text-dark mb-0" style="letter-spacing: -1px;">₹<%= Number(order.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></h2>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive mb-4 mt-4">
+            <table class="table border text-dark">
+                <thead class="border-bottom">
                     <tr>
-                        <th>Item</th>
-                        <!-- <th>Description</th> -->
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
+                        <th class="text-uppercase fw-bold text-muted py-3 px-4" style="font-size: 0.75rem; letter-spacing: 1px;">Charges</th>
+                        <th class="text-uppercase fw-bold text-muted py-3 text-center" style="font-size: 0.75rem; letter-spacing: 1px;">Quantity</th>
+                        <th class="text-uppercase fw-bold text-muted py-3 px-4 text-end" style="font-size: 0.75rem; letter-spacing: 1px;">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% order.items.forEach(function(item) { %>
                         <tr>
-                            <td>
-                                <%= item.product ? item.product.product_name : 'Unknown Item' %>
+                            <td class="py-4 px-4 border-end">
+                                <span class="fw-medium text-dark d-block"><%= item.product ? item.product.product_name : 'Unknown Item' %></span>
+                                <% if (item.price) { %>
+                                    <span class="text-muted" style="font-size: 0.8rem;">Unit Price: ₹<%= item.price.toLocaleString('en-IN', {minimumFractionDigits: 2}) %></span>
+                                <% } %>
                             </td>
-                            <!-- <td>HTML Admin Template</td> -->
-                            <td>₹<%= item.price.toFixed(2) %>
-                            </td>
-                            <td>
-                                <%= item.quantity %>
-                            </td>
-                            <td>₹<%= (item.price * item.quantity).toFixed(2) %>
-                            </td>
+                            <td class="py-4 text-center border-end text-dark"><%= item.quantity %></td>
+                            <td class="py-4 px-4 text-end text-dark">₹<%= (item.price * item.quantity).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></td>
                         </tr>
-                        <% }); %>
-
-                            <tr>
-                                <td colspan="2" class="align-top px-4 py-3">
-                                    <p class="mb-2">
-                                        <span class="me-1 fw-medium">Salesperson:</span>
-                                        <span>Jagannathapuri</span>
-                                    </p>
-                                    <span>Thanks for your business</span>
-                                </td>
-                                <td class="text-end px-4 py-3">
-                                    <p class="mb-2">Subtotal:</p>
-                                    <!-- <p class="mb-2">Discount:</p> -->
-                                    <p class="mb-2">Tax:</p>
-                                    <p class="mb-2">Shipping:</p>
-                                    <p class="mb-0">Total:</p>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <p class="fw-medium mb-2">₹<%= Number(order.subtotal || order.totalAmount ||
-                                            0).toFixed(2) %>
-                                    </p>
-                                    <!-- <p class="fw-medium mb-2">$00.00</p> -->
-                                    <p class="fw-medium mb-2">₹0.00</p>
-                                    <p class="fw-medium mb-2">₹<%= Number(order.shippingFee || 0).toFixed(2) %>
-                                    </p>
-                                    <p class="fw-medium mb-0">₹<%= Number(order.totalAmount || 0).toFixed(2) %>
-                                    </p>
-                                </td>
-                            </tr>
+                    <% }); %>
                 </tbody>
             </table>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <span class="fw-medium">Note:</span>
-                <span>Thank you for shopping with us!</span>
+        <!-- Subtotal block -->
+        <div class="d-flex justify-content-end mb-5">
+            <div class="border p-4" style="width: 320px;">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-dark fw-medium">Subtotal</span>
+                    <span class="text-dark">₹<%= Number(order.subtotal || order.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-dark fw-medium">Shipping</span>
+                    <span class="text-dark">₹<%= Number(order.shippingFee || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></span>
+                </div>
+                <div class="d-flex justify-content-between mb-4 pb-4 border-bottom">
+                    <span class="text-dark fw-medium">Includes 18% Tax</span>
+                    <span class="text-dark">₹<%= Number(order.tax || ((order.totalAmount || 0) * 18 / 118)).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold text-dark">Total</span>
+                    <span class="fw-bold text-dark">₹<%= Number(order.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) %></span>
+                </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <div class="row pt-5 mt-5 border-top">
+            <div class="col-sm-5">
+                <h6 class="fw-bold text-dark mb-3">Payments:</h6>
+                <p class="mb-1 text-muted">Bank Transfer to:</p>
+                <p class="mb-1 text-dark">Jagannathapuri</p>
+                <p class="mb-1 text-dark">A/C: 123456789012</p>
+                <p class="mb-1 text-dark">IFSC: SBIN0001234</p>
+            </div>
+            <div class="col-sm-4 border-end">
+                <h6 class="fw-bold text-dark mb-3">Contact:</h6>
+                <p class="mb-1 text-dark"><%= (locals.siteConfig && locals.siteConfig.contact && locals.siteConfig.contact.address) ? locals.siteConfig.contact.address : 'Jagannathapuri Admin' %></p>
+                <p class="mb-1 text-dark"><%= (locals.siteConfig && locals.siteConfig.contact && locals.siteConfig.contact.email) ? locals.siteConfig.contact.email : 'support@jagannathapuri.com' %></p>
+                <p class="mb-1 text-dark"><%= (locals.siteConfig && locals.siteConfig.contact && locals.siteConfig.contact.phone) ? locals.siteConfig.contact.phone : '+91 98765 43210' %></p>
+            </div>
+            <div class="col-sm-3 ps-4">
+                <h6 class="fw-bold text-dark mb-3 text-center">Scan to Pay:</h6>
+                <div class="text-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=jagannathapuri@upi&pn=Jagannathapuri&am=<%= order.totalAmount %>" alt="QR Code" class="img-fluid border p-1" style="width: 100px; height: 100px;">
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="/admin-assets/js/main.js"></script>

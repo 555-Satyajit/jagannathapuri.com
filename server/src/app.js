@@ -197,7 +197,7 @@ app.use((req, res, next) => {
         else if (host === mainHost) {
             // Prevent access to /admin on the main domain
             if (req.path.startsWith('/admin')) {
-                return res.status(404).render('pages/404', { title: '404 - Page Not Found' });
+                return res.status(404).json({ error: 'Not Found' });
             }
         }
     }
