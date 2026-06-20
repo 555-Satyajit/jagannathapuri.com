@@ -1009,7 +1009,11 @@ exports.postCheckout = async (req, res) => {
     const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     const shipping = 0;
     const tax = 0;
-    const total = subtotal + shipping + tax;
+    let discount = 0;
+    if (req.session.coupon) {
+        discount = req.session.coupon.discountAmount || 0;
+    }
+    const total = Math.max(0, subtotal + shipping + tax - discount);
 
     try {
         // Simple order number generation
@@ -1076,16 +1080,15 @@ exports.postCheckout = async (req, res) => {
             });
 
             // 4. Create order items and reduce stock
-            for (const item of cart) {
-                await tx.orderItem.create({
-                    data: {
-                        orderId: order.id,
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        price: item.price
-                    }
-                });
+            const orderItemsData = cart.map(item => ({
+                orderId: order.id,
+                productId: item.productId,
+                quantity: item.quantity,
+                price: item.price
+            }));
+            await tx.orderItem.createMany({ data: orderItemsData });
 
+            for (const item of cart) {
                 // Reduce stock
                 const updatedProduct = await tx.product.update({
                     where: { id: item.productId },

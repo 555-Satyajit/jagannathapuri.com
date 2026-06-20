@@ -92,6 +92,14 @@ export default function CheckoutClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
 
+  // Coupon State
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number} | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
+  const [isEditingContact, setIsEditingContact] = useState(false);
+
   // Address State
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
@@ -109,6 +117,10 @@ export default function CheckoutClient() {
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
+      if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+        resolve(true);
+        return;
+      }
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
@@ -116,6 +128,29 @@ export default function CheckoutClient() {
       document.body.appendChild(script);
     });
   };
+
+  // Preload Razorpay only if they select online payment
+  useEffect(() => {
+    if (mounted && paymentMethod === 'online') {
+      loadRazorpayScript();
+    }
+  }, [mounted, paymentMethod]);
+
+  // Background sync cart to backend with debounce
+  useEffect(() => {
+    if (!mounted || !isAuthenticated || items.length === 0) return;
+
+    const timeoutId = setTimeout(() => {
+      fetch('/api/auth/cart/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ items: items.map(i => ({ productId: i.id, quantity: i.quantity })) })
+      }).catch(console.error);
+    }, 500); // 500ms debounce protects the server from rapid API spam
+
+    return () => clearTimeout(timeoutId);
+  }, [mounted, isAuthenticated, items]);
 
   useEffect(() => {
     setMounted(true);
@@ -199,6 +234,50 @@ export default function CheckoutClient() {
     setValue("zipCode", "");
   };
 
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setIsApplyingCoupon(true);
+    setCouponError("");
+    try {
+      const res = await fetch('/api/auth/api/apply-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code: couponCode })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon({ code: data.code, discount: data.discount });
+        setCouponCode("");
+      } else {
+        setCouponError(data.message || "Failed to apply coupon");
+      }
+    } catch (err) {
+      setCouponError("An error occurred");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    setIsRemovingCoupon(true);
+    try {
+      const res = await fetch('/api/auth/api/remove-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon(null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRemovingCoupon(false);
+    }
+  };
+
   if (!mounted) return <CheckoutSkeleton />;
   if (!isAuthenticated) return null;
 
@@ -225,7 +304,8 @@ export default function CheckoutClient() {
 
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const shipping = 0; // Free shipping as requested
-  const total = subtotal + shipping;
+  const discount = appliedCoupon ? appliedCoupon.discount : 0;
+  const total = Math.max(0, subtotal + shipping - discount);
 
   const onSubmit = async (data: CheckoutFormValues) => {
     setIsSubmitting(true);
@@ -254,15 +334,6 @@ export default function CheckoutClient() {
           console.error("Failed to add address", addrResult.error);
         }
       }
-
-      // Sync cart with backend before checkout
-      const syncRes = await fetch('/api/auth/cart/add-bulk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ items: items.map(i => ({ productId: i.id, quantity: i.quantity })) })
-      });
-      await syncRes.json();
 
       // Submit checkout
       const checkoutRes = await fetch('/api/auth/checkout', {
@@ -301,7 +372,7 @@ export default function CheckoutClient() {
             key: checkoutResult.keyId,
             amount: checkoutResult.amount,
             currency: "INR",
-            name: "Jay Subhdra",
+            name: "JAGANNATHAPURI",
             description: "Order Payment",
             order_id: checkoutResult.razorpayOrderId,
             handler: async function (response: any) {
@@ -371,55 +442,84 @@ export default function CheckoutClient() {
         <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-10">
           
           {/* Contact Information */}
-          <section>
+          <section className="mb-6">
             <h2 className="text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs">1</span>
               Contact Information
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <Field>
-                <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">First Name</FieldLabel>
-                <Input 
-                  {...register("firstName")}
-                  aria-invalid={!!errors.firstName}
-                  className="h-12"
-                  placeholder="John"
-                />
-                {errors.firstName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.firstName.message}</p>}
-              </Field>
-              <Field>
-                <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Last Name</FieldLabel>
-                <Input 
-                  {...register("lastName")}
-                  aria-invalid={!!errors.lastName}
-                  className="h-12"
-                  placeholder="Doe"
-                />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.lastName.message}</p>}
-              </Field>
-              <Field className="sm:col-span-2">
-                <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Email Address</FieldLabel>
-                <Input 
-                  {...register("email")}
-                  type="email"
-                  aria-invalid={!!errors.email}
-                  className="h-12"
-                  placeholder="john@example.com"
-                />
-                {errors.email && <p className="text-red-500 text-xs mt-1 font-medium">{errors.email.message}</p>}
-              </Field>
-              <Field className="sm:col-span-2">
-                <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Phone Number</FieldLabel>
-                <Input 
-                  {...register("phone")}
-                  type="tel"
-                  aria-invalid={!!errors.phone}
-                  className="h-12"
-                  placeholder="+91 98765 43210"
-                />
-                {errors.phone && <p className="text-red-500 text-xs mt-1 font-medium">{errors.phone.message}</p>}
-              </Field>
-            </div>
+            
+            {isAuthenticated && user && !isEditingContact ? (
+              <div className="border border-zinc-200 rounded-2xl p-5 bg-white relative group flex justify-between items-center">
+                <div>
+                  <p className="font-bold text-zinc-900 text-sm leading-relaxed">{watch("firstName")} {watch("lastName")}</p>
+                  <p className="text-sm text-zinc-600 mt-1">{watch("email")}</p>
+                  {watch("phone") && <p className="text-sm text-zinc-500 mt-1">{watch("phone")}</p>}
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setIsEditingContact(true)}
+                  className="text-sm font-semibold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-4 py-2 rounded-xl transition-colors"
+                >
+                  Edit
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Field>
+                  <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">First Name</FieldLabel>
+                  <Input 
+                    {...register("firstName")}
+                    aria-invalid={!!errors.firstName}
+                    className="h-12"
+                    placeholder="John"
+                  />
+                  {errors.firstName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.firstName.message}</p>}
+                </Field>
+                <Field>
+                  <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Last Name</FieldLabel>
+                  <Input 
+                    {...register("lastName")}
+                    aria-invalid={!!errors.lastName}
+                    className="h-12"
+                    placeholder="Doe"
+                  />
+                  {errors.lastName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.lastName.message}</p>}
+                </Field>
+                <Field className="sm:col-span-2">
+                  <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Email Address</FieldLabel>
+                  <Input 
+                    {...register("email")}
+                    type="email"
+                    aria-invalid={!!errors.email}
+                    className="h-12"
+                    placeholder="john@example.com"
+                  />
+                  {errors.email && <p className="text-red-500 text-xs mt-1 font-medium">{errors.email.message}</p>}
+                </Field>
+                <Field className="sm:col-span-2">
+                  <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Phone Number</FieldLabel>
+                  <Input 
+                    {...register("phone")}
+                    type="tel"
+                    aria-invalid={!!errors.phone}
+                    className="h-12"
+                    placeholder="+91 98765 43210"
+                  />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1 font-medium">{errors.phone.message}</p>}
+                </Field>
+                {isAuthenticated && user && (
+                  <div className="sm:col-span-2 flex justify-end">
+                    <button 
+                      type="button" 
+                      onClick={() => setIsEditingContact(false)}
+                      className="text-sm font-semibold text-zinc-600 hover:text-zinc-900"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
 
           <hr className="border-zinc-100" />
@@ -617,11 +717,65 @@ export default function CheckoutClient() {
 
           <hr className="border-zinc-100 my-6" />
 
+          {/* Coupon Code Section */}
+          <div className="mb-6">
+            <h4 className="text-sm font-bold text-zinc-900 mb-3">Discount Code</h4>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl p-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-green-800 text-sm">{appliedCoupon.code}</p>
+                    <p className="text-green-600 text-xs font-medium">Coupon applied successfully</p>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  disabled={isRemovingCoupon}
+                  onClick={handleRemoveCoupon}
+                  className="text-sm text-green-700 font-semibold hover:text-green-800 disabled:opacity-50 flex items-center gap-1"
+                >
+                  {isRemovingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Remove"}
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <Input 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Enter coupon code"
+                    className="h-12 uppercase bg-zinc-50 focus:bg-white transition-colors"
+                  />
+                  {couponError && <p className="text-red-500 text-xs mt-1 font-medium ml-1">{couponError}</p>}
+                </div>
+                <Button 
+                  type="button"
+                  disabled={!couponCode || isApplyingCoupon}
+                  onClick={handleApplyCoupon}
+                  className="h-12 px-6 bg-zinc-900 hover:bg-zinc-800 text-white font-bold rounded-xl transition-all disabled:opacity-50"
+                >
+                  {isApplyingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <hr className="border-zinc-100 my-6" />
+
           <div className="space-y-3 mb-6 text-sm">
             <div className="flex justify-between text-zinc-600">
               <span>Subtotal</span>
               <span className="font-medium text-zinc-900">₹{subtotal.toLocaleString("en-IN")}</span>
             </div>
+            {appliedCoupon && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount ({appliedCoupon.code})</span>
+                <span className="font-medium">-₹{appliedCoupon.discount.toLocaleString("en-IN")}</span>
+              </div>
+            )}
             <div className="flex justify-between text-zinc-600">
               <span>Shipping</span>
               <span className="font-medium text-green-600 uppercase tracking-wider text-xs">Free</span>

@@ -333,6 +333,107 @@ exports.addBulkItems = async (req, res) => {
     }
 };
 
+exports.syncCart = async (req, res) => {
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items)) {
+        return res.status(400).json({ success: false, message: 'Invalid items payload' });
+    }
+
+    try {
+        if (req.session.customerId) {
+            let cart = await prisma.cart.findUnique({
+                where: { customerId: req.session.customerId }
+            });
+
+            if (!cart) {
+                cart = await prisma.cart.create({
+                    data: { customerId: req.session.customerId }
+                });
+            }
+
+            // Clear existing items
+            await prisma.cartItem.deleteMany({
+                where: { cartId: cart.id }
+            });
+
+            // Add new items via createMany for speed
+            const newItemsData = items
+                .map(i => ({ productId: parseInt(i.productId), quantity: parseInt(i.quantity) || 1 }))
+                .filter(i => !isNaN(i.productId))
+                .map(i => ({ cartId: cart.id, productId: i.productId, quantity: i.quantity }));
+            
+            if (newItemsData.length > 0) {
+                await prisma.cartItem.createMany({ data: newItemsData });
+            }
+
+            // Sync updated cart to response
+            const updatedDbCart = await prisma.cart.findUnique({
+                where: { id: cart.id },
+                include: { items: { include: { product: true } } }
+            });
+
+            if (updatedDbCart && updatedDbCart.items.length > 0) {
+                req.session.cart = updatedDbCart.items.map(item => {
+                    let image = '/assets/images/logo.png';
+                    if (item.product.images && item.product.images.length > 0) {
+                        const img = item.product.images[0].trim();
+                        image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+                    }
+                    return {
+                        productId: item.productId,
+                        name: item.product.product_name,
+                        price: parseFloat(item.product.price_amount || item.product.price),
+                        image: image,
+                        slug: item.product.slug,
+                        quantity: item.quantity
+                    };
+                });
+            } else {
+                req.session.cart = [];
+            }
+        } else {
+            // Guest Session Logic
+            req.session.cart = [];
+            const validItems = items
+                .map(i => ({ productId: parseInt(i.productId), quantity: parseInt(i.quantity) || 1 }))
+                .filter(i => !isNaN(i.productId));
+
+            if (validItems.length > 0) {
+                const productIds = validItems.map(i => i.productId);
+                const products = await prisma.product.findMany({
+                    where: { id: { in: productIds } }
+                });
+
+                for (const item of validItems) {
+                    const product = products.find(p => p.id === item.productId);
+                    if (!product) continue;
+
+                    let image = '/assets/images/logo.png';
+                    if (product.images && product.images.length > 0) {
+                        const img = product.images[0].trim();
+                        image = (img.startsWith('http') || img.startsWith('/')) ? img : '/uploads/' + img;
+                    }
+
+                    req.session.cart.push({
+                        productId: product.id,
+                        name: product.product_name,
+                        price: parseFloat(product.price_amount || product.price),
+                        image: image,
+                        slug: product.slug,
+                        quantity: item.quantity
+                    });
+                }
+            }
+        }
+
+        res.json({ success: true, cart: req.session.cart });
+    } catch (error) {
+        console.error('Sync cart error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 exports.updateQuantity = async (req, res) => {
     const { productId, quantity } = req.body;
     const pId = parseInt(productId);
