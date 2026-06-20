@@ -3,8 +3,9 @@ import ContactForm from "@/components/contact/ContactForm";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Jagannathapuri",
-  description: "Get in touch with the Jagannathapuri team for inquiries, feedback, and spiritual guidance.",
+  title: "Contact Jagannathapuri | Spiritual Support & Support from Puri",
+  description: "Reach out to Jagannathapuri for inquiries about Mahaprasad, authentic spiritual items, rudraksha, and customized temple puja services from Puri, Odisha.",
+  keywords: "contact Jagannathapuri, Puri temple support, Mahaprasad inquiries, spiritual items customer care, Odisha puja services",
 };
 
 export default function ContactPage() {

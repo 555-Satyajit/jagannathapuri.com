@@ -4,8 +4,9 @@ import type { Metadata } from "next";
 import ServicesList from "@/components/services/ServicesList";
 
 export const metadata: Metadata = {
-  title: "Spiritual Services & Custom Orders | Jagannathapuri",
-  description: "Explore our bespoke spiritual services, custom idol carving, special rituals, and bulk temple sourcing directly from Puri.",
+  title: "Authentic Puja Services & Offerings in Puri | Jagannathapuri",
+  description: "Book authentic Hindu puja services, special offerings, and personalized rituals conducted by expert pandits near the sacred Jagannath Temple in Puri.",
+  keywords: "book puja Puri, Jagannath temple offerings, online puja services, spiritual rituals Odisha, pandit booking Puri",
 };
 
 export const revalidate = 3600; // Revalidate every hour

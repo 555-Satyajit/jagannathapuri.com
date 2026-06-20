@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Return Policy - Jagannathapuri",
-  description: "Return Policy of Jagannathapuri",
+  title: "Return Policy | Jagannathapuri",
+  description: "Read the Return Policy for Jagannathapuri. We ensure secure, transparent, and authentic delivery of spiritual items and Mahaprasad directly from Puri.",
 };
 
 export default async function ReturnPolicyPage() {

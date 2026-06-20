@@ -4,8 +4,9 @@ import { ChevronRight, Calendar, Moon, Sun, Sparkles, Star } from "lucide-react"
 import PanchangDateNavigator from "@/components/panchang/PanchangDateNavigator"
 
 export const metadata = {
-  title: "Daily Panchang & Almanac | Jagannathapuri",
-  description: "Access the complete Vedic calendar with accurate Tithi, Nakshatra, and auspicious timings.",
+  title: "Today's Odia Panchang & Tithi | Jagannathapuri Almanac",
+  description: "Check today's authentic Odia Panchang. Find the exact Tithi, Nakshatra, Yoga, and auspicious timings (Shubh Muhurat) for your daily spiritual practices.",
+  keywords: "Odia panchang today, Jagannath temple tithi, Puri almanac, shubh muhurat, today nakshatra, odisha calendar",
 }
 
 export default async function PanchangPage({

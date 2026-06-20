@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions - Jagannathapuri",
-  description: "Terms & Conditions of Jagannathapuri",
+  title: "Terms & Conditions | Jagannathapuri",
+  description: "Read the Terms & Conditions for Jagannathapuri. We ensure secure, transparent, and authentic delivery of spiritual items and Mahaprasad directly from Puri.",
 };
 
 export default async function TermsPage() {

@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma"
 import Link from "next/link"
 
 export const metadata = {
-  title: "Temple & Daily Rituals | Jagannathapuri",
-  description: "Discover and follow daily spiritual rituals, darshan timings, and temple facts.",
+  title: "Jagannath Temple Daily Rituals | Niti & Timings | Jagannathapuri",
+  description: "Discover the sacred daily rituals (Niti) of Lord Jagannath at the Puri Temple. Learn about the exact timings of Mangala Alati, Abakasha, and Sandhya Dhupa.",
+  keywords: "Jagannath temple rituals, Puri temple timings, Mangala Alati, Lord Jagannath Niti, Sandhya Dhupa, Puri darshan timings",
 }
 
 const getIcon = (iconName: string) => {
