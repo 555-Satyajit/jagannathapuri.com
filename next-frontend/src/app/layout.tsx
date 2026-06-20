@@ -22,8 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       const general = config?.general || {};
       
       const iconPath = general.favicon || seo.favicon || "/favicon.ico";
-      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const iconUrl = iconPath.startsWith('http') ? iconPath : `${apiHost}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+      const iconUrl = iconPath;
       
       return {
         title: seo.meta_title || "Jay Subhdra | Sacred Treasures from Puri",
