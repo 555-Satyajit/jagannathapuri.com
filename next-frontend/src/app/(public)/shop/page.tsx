@@ -8,10 +8,35 @@ import { SearchX, ChevronRight } from "lucide-react";
 import Link from "next/link";
 // import { Prisma } from "@prisma/client";
 
-export const metadata = {
-  title: "Shop | Jay Subhdra",
-  description: "Browse our sacred collection of items.",
-};
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const categorySlug = typeof params.category === "string" ? params.category : undefined;
+
+  if (categorySlug && categorySlug !== "all") {
+    const category = await prisma.category.findUnique({
+      where: { slug: categorySlug },
+    });
+
+    if (category) {
+      return {
+        title: category.meta_title || `${category.name} | Shop Jay Subhdra`,
+        description: category.meta_description || category.description?.substring(0, 160) || `Browse our sacred collection of ${category.name}.`,
+        keywords: category.meta_keywords || undefined,
+      };
+    }
+  }
+
+  return {
+    title: "Shop | Jay Subhdra",
+    description: "Browse our sacred collection of items.",
+  };
+}
 
 const ITEMS_PER_PAGE = 20; // Increased to show more products per page
 

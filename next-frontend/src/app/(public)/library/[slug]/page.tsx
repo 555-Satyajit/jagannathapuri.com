@@ -17,8 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!article) return { title: "Article Not Found" };
 
   return {
-    title: `${article.title} | Jay Subhdra Library`,
-    description: article.summary || article.subtitle || `Read ${article.title} in the Jay Subhdra Spiritual Library.`,
+    title: article.meta_title || `${article.title} | Jay Subhdra Library`,
+    description: article.meta_description || article.summary || article.subtitle || `Read ${article.title} in the Jay Subhdra Spiritual Library.`,
+    keywords: article.meta_keywords || undefined,
   };
 }
 

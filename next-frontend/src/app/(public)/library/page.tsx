@@ -21,8 +21,9 @@ export async function generateMetadata({
 
     if (category) {
       return {
-        title: `${category.name} | Spiritual Library | Jay Subhdra`,
-        description: `Explore spiritual texts, articles, and knowledge bases about ${category.name}.`,
+        title: category.meta_title || `${category.name} | Spiritual Library | Jay Subhdra`,
+        description: category.meta_description || `Explore spiritual texts, articles, and knowledge bases about ${category.name}.`,
+        keywords: category.meta_keywords || undefined,
       };
     }
   }
