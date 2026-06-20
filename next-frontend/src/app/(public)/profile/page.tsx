@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import ProfileDashboard from "@/components/profile/ProfileDashboard";
 
 export default function ProfilePage() {
@@ -34,7 +34,9 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-zinc-50 pt-28 pb-20">
       <div className="container max-w-6xl mx-auto px-4 sm:px-6">
-        <ProfileDashboard handleLogout={handleLogout} />
+        <Suspense fallback={<div className="text-center py-20 text-zinc-500 font-medium">Loading dashboard...</div>}>
+          <ProfileDashboard handleLogout={handleLogout} />
+        </Suspense>
       </div>
     </div>
   );

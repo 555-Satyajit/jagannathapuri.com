@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { User, Package, Heart, Settings, LogOut, ChevronRight } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 import AccountTab from "./AccountTab";
 import OrdersTab from "./OrdersTab";
 import WishlistTab from "./WishlistTab";
@@ -16,7 +17,23 @@ interface ProfileDashboardProps {
 
 export default function ProfileDashboard({ handleLogout }: ProfileDashboardProps) {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<TabType>("account");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const defaultTab = (searchParams.get("tab") as TabType) || "account";
+  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab") as TabType;
+    if (tab && ["account", "orders", "wishlist", "settings"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tabId: TabType) => {
+    setActiveTab(tabId);
+    router.push(`/profile?tab=${tabId}`, { scroll: false });
+  };
 
   if (!user) return null;
 
@@ -69,7 +86,7 @@ export default function ProfileDashboard({ handleLogout }: ProfileDashboardProps
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm lg:text-base text-left transition-all duration-300 whitespace-nowrap lg:whitespace-normal group ${
                   isActive 
                     ? "bg-zinc-900 text-white shadow-md shadow-zinc-900/10" 
