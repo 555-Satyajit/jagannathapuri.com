@@ -10,10 +10,40 @@ const outfit = Outfit({
 
 
 
-export const metadata: Metadata = {
-  title: "Jay Subhdra | Sacred Treasures from Puri",
-  description: "Authentic offerings and spiritual heritage from the sacred city of Puri.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/site-config`, {
+      next: { revalidate: 60 } // Refresh cache every 60 seconds
+    });
+    
+    if (res.ok) {
+      const config = await res.json();
+      const seo = config?.seo || {};
+      const general = config?.general || {};
+      
+      const iconPath = general.favicon || seo.favicon || "/favicon.ico";
+      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const iconUrl = iconPath.startsWith('http') ? iconPath : `${apiHost}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+      
+      return {
+        title: seo.meta_title || "Jay Subhdra | Sacred Treasures from Puri",
+        description: seo.meta_description || "Authentic offerings and spiritual heritage from the sacred city of Puri.",
+        keywords: seo.meta_keywords || "Puri, Jagannath, Mahaprasad",
+        icons: {
+          icon: iconUrl,
+        }
+      };
+    }
+  } catch (err) {
+    console.error("Failed to fetch site config for metadata:", err);
+  }
+
+  // Fallback metadata if backend fails
+  return {
+    title: "Jay Subhdra | Sacred Treasures from Puri",
+    description: "Authentic offerings and spiritual heritage from the sacred city of Puri.",
+  };
+}
 
 import NextTopLoader from 'nextjs-toploader';
 

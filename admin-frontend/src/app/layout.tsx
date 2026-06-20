@@ -33,10 +33,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Jagannathapuri | Admin",
-  description: "Modern Admin Panel for Jagannathapuri",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/site-config`, {
+      next: { revalidate: 60 }
+    });
+    
+    if (res.ok) {
+      const config = await res.json();
+      const seo = config?.seo || {};
+      const general = config?.general || {};
+      
+      const iconPath = general.favicon || seo.favicon || "/favicon.ico";
+      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const iconUrl = iconPath.startsWith('http') ? iconPath : `${apiHost}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+      
+      return {
+        title: `${seo.meta_title?.split('|')[0]?.trim() || "Jagannathapuri"} | Admin`,
+        description: "Modern Admin Panel for Jagannathapuri",
+        icons: {
+          icon: iconUrl,
+        }
+      };
+    }
+  } catch (err) {
+    console.error("Failed to fetch site config for metadata:", err);
+  }
+
+  return {
+    title: "Jagannathapuri | Admin",
+    description: "Modern Admin Panel for Jagannathapuri",
+  };
+}
 
 export default function RootLayout({
   children,
