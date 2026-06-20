@@ -284,10 +284,7 @@ const categoryMiddleware = require('./middlewares/categoryMiddleware');
 
 app.use(categoryMiddleware);
 
-app.set('view engine', 'ejs');
-app.set('views', [
-    path.join(__dirname, '../../admin-panel/Ui')
-]);
+
 
 app.use('/admin/login', authLimiter);
 app.post('/api/send-otp', authLimiter);
@@ -298,28 +295,9 @@ app.use('/api/admin', require('./routes/adminApi'));
 app.use('/api', require('./routes/api'));
 
 // 404 Error Handler
-app.use(async (req, res, next) => {
-    const host = req.get('host') || '';
-    const ADMIN_DOMAIN = process.env.ADMIN_DOMAIN || 'admin.jagannathapuri.com';
-    const isAdminDomain = host.toLowerCase().includes(ADMIN_DOMAIN.toLowerCase());
-
-    if (isAdminDomain || req.path.startsWith('/admin')) {
-        res.status(404).render('pages/admin-404', {}, (err, html) => {
-            if (err) {
-                console.error('Error rendering Admin 404 page content:', err);
-                return res.status(404).send('Admin Page not found');
-            }
-            res.render('layouts/admin-master', {
-                body: html,
-                title: '404 - Admin Page Not Found',
-                staff: req.session.staff || null,
-                hideSidebar: true
-            });
-        });
-    } else {
-        // Return JSON 404 for public routes, as Next.js handles frontend 404s natively
-        res.status(404).json({ error: 'Endpoint not found' });
-    }
+app.use((req, res, next) => {
+    // Return JSON 404 for all routes, as Next.js handles frontend 404s natively
+    res.status(404).json({ error: 'Endpoint not found' });
 });
 
 // Error handling middleware
