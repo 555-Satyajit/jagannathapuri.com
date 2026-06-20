@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       const iconUrl = iconPath;
       
       return {
-        title: seo.meta_title || "Jay Subhdra | Sacred Treasures from Puri",
+        title: seo.meta_title || "Jagannathapuri | Sacred Treasures from Puri",
         description: seo.meta_description || "Authentic offerings and spiritual heritage from the sacred city of Puri.",
         keywords: seo.meta_keywords || "Puri, Jagannath, Mahaprasad",
         icons: {
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Fallback metadata if backend fails
   return {
-    title: "Jay Subhdra | Sacred Treasures from Puri",
+    title: "Jagannathapuri | Sacred Treasures from Puri",
     description: "Authentic offerings and spiritual heritage from the sacred city of Puri.",
   };
 }

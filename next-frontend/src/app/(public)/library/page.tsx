@@ -21,7 +21,7 @@ export async function generateMetadata({
 
     if (category) {
       return {
-        title: category.meta_title || `${category.name} | Spiritual Library | Jay Subhdra`,
+        title: category.meta_title || `${category.name} | Spiritual Library | Jagannathapuri`,
         description: category.meta_description || `Explore spiritual texts, articles, and knowledge bases about ${category.name}.`,
         keywords: category.meta_keywords || undefined,
       };
@@ -29,7 +29,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: "Spiritual Library | Jay Subhdra",
+    title: "Spiritual Library | Jagannathapuri",
     description: "Explore spiritual texts, articles, and knowledge bases about Jagannath Temple, Vedas, and rituals.",
   };
 }

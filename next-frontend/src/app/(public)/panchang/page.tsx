@@ -4,7 +4,7 @@ import { ChevronRight, Calendar, Moon, Sun, Sparkles, Star } from "lucide-react"
 import PanchangDateNavigator from "@/components/panchang/PanchangDateNavigator"
 
 export const metadata = {
-  title: "Daily Panchang & Almanac | Jay Subhdra",
+  title: "Daily Panchang & Almanac | Jagannathapuri",
   description: "Access the complete Vedic calendar with accurate Tithi, Nakshatra, and auspicious timings.",
 }
 

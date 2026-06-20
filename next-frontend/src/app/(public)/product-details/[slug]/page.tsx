@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!product) return { title: "Product Not Found" };
 
   return {
-    title: product.meta_title || `${product.product_name} | Jay Subhdra`,
+    title: product.meta_title || `${product.product_name} | Jagannathapuri`,
     description: product.meta_description || product.description?.substring(0, 160) || `Buy ${product.product_name} online.`,
     keywords: product.meta_keywords || "spiritual items, pooja, rudraksha",
   };

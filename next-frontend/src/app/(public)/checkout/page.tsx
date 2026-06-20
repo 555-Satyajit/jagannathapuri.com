@@ -2,8 +2,8 @@ import CheckoutClient from "@/components/checkout/CheckoutClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Checkout - Jay Subhdra",
-  description: "Complete your order with Jay Subhdra",
+  title: "Checkout - Jagannathapuri",
+  description: "Complete your order with Jagannathapuri",
 };
 
 export default function CheckoutPage() {

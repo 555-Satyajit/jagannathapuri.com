@@ -3,8 +3,8 @@ import ContactForm from "@/components/contact/ContactForm";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Jay Subhdra",
-  description: "Get in touch with the Jay Subhdra team for inquiries, feedback, and spiritual guidance.",
+  title: "Contact Us | Jagannathapuri",
+  description: "Get in touch with the Jagannathapuri team for inquiries, feedback, and spiritual guidance.",
 };
 
 export default function ContactPage() {

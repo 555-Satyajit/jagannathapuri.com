@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import Link from "next/link"
 
 export const metadata = {
-  title: "Temple & Daily Rituals | Jay Subhdra",
+  title: "Temple & Daily Rituals | Jagannathapuri",
   description: "Discover and follow daily spiritual rituals, darshan timings, and temple facts.",
 }
 

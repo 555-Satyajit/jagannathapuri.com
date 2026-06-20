@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Jay Subhdra",
-  description: "Privacy Policy of Jay Subhdra",
+  title: "Privacy Policy - Jagannathapuri",
+  description: "Privacy Policy of Jagannathapuri",
 };
 
 export default async function PrivacyPolicyPage() {

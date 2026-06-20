@@ -25,7 +25,7 @@ export async function generateMetadata({
 
     if (category) {
       return {
-        title: category.meta_title || `${category.name} | Shop Jay Subhdra`,
+        title: category.meta_title || `${category.name} | Shop Jagannathapuri`,
         description: category.meta_description || category.description?.substring(0, 160) || `Browse our sacred collection of ${category.name}.`,
         keywords: category.meta_keywords || undefined,
       };
@@ -33,7 +33,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: "Shop | Jay Subhdra",
+    title: "Shop | Jagannathapuri",
     description: "Browse our sacred collection of items.",
   };
 }

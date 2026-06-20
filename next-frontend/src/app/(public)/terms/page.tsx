@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions - Jay Subhdra",
-  description: "Terms & Conditions of Jay Subhdra",
+  title: "Terms & Conditions - Jagannathapuri",
+  description: "Terms & Conditions of Jagannathapuri",
 };
 
 export default async function TermsPage() {

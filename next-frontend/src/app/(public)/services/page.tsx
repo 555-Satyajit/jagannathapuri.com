@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import ServicesList from "@/components/services/ServicesList";
 
 export const metadata: Metadata = {
-  title: "Spiritual Services & Custom Orders | Jay Subhdra",
+  title: "Spiritual Services & Custom Orders | Jagannathapuri",
   description: "Explore our bespoke spiritual services, custom idol carving, special rituals, and bulk temple sourcing directly from Puri.",
 };
 

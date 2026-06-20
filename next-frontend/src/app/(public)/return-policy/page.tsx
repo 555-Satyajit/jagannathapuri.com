@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Return Policy - Jay Subhdra",
-  description: "Return Policy of Jay Subhdra",
+  title: "Return Policy - Jagannathapuri",
+  description: "Return Policy of Jagannathapuri",
 };
 
 export default async function ReturnPolicyPage() {
