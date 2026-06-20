@@ -54,7 +54,8 @@ export function SignupForm({
         if (callbackUrl && callbackUrl.startsWith("/")) {
           router.push(callbackUrl);
         } else {
-          router.push("/profile");
+          // Changed from /profile to / to avoid confusing users
+          router.push("/");
         }
       } else {
         setError(result.error || "Registration failed. Please try again.");

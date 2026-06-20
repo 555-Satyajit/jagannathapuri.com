@@ -53,7 +53,8 @@ export function LoginForm({
         if (callbackUrl && callbackUrl.startsWith("/")) {
           router.push(callbackUrl);
         } else {
-          router.push("/profile");
+          // Changed from /profile to / to avoid confusing users
+          router.push("/");
         }
       } else {
         setError(result.error || "Invalid login credentials. Please try again.");
