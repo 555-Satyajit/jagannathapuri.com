@@ -318,7 +318,7 @@ export function LibraryManagementContent() {
 
                       <div className="grid gap-2">
                         <Label>Status</Label>
-                        <Select value={catStatus} onValueChange={setCatStatus}>
+                        <Select value={catStatus} onValueChange={(val) => setCatStatus(val || "")}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
