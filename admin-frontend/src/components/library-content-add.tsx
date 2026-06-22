@@ -274,7 +274,7 @@ export function LibraryContentAdd() {
             <CardContent className="space-y-4">
               <div className="grid gap-2">
                 <Label>Category</Label>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={category} onValueChange={(val) => setCategory(val || "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={isCategoriesLoading ? "Loading..." : categories.length === 0 ? "No categories exist" : "Select Category"}>
                       {category ? categories.find(c => c.id.toString() === category)?.name : undefined}
@@ -303,7 +303,7 @@ export function LibraryContentAdd() {
 
               <div className="grid gap-2">
                 <Label>Status</Label>
-                <Select value={status} onValueChange={setStatus}>
+                <Select value={status} onValueChange={(val) => setStatus(val || "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
