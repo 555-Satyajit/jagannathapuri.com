@@ -21,6 +21,8 @@ const popupController = require('../controllers/api/popupController');
 const newsletterController = require('../controllers/api/newsletterController');
 const dailyRitualsController = require('../controllers/api/dailyRitualsController');
 const manageHomeController = require('../controllers/api/manageHomeController');
+const aiContentController = require('../controllers/admin/aiContentController');
+const libraryController = require('../controllers/admin/libraryController');
 
 // Authentication routes
 router.post('/auth/login', adminApiAuthController.apiPostLogin);
@@ -41,6 +43,22 @@ router.get('/ecommerce/coupons/data', adminAuth, couponController.apiGetCouponDa
 
 // Catalog CRUD
 const upload = require('../middlewares/uploadMiddleware');
+
+// Library AI Generation
+router.post('/library/ai-generate', adminAuth, aiContentController.apiGenerateLibraryContent);
+
+// Library Categories
+router.get('/library/categories/data', adminAuth, libraryController.getLibCategoryData);
+router.post('/library/categories/save', adminAuth, upload.single('image'), libraryController.saveLibCategory);
+router.post('/library/categories/update/:id', adminAuth, upload.single('image'), libraryController.saveLibCategory);
+router.get('/library/categories/delete/:id', adminAuth, libraryController.deleteLibCategory);
+
+// Library Content
+router.get('/library/content/data', adminAuth, libraryController.getLibContentData);
+router.post('/library/content/save', adminAuth, upload.single('image'), libraryController.saveLibContent);
+router.post('/library/content/update/:id', adminAuth, upload.single('image'), libraryController.saveLibContent);
+router.get('/library/content/delete/:id', adminAuth, libraryController.deleteLibContent);
+
 // Categories
 router.post('/ecommerce/categories/save', adminAuth, upload.single('categoryImage'), categoryController.saveCategory);
 router.post('/ecommerce/categories/update/:id', adminAuth, upload.single('categoryImage'), categoryController.updateCategory);

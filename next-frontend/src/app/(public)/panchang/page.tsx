@@ -3,10 +3,23 @@ import Link from "next/link"
 import { ChevronRight, Calendar, Moon, Sun, Sparkles, Star } from "lucide-react"
 import PanchangDateNavigator from "@/components/panchang/PanchangDateNavigator"
 
-export const metadata = {
-  title: "Today's Odia Panchang & Tithi | Jagannathapuri Almanac",
-  description: "Check today's authentic Odia Panchang. Find the exact Tithi, Nakshatra, Yoga, and auspicious timings (Shubh Muhurat) for your daily spiritual practices.",
-  keywords: "Odia panchang today, Jagannath temple tithi, Puri almanac, shubh muhurat, today nakshatra, odisha calendar",
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+  const resolvedParams = await searchParams;
+  let dateStr = "Today";
+  
+  if (resolvedParams.date) {
+    const [y, m, d] = resolvedParams.date.split('-');
+    if (y && m && d) {
+      const dateObj = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+      dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+  }
+
+  return {
+    title: `${dateStr === 'Today' ? "Today's" : dateStr} Odia Panchang & Tithi | Jagannathapuri Almanac`,
+    description: `Check the authentic Odia Panchang for ${dateStr.toLowerCase()}. Find the exact Tithi, Nakshatra, Yoga, and auspicious timings (Shubh Muhurat) for your daily spiritual practices.`,
+    keywords: "Odia panchang, Jagannath temple tithi, Puri almanac, shubh muhurat, nakshatra, odisha calendar",
+  }
 }
 
 export default async function PanchangPage({

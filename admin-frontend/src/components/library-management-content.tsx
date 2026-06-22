@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-// Removed direct Table imports, using DataTable instead
 import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
@@ -32,151 +31,223 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-// Pagination handled inside DataTable
-
-// Dummy Data
-const dummyCategories = [
-  { id: 1, name: "Pooja Methods", slug: "pooja-methods", contents: 12, isHome: true, status: "Active" },
-  { id: 2, name: "Vedic Chants", slug: "vedic-chants", contents: 8, isHome: true, status: "Active" },
-  { id: 3, name: "Temple History", slug: "temple-history", contents: 5, isHome: false, status: "Active" },
-  { id: 4, name: "Daily Rituals", slug: "daily-rituals", contents: 15, isHome: true, status: "Active" },
-  { id: 5, name: "Festivals Guide", slug: "festivals-guide", contents: 24, isHome: false, status: "Inactive" },
-]
-
-const dummyArticles = [
-  { id: 101, title: "How to perform morning Aarti", category: "Daily Rituals", tags: ["Aarti", "Morning"], author: "Jagannathapuri Team", status: "Active" },
-  { id: 102, title: "Significance of Ekadashi Fasting", category: "Festivals Guide", tags: ["Fasting", "Ekadashi"], author: "Swami Vedant", status: "Active" },
-  { id: 103, title: "Daily Mantra Chants for Peace", category: "Vedic Chants", tags: ["Mantra", "Peace"], author: "Jagannathapuri Team", status: "Active" },
-  { id: 104, title: "Understanding the Panchang", category: "Pooja Methods", tags: ["Astrology", "Calendar"], author: "Pundit Ram", status: "Draft" },
-  { id: 105, title: "Preparing for Diwali Pooja", category: "Festivals Guide", tags: ["Diwali", "Pooja"], author: "Jagannathapuri Team", status: "Active" },
-]
-
-const categoriesColumns: ColumnDef<typeof dummyCategories[0]>[] = [
-  {
-    header: "Image",
-    className: "w-[80px]",
-    cell: () => (
-      <div className="h-12 w-12 shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden border">
-        <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
-      </div>
-    ),
-  },
-  {
-    header: "Name",
-    accessorKey: "name",
-    className: "font-medium",
-  },
-  {
-    header: "Slug",
-    accessorKey: "slug",
-    className: "text-muted-foreground",
-  },
-  {
-    header: "Contents",
-    className: "text-center",
-    cell: (cat) => <Badge variant="secondary">{cat.contents}</Badge>,
-  },
-  {
-    header: "Home",
-    className: "text-center",
-    cell: (cat) => cat.isHome ? (
-      <CheckCircle2 className="h-5 w-5 text-emerald-500 mx-auto" />
-    ) : (
-      <XCircle className="h-5 w-5 text-muted-foreground/30 mx-auto" />
-    ),
-  },
-  {
-    header: "Status",
-    cell: (cat) => (
-      <Badge 
-        variant={cat.status === "Active" ? "default" : "secondary"}
-        className={cat.status === "Active" ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-none" : ""}
-      >
-        {cat.status}
-      </Badge>
-    ),
-  },
-  {
-    header: "Actions",
-    className: "text-right",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Open menu</span><MoreHorizontal className="h-4 w-4" /></Button>} />
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>Edit Category</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-]
-
-const articlesColumns: ColumnDef<typeof dummyArticles[0]>[] = [
-  {
-    header: "Banner",
-    className: "w-[80px]",
-    cell: () => (
-      <div className="h-10 w-14 shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden border">
-        <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
-      </div>
-    ),
-  },
-  {
-    header: "Title",
-    className: "font-medium max-w-[200px] truncate",
-    cell: (art) => <span title={art.title}>{art.title}</span>,
-  },
-  {
-    header: "Category",
-    accessorKey: "category",
-  },
-  {
-    header: "Tags",
-    cell: (art) => (
-      <div className="flex flex-wrap gap-1">
-        {art.tags.map(tag => (
-          <Badge key={tag} variant="outline" className="text-[10px] px-1 py-0">{tag}</Badge>
-        ))}
-      </div>
-    ),
-  },
-  {
-    header: "Author",
-    accessorKey: "author",
-    className: "text-muted-foreground text-sm",
-  },
-  {
-    header: "Status",
-    cell: (art) => (
-      <Badge 
-        variant={art.status === "Active" ? "default" : "secondary"}
-        className={art.status === "Active" ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-none" : ""}
-      >
-        {art.status}
-      </Badge>
-    ),
-  },
-  {
-    header: "Actions",
-    className: "text-right",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Open menu</span><MoreHorizontal className="h-4 w-4" /></Button>} />
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>Edit Article</DropdownMenuItem>
-          <DropdownMenuItem>View on Frontend</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-]
 
 export function LibraryManagementContent() {
+  const [categories, setCategories] = React.useState<any[]>([])
+  const [articles, setArticles] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  // Category Form State
+  const [catName, setCatName] = React.useState("")
+  const [catDesc, setCatDesc] = React.useState("")
+  const [catStatus, setCatStatus] = React.useState("Active")
+  const [catShowOnHome, setCatShowOnHome] = React.useState(false)
+  const [catMetaTitle, setCatMetaTitle] = React.useState("")
+  const [catMetaDesc, setCatMetaDesc] = React.useState("")
+  const [catMetaKeys, setCatMetaKeys] = React.useState("")
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [catRes, artRes] = await Promise.all([
+        fetch('/api/admin/library/categories/data'),
+        fetch('/api/admin/library/content/data')
+      ])
+      const catJson = await catRes.json()
+      const artJson = await artRes.json()
+      if (catJson.data) setCategories(catJson.data)
+      if (artJson.data) setArticles(artJson.data)
+    } catch (err) {
+      console.error('Error fetching data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  React.useEffect(() => {
+    fetchData()
+  }, [])
+
+  const handleSaveCategory = async () => {
+    try {
+      const formData = new FormData()
+      formData.append('name', catName)
+      formData.append('description', catDesc)
+      formData.append('status', catStatus)
+      formData.append('show_on_home', catShowOnHome.toString())
+      formData.append('meta_title', catMetaTitle)
+      formData.append('meta_description', catMetaDesc)
+      formData.append('meta_keywords', catMetaKeys)
+
+      const res = await fetch('/api/admin/library/categories/save', {
+        method: 'POST',
+        body: formData
+      })
+      if (res.ok) {
+        setIsSheetOpen(false)
+        fetchData()
+        // Reset form
+        setCatName(""); setCatDesc(""); setCatStatus("Active"); setCatShowOnHome(false);
+        setCatMetaTitle(""); setCatMetaDesc(""); setCatMetaKeys("");
+      }
+    } catch (err) {
+      console.error("Failed to save category:", err)
+    }
+  }
+
+  const handleDeleteCategory = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this category?')) return;
+    try {
+      await fetch(`/api/admin/library/categories/delete/${id}`)
+      fetchData()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleDeleteArticle = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this article?')) return;
+    try {
+      await fetch(`/api/admin/library/content/delete/${id}`)
+      fetchData()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const categoriesColumns: ColumnDef<any>[] = [
+    {
+      header: "Image",
+      className: "w-[80px]",
+      cell: () => (
+        <div className="h-12 w-12 shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden border">
+          <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
+        </div>
+      ),
+    },
+    {
+      header: "Name",
+      accessorKey: "name",
+      className: "font-medium",
+    },
+    {
+      header: "Slug",
+      accessorKey: "slug",
+      className: "text-muted-foreground",
+    },
+    {
+      header: "Contents",
+      className: "text-center",
+      cell: (item) => <Badge variant="secondary">{item._count?.contents || 0}</Badge>,
+    },
+    {
+      header: "Home",
+      className: "text-center",
+      cell: (item) => item.show_on_home ? (
+        <CheckCircle2 className="h-5 w-5 text-emerald-500 mx-auto" />
+      ) : (
+        <XCircle className="h-5 w-5 text-muted-foreground/30 mx-auto" />
+      ),
+    },
+    {
+      header: "Status",
+      cell: (item) => (
+        <Badge 
+          variant={item.status === "Active" ? "default" : "secondary"}
+          className={item.status === "Active" ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-none" : ""}
+        >
+          {item.status}
+        </Badge>
+      ),
+    },
+    {
+      header: "Actions",
+      className: "text-right",
+      cell: (item) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>} />
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => alert('Edit is coming soon')}>Edit Category</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCategory(item.id)}>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
+
+  const articlesColumns: ColumnDef<any>[] = [
+    {
+      header: "Banner",
+      className: "w-[80px]",
+      cell: () => (
+        <div className="h-10 w-14 shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden border">
+          <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
+        </div>
+      ),
+    },
+    {
+      header: "Title",
+      className: "font-medium max-w-[200px] truncate",
+      cell: (item) => <span title={item.title}>{item.title}</span>,
+    },
+    {
+      header: "Category",
+      cell: (item) => item.categories?.map((c: any) => c.name).join(', ') || 'Uncategorized',
+    },
+    {
+      header: "Tags",
+      cell: (item) => (
+        <div className="flex flex-wrap gap-1">
+          {item.tags?.slice(0, 3).map((tag: any) => (
+            <Badge key={tag.id} variant="outline" className="text-[10px] px-1 py-0">{tag.name}</Badge>
+          ))}
+          {item.tags?.length > 3 && <Badge variant="outline" className="text-[10px] px-1 py-0">+{item.tags.length - 3}</Badge>}
+        </div>
+      ),
+    },
+    {
+      header: "Author",
+      accessorKey: "author",
+      className: "text-muted-foreground text-sm",
+    },
+    {
+      header: "Status",
+      cell: (item) => (
+        <Badge 
+          variant={item.status === "Active" ? "default" : "secondary"}
+          className={item.status === "Active" ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-none" : ""}
+        >
+          {item.status}
+        </Badge>
+      ),
+    },
+    {
+      header: "Actions",
+      className: "text-right",
+      cell: (item) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>} />
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem>Edit Article</DropdownMenuItem>
+            <DropdownMenuItem>View on Frontend</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteArticle(item.id)}>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-6 pb-8">
       {/* Header section */}
@@ -216,7 +287,7 @@ export function LibraryManagementContent() {
                   </Button>
                 </div>
                 
-                <Sheet>
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger render={<Button className="w-full sm:w-auto gap-2"><Plus className="h-4 w-4" /> Add Category</Button>} />
                   <SheetContent className="w-full sm:max-w-md overflow-y-auto">
                     <SheetHeader>
@@ -229,12 +300,12 @@ export function LibraryManagementContent() {
                     <div className="flex flex-col gap-5 px-4 py-4">
                       <div className="grid gap-2">
                         <Label htmlFor="cat-name">Name</Label>
-                        <Input id="cat-name" placeholder="e.g. Pooja Methods" />
+                        <Input id="cat-name" value={catName} onChange={e => setCatName(e.target.value)} placeholder="e.g. Pooja Methods" />
                       </div>
                       
                       <div className="grid gap-2">
                         <Label htmlFor="cat-desc">Description</Label>
-                        <Textarea id="cat-desc" placeholder="Brief description..." rows={3} />
+                        <Textarea id="cat-desc" value={catDesc} onChange={e => setCatDesc(e.target.value)} placeholder="Brief description..." rows={3} />
                       </div>
 
                       <div className="grid gap-2">
@@ -247,13 +318,13 @@ export function LibraryManagementContent() {
 
                       <div className="grid gap-2">
                         <Label>Status</Label>
-                        <Select defaultValue="active">
+                        <Select value={catStatus} onValueChange={setCatStatus}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
+                            <SelectItem value="Active">Active</SelectItem>
+                            <SelectItem value="Inactive">Inactive</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -265,7 +336,7 @@ export function LibraryManagementContent() {
                             Display this category prominently on the frontend.
                           </p>
                         </div>
-                        <Switch />
+                        <Switch checked={catShowOnHome} onCheckedChange={setCatShowOnHome} />
                       </div>
 
                       <div className="border-t pt-4 mt-2 grid gap-4">
@@ -274,29 +345,29 @@ export function LibraryManagementContent() {
                         <div className="grid gap-2">
                           <div className="flex justify-between items-center">
                             <Label htmlFor="meta-title">Meta Title</Label>
-                            <span className="text-[10px] text-muted-foreground">0 / 60</span>
+                            <span className="text-[10px] text-muted-foreground">{catMetaTitle.length} / 60</span>
                           </div>
-                          <Input id="meta-title" placeholder="SEO Title" />
+                          <Input id="meta-title" value={catMetaTitle} onChange={e => setCatMetaTitle(e.target.value)} placeholder="SEO Title" />
                         </div>
                         
                         <div className="grid gap-2">
                           <div className="flex justify-between items-center">
                             <Label htmlFor="meta-desc">Meta Description</Label>
-                            <span className="text-[10px] text-muted-foreground">0 / 160</span>
+                            <span className="text-[10px] text-muted-foreground">{catMetaDesc.length} / 160</span>
                           </div>
-                          <Textarea id="meta-desc" placeholder="SEO Description" rows={2} />
+                          <Textarea id="meta-desc" value={catMetaDesc} onChange={e => setCatMetaDesc(e.target.value)} placeholder="SEO Description" rows={2} />
                         </div>
                         
                         <div className="grid gap-2">
                           <Label htmlFor="meta-keys">Meta Keywords</Label>
-                          <Input id="meta-keys" placeholder="keyword1, keyword2" />
+                          <Input id="meta-keys" value={catMetaKeys} onChange={e => setCatMetaKeys(e.target.value)} placeholder="keyword1, keyword2" />
                         </div>
                       </div>
                     </div>
                     
                     <SheetFooter className="sticky bottom-0 bg-background pt-2 border-t mt-auto">
                       <SheetClose render={<Button variant="outline" className="w-full sm:w-auto">Cancel</Button>} />
-                      <Button type="submit" className="w-full sm:w-auto">Save Category</Button>
+                      <Button onClick={handleSaveCategory} className="w-full sm:w-auto">Save Category</Button>
                     </SheetFooter>
                   </SheetContent>
                 </Sheet>
@@ -305,8 +376,9 @@ export function LibraryManagementContent() {
             <CardContent className="p-0">
               <DataTable 
                 columns={categoriesColumns} 
-                data={dummyCategories} 
+                data={categories} 
                 keyExtractor={(item) => item.id} 
+                isLoading={loading}
               />
             </CardContent>
           </Card>
@@ -334,8 +406,9 @@ export function LibraryManagementContent() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="pooja">Pooja Methods</SelectItem>
-                      <SelectItem value="festivals">Festivals Guide</SelectItem>
+                      {categories.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -350,8 +423,9 @@ export function LibraryManagementContent() {
             <CardContent className="p-0">
               <DataTable 
                 columns={articlesColumns} 
-                data={dummyArticles} 
+                data={articles} 
                 keyExtractor={(item) => item.id} 
+                isLoading={loading}
               />
             </CardContent>
           </Card>

@@ -41,15 +41,30 @@ export function DataTable<T>({
   data, 
   keyExtractor,
   totalItems,
-  currentPage = 1,
   itemsPerPage = 10,
   isLoading = false
 }: DataTableProps<T>) {
+  const [internalPage, setInternalPage] = React.useState(1)
   
-  // Calculate display range for dummy data, falling back to data.length if totalItems not provided
+  const isServerSide = totalItems !== undefined
   const actualTotal = totalItems ?? data.length
+  const totalPages = Math.max(1, Math.ceil(actualTotal / itemsPerPage))
+  
+  const currentPage = Math.min(internalPage, totalPages)
+  
   const startItem = actualTotal === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
   const endItem = Math.min(currentPage * itemsPerPage, actualTotal)
+
+  const currentData = isServerSide 
+    ? data 
+    : data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  const handlePageChange = (page: number, e: React.MouseEvent) => {
+    e.preventDefault()
+    if (page >= 1 && page <= totalPages) {
+      setInternalPage(page)
+    }
+  }
 
   return (
     <div>
@@ -66,14 +81,14 @@ export function DataTable<T>({
         <TableBody>
           {isLoading ? (
             <TableSkeleton columns={columns.length} rows={Math.max(3, itemsPerPage)} />
-          ) : data.length === 0 ? (
+          ) : currentData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results found.
               </TableCell>
             </TableRow>
           ) : (
-            data.map((item) => (
+            currentData.map((item) => (
               <TableRow key={keyExtractor(item)}>
                 {columns.map((col, colIndex) => (
                   <TableCell key={colIndex} className={col.className}>
@@ -98,13 +113,43 @@ export function DataTable<T>({
           <Pagination className="mx-0 w-auto">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious 
+                  href="#" 
+                  onClick={(e) => handlePageChange(currentPage - 1, e)} 
+                  className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
               </PaginationItem>
+              
+              {/* Show simple pagination pages for now */}
+              {[...Array(totalPages)].map((_, i) => {
+                const page = i + 1;
+                // Simple logic to show a few pages around current page
+                if (page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink 
+                        href="#" 
+                        isActive={currentPage === page}
+                        onClick={(e) => handlePageChange(page, e)}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                }
+                // Show ellipsis
+                if (page === currentPage - 2 || page === currentPage + 2) {
+                  return <PaginationItem key={page}><span className="px-2">...</span></PaginationItem>
+                }
+                return null;
+              })}
+
               <PaginationItem>
-                <PaginationLink href="#" isActive>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext 
+                  href="#" 
+                  onClick={(e) => handlePageChange(currentPage + 1, e)}
+                  className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

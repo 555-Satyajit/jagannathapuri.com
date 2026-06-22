@@ -282,6 +282,12 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     },
   })
 
+  React.useEffect(() => {
+    if (editor && value !== undefined && value !== editor.getHTML()) {
+      editor.commands.setContent(value)
+    }
+  }, [editor, value])
+
   return (
     <div className="border rounded-md shadow-sm bg-background focus-within:ring-1 focus-within:ring-ring flex flex-col">
       <MenuBar editor={editor} />
