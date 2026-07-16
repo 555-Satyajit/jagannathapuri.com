@@ -24,7 +24,7 @@ export default async function SignupPage() {
               <img src={logoUrl} alt="Logo" className="h-10 md:h-12 w-auto object-contain origin-left" />
             ) : (
               <span className="text-xl md:text-2xl font-serif font-bold text-orange-600 tracking-tight">
-                Jay <span className="text-orange-900">Subhdra</span>
+                Jagannath<span className="text-orange-900">apuri</span>
               </span>
             )}
           </a>

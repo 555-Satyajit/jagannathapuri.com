@@ -115,7 +115,7 @@ model LibraryContent {
   summary    String?
   content    String
   image      String?
-  author     String          @default("Jay Subhdra Team")
+  author     String          @default("Jagannathapuri Team")
   status     String          @default("Active")
   created_at DateTime        @default(now())
   updated_at DateTime        @updatedAt

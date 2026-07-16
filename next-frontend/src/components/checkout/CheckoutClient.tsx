@@ -18,13 +18,13 @@ import { Field, FieldLabel } from "@/components/ui/field";
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
+  lastName: z.string().optional(),
   email: z.string().email("Valid email is required"),
   phone: z.string().min(10, "Valid phone number is required"),
-  address: z.string().min(5, "Address is required"),
+  address: z.string().min(2, "Address is required"),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "Zip code is required"),
+  zipCode: z.string().min(4, "Zip code is required"),
   paymentMethod: z.enum(["cod", "online"]),
 });
 
@@ -429,8 +429,9 @@ export default function CheckoutClient() {
         alert(checkoutResult.error || "Failed to place order.");
         setIsSubmitting(false);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      alert("An unexpected error occurred during checkout: " + err.message);
       setIsSubmitting(false);
     }
   };
@@ -439,7 +440,14 @@ export default function CheckoutClient() {
     <div className="flex flex-col lg:flex-row gap-12">
       {/* Left Column: Form */}
       <div className="flex-1">
-        <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+        <form id="checkout-form" onSubmit={handleSubmit(onSubmit, (errors) => {
+          console.log("Form validation errors:", errors);
+          const errorFields = Object.keys(errors);
+          if (errorFields.some(field => ['address', 'city', 'state', 'zipCode'].includes(field))) {
+            setShowAddressForm(true);
+          }
+          alert(`Form validation failed. Please check these fields: ${errorFields.join(', ')}`);
+        })} className="space-y-10">
           
           {/* Contact Information */}
           <section className="mb-6">

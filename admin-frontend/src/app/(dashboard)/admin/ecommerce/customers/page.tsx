@@ -1,7 +1,7 @@
 import { CustomersContent } from "@/components/customers-content"
 
 export const metadata = {
-  title: "Customers | Jay Subhdra Admin",
+  title: "Customers | Jagannathapuri Admin",
   description: "Manage eCommerce customers",
 }
 

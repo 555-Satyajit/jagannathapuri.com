@@ -27,7 +27,7 @@ export default async function SpiritualResources() {
   if (!categories || categories.length === 0) return null;
 
   const getImageUrl = (img?: string | null) => {
-    if (!img) return "https://placehold.co/600x800?text=Jay+Subhdra";
+    if (!img) return "https://placehold.co/600x800?text=Jagannathapuri";
     if (img.startsWith('http') || img.startsWith('/')) return img;
     return `/uploads/${img}`;
   };

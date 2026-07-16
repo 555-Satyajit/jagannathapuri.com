@@ -285,7 +285,12 @@ export function DailyRitualsContent() {
         </div>
       ),
     },
-    { header: "Name", accessorKey: "name", className: "font-medium" },
+    {
+      header: "Name",
+      accessorKey: "name",
+      className: "font-medium",
+      cell: (item) => <div className="max-w-[300px] sm:max-w-[400px] md:max-w-[500px] whitespace-normal leading-relaxed text-balance">{item.name}</div>
+    },
     {
       header: "Time",
       className: "text-muted-foreground",

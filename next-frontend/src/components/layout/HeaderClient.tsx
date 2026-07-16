@@ -169,7 +169,7 @@ export default function HeaderClient({ siteConfig }: { siteConfig: any }) {
                 <img src={logoUrl} alt="Logo" className="h-10 md:h-12 w-auto object-contain transition-transform duration-300 scale-[1.3] md:scale-[1.6] origin-left" />
               ) : (
                 <span className="text-2xl md:text-3xl font-serif font-bold text-orange-600 tracking-tight">
-                  Jay <span className="text-orange-900">Subhdra</span>
+                  Jagannath<span className="text-orange-900">apuri</span>
                 </span>
               )}
             </Link>

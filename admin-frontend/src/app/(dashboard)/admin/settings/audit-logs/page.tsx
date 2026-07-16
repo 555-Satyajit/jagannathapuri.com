@@ -1,7 +1,7 @@
 import { AuditLogsContent } from "@/components/audit-logs-content"
 
 export const metadata = {
-  title: "Audit Logs | Jay Subhdra Admin",
+  title: "Audit Logs | Jagannathapuri Admin",
   description: "Monitor system activity and administrative actions",
 }
 

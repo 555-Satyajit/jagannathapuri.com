@@ -14,7 +14,10 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
   fetchWishlist: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch("/api/auth/api/wishlist/items", { credentials: "include" });
+      const res = await fetch("/api/auth/api/wishlist/items", { 
+        credentials: "include",
+        headers: { "Accept": "application/json" }
+      });
       const data = await res.json();
       if (data.success) {
         set({ items: data.items.map((item: any) => item.productId) });
@@ -41,7 +44,10 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       const endpoint = isWishlisted ? "/api/auth/api/wishlist/remove" : "/api/auth/api/wishlist/add";
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         credentials: "include",
         body: JSON.stringify({ productId })
       });

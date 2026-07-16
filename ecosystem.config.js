@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: "jay-subhdra-server",
+            name: "jagannathapuri-server",
             script: "./server.js",
             cwd: "./server", // Assumes PM2 is run from the project root
             instances: 1,
@@ -21,7 +21,7 @@ module.exports = {
             merge_logs: true,
         },
         {
-            name: "jay-subhdra-frontend",
+            name: "jagannathapuri-frontend",
             script: "npm",
             args: "start",
             cwd: "./next-frontend", // Run the start script from inside the next-frontend folder

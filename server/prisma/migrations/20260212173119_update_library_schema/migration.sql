@@ -41,7 +41,7 @@ CREATE TABLE "LibraryContent" (
     "summary" TEXT,
     "content" TEXT NOT NULL,
     "image" TEXT,
-    "author" TEXT NOT NULL DEFAULT 'Jay Subhdra Team',
+    "author" TEXT NOT NULL DEFAULT 'Jagannathapuri Team',
     "categoryId" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'Active',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

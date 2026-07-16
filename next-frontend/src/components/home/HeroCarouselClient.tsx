@@ -23,7 +23,7 @@ export default function HeroCarouselClient({ heroes }: { heroes: any[] }) {
   const activeHero = heroes[currentIndex];
 
   const getImageUrl = (img?: string | null) => {
-    if (!img) return "https://placehold.co/1920x800?text=Jay+Subhdra";
+    if (!img) return "https://placehold.co/1920x800?text=Jagannathapuri";
     if (img.startsWith('http')) return img;
     let cleanPath = img;
     if (cleanPath.startsWith('/uploads/hero/')) cleanPath = cleanPath.replace('/uploads/hero/', '/uploads/');

@@ -109,12 +109,12 @@ app.use(async (req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Using the same secret for session and signed cookies
-const cookieSecret = process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key';
+const cookieSecret = process.env.SESSION_SECRET || 'jagannathapuri-fallback-secret-key';
 app.use(cookieParser(cookieSecret));
 
 const adminSessionConfig = {
     name: 'admin_sid',
-    secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
+    secret: process.env.SESSION_SECRET || 'jagannathapuri-fallback-secret-key',
     store: new pgSession(sessionStoreOptions),
     resave: false,
     saveUninitialized: false,
@@ -129,7 +129,7 @@ const adminSessionConfig = {
 
 const shopSessionConfig = {
     name: 'shop_sid',
-    secret: process.env.SESSION_SECRET || 'jay-subhdra-fallback-secret-key',
+    secret: process.env.SESSION_SECRET || 'jagannathapuri-fallback-secret-key',
     store: new pgSession(sessionStoreOptions),
     resave: false,
     saveUninitialized: true,

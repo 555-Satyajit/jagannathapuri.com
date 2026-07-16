@@ -59,7 +59,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold mb-1">Email Address</h3>
                   <p className="text-orange-100">
-                    <a href="mailto:contact@jaysubhdra.com" className="hover:text-white transition-colors">contact@jaysubhdra.com</a>
+                    <a href="mailto:contact@jagannathapuri.com" className="hover:text-white transition-colors">contact@jagannathapuri.com</a>
                   </p>
                 </div>
               </div>

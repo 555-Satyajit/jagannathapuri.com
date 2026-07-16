@@ -33,7 +33,7 @@ exports.getCart = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -78,7 +78,7 @@ exports.getCartApi = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -165,7 +165,7 @@ exports.addItem = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -194,7 +194,7 @@ exports.addItem = async (req, res) => {
                 req.session.cart.push({
                     productId: product.id,
                     name: product.product_name,
-                    price: parseFloat(product.price_amount || product.price),
+                    price: product.on_sale && product.sale_price ? parseFloat(product.sale_price) : parseFloat(product.price_amount || product.price),
                     image: image,
                     slug: product.slug,
                     quantity: qty
@@ -276,7 +276,7 @@ exports.addBulkItems = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -317,7 +317,7 @@ exports.addBulkItems = async (req, res) => {
                     req.session.cart.push({
                         productId: product.id,
                         name: product.product_name,
-                        price: parseFloat(product.price_amount || product.price),
+                        price: product.on_sale && product.sale_price ? parseFloat(product.sale_price) : parseFloat(product.price_amount || product.price),
                         image: image,
                         slug: product.slug,
                         quantity: qty
@@ -383,7 +383,7 @@ exports.syncCart = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -418,7 +418,7 @@ exports.syncCart = async (req, res) => {
                     req.session.cart.push({
                         productId: product.id,
                         name: product.product_name,
-                        price: parseFloat(product.price_amount || product.price),
+                        price: product.on_sale && product.sale_price ? parseFloat(product.sale_price) : parseFloat(product.price_amount || product.price),
                         image: image,
                         slug: product.slug,
                         quantity: item.quantity
@@ -494,7 +494,7 @@ exports.updateQuantity = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -570,7 +570,7 @@ exports.removeItem = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity

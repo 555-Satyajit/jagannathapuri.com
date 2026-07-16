@@ -38,7 +38,7 @@ export default function ContactForm() {
             id="name" 
             name="name" 
             required 
-            placeholder="Jay Subhdra"
+            placeholder="Jagannathapuri"
             className="w-full h-12 px-4 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-zinc-50 focus:bg-white outline-none transition-all"
           />
         </div>
@@ -49,7 +49,7 @@ export default function ContactForm() {
             id="email" 
             name="email" 
             required 
-            placeholder="jay@example.com"
+            placeholder="info@jagannathapuri.com"
             className="w-full h-12 px-4 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-zinc-50 focus:bg-white outline-none transition-all"
           />
         </div>

@@ -802,7 +802,7 @@ exports.getCheckout = async (req, res) => {
                     return {
                         productId: item.productId,
                         name: item.product.product_name,
-                        price: parseFloat(item.product.price_amount || item.product.price),
+                        price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                         image: image,
                         slug: item.product.slug,
                         quantity: item.quantity
@@ -873,7 +873,7 @@ exports.applyCoupon = async (req, res) => {
             if (dbCart && dbCart.items.length > 0) {
                 cart = dbCart.items.map(item => ({
                     productId: item.productId,
-                    price: parseFloat(item.product.price_amount || item.product.price),
+                    price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
                     quantity: item.quantity
                 }));
             }
@@ -974,48 +974,48 @@ exports.removeCoupon = (req, res) => {
     res.json({ success: false, message: 'No coupon to remove' });
 };
 exports.postCheckout = async (req, res) => {
-    const {
-        email, firstName, lastName, phone,
-        country, city, state, zipCode, addressLine1,
-        paymentMethod
-    } = req.body;
-
-    let cart = req.session.cart || [];
-    if (req.session.customerId) {
-        const dbCart = await prisma.cart.findUnique({
-            where: { customerId: req.session.customerId },
-            include: { items: { include: { product: true } } }
-        });
-
-        if (dbCart && dbCart.items.length > 0) {
-            cart = dbCart.items.map(item => ({
-                productId: item.productId,
-                price: parseFloat(item.product.price_amount || item.product.price),
-                quantity: item.quantity
-            }));
-        }
-    }
-
-    console.log('[Debug] postCheckout - User:', req.session.customerId, 'Email:', email);
-    console.log('[Debug] postCheckout - Initial Cart items:', cart.length);
-
-    if (cart.length === 0) {
-        if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
-            return res.status(400).json({ success: false, error: 'Cart is empty' });
-        }
-        return res.status(400).send('Cart is empty');
-    }
-
-    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const shipping = 0;
-    const tax = 0;
-    let discount = 0;
-    if (req.session.coupon) {
-        discount = req.session.coupon.discountAmount || 0;
-    }
-    const total = Math.max(0, subtotal + shipping + tax - discount);
-
     try {
+        const {
+            email, firstName, lastName, phone,
+            country, city, state, zipCode, addressLine1,
+            paymentMethod
+        } = req.body;
+
+        let cart = req.session.cart || [];
+        if (req.session.customerId) {
+            const dbCart = await prisma.cart.findUnique({
+                where: { customerId: req.session.customerId },
+                include: { items: { include: { product: true } } }
+            });
+
+            if (dbCart && dbCart.items.length > 0) {
+                cart = dbCart.items.map(item => ({
+                    productId: item.productId,
+                    price: item.product.on_sale && item.product.sale_price ? parseFloat(item.product.sale_price) : parseFloat(item.product.price_amount || item.product.price),
+                    quantity: item.quantity
+                }));
+            }
+        }
+
+        console.log('[Debug] postCheckout - User:', req.session.customerId, 'Email:', email);
+        console.log('[Debug] postCheckout - Initial Cart items:', cart.length);
+
+        if (cart.length === 0) {
+            if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+                return res.status(400).json({ success: false, error: 'Cart is empty' });
+            }
+            return res.status(400).send('Cart is empty');
+        }
+
+        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const shipping = 0;
+        const tax = 0;
+        let discount = 0;
+        if (req.session.coupon) {
+            discount = req.session.coupon.discountAmount || 0;
+        }
+        const total = Math.max(0, subtotal + shipping + tax - discount);
+
         // Simple order number generation
         const orderNumber = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
@@ -1153,25 +1153,29 @@ exports.postCheckout = async (req, res) => {
             }
 
             // Clear Cart (DB or Session)
-            if (req.session.customerId) {
-                const dbCart = await tx.cart.findUnique({
-                    where: { customerId: customer.id }
-                });
-                if (dbCart) {
-                    await tx.cartItem.deleteMany({
-                        where: { cartId: dbCart.id }
+            if (paymentMethod !== 'Razorpay') {
+                if (req.session.customerId) {
+                    const dbCart = await tx.cart.findUnique({
+                        where: { customerId: customer.id }
                     });
+                    if (dbCart) {
+                        await tx.cartItem.deleteMany({
+                            where: { cartId: dbCart.id }
+                        });
+                    }
+                    req.session.cart = []; // Also clear session just in case
+                } else {
+                    req.session.cart = [];
                 }
-                req.session.cart = []; // Also clear session just in case
-            } else {
-                req.session.cart = [];
             }
 
             return order;
         });
 
         // Clear cart
-        req.session.cart = [];
+        if (paymentMethod !== 'Razorpay') {
+            req.session.cart = [];
+        }
 
         if (paymentMethod === 'Razorpay') {
             const instance = new Razorpay({
@@ -1666,6 +1670,21 @@ exports.verifyRazorpayPayment = async (req, res) => {
                     status: 'Success'
                 }
             });
+
+            // Clear Cart upon successful payment
+            if (order.customer_id) {
+                const dbCart = await prisma.cart.findUnique({
+                    where: { customerId: order.customer_id }
+                });
+                if (dbCart) {
+                    await prisma.cartItem.deleteMany({
+                        where: { cartId: dbCart.id }
+                    });
+                }
+            }
+            if (req.session) {
+                req.session.cart = [];
+            }
 
             res.json({ success: true, message: "Payment verified successfully", orderNumber });
         } else {

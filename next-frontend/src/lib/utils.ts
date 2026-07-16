@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getImageUrl = (img?: string | null) => {
-  if (!img) return "https://placehold.co/600x600?text=Jay+Subhdra";
+  if (!img) return "https://placehold.co/600x600?text=Jagannathapuri";
   if (img.startsWith('http')) return img;
   if (img.startsWith('image-') || img.startsWith('mobileImage-') || img.startsWith('product_images-')) return `/uploads/${img}`;
   if (img.startsWith('review-')) return `/uploads/reviews/${img}`;

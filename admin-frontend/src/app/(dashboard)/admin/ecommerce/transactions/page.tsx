@@ -1,7 +1,7 @@
 import { TransactionsContent } from "@/components/transactions-content"
 
 export const metadata = {
-  title: "Transactions | Jay Subhdra Admin",
+  title: "Transactions | Jagannathapuri Admin",
   description: "Manage eCommerce transactions",
 }
 

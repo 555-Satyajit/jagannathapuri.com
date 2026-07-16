@@ -1,7 +1,7 @@
 import { ManageHomeContent } from "@/components/manage-home-content"
 
 export const metadata = {
-  title: "Manage Home | Jay Subhdra Admin",
+  title: "Manage Home | Jagannathapuri Admin",
   description: "Configure your storefront homepage sections",
 }
 

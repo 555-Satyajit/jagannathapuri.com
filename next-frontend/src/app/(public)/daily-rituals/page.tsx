@@ -22,7 +22,7 @@ const getIcon = (iconName: string) => {
 
 export default async function DailyRitualsPage() {
   const [rituals, darshans, facts] = await Promise.all([
-    prisma.dailyRitual.findMany({ where: { status: 'Active' }, orderBy: { time: 'asc' } }),
+    prisma.dailyRitual.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'asc' } }),
     prisma.darshanTiming.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'asc' } }),
     prisma.templeFact.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'desc' } })
   ]);
@@ -48,30 +48,44 @@ export default async function DailyRitualsPage() {
 
       <div className="container max-w-7xl mx-auto px-6 mt-16 space-y-24">
         
-        {/* Daily Rituals - Compact High-Density Grid */}
+        {/* Live Temple Updates - Vertical Feed */}
         {rituals.length > 0 && (
-          <section className="max-w-6xl mx-auto">
+          <section className="max-w-3xl mx-auto">
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
-                <Flame className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
+                <div className="relative">
+                  <Flame className="w-6 h-6 relative z-10" />
+                  <span className="absolute top-0 right-0 -mr-1 -mt-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
+                  <span className="absolute top-0 right-0 -mr-1 -mt-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                </div>
               </div>
               <div>
-                <h2 className="text-3xl font-serif font-bold text-zinc-900">Daily Rituals</h2>
-                <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mt-1">Niti Schedule</p>
+                <h2 className="text-3xl font-serif font-bold text-zinc-900">Live Temple Updates</h2>
+                <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mt-1 flex items-center gap-2">
+                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                   ନୀତି ଅପଡେଟ୍ (Live)
+                </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="flex flex-col gap-5">
               {rituals.map((ritual: any) => (
-                <div key={ritual.id} className="bg-white border border-zinc-200 rounded-xl p-4 flex items-center gap-4 shadow-sm hover:border-orange-300 hover:shadow-md transition-all">
-                  <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
-                    {getIcon(ritual.icon)}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-900 line-clamp-1" title={ritual.name}>{ritual.name}</h3>
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-orange-600 mt-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      {ritual.time}
+                <div key={ritual.id} className="bg-white border border-zinc-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:border-orange-300 hover:shadow-md transition-all relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-400 to-amber-300 opacity-75 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0 mt-0.5">
+                      {getIcon(ritual.icon)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5 text-sm font-bold text-zinc-900">
+                          <Clock className="w-4 h-4 text-orange-500" />
+                          {ritual.time}
+                        </div>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-medium text-zinc-800 leading-relaxed text-balance">
+                        {ritual.name}
+                      </h3>
                     </div>
                   </div>
                 </div>

@@ -45,7 +45,7 @@ export default async function Categories() {
   }
 
   const getImageUrl = (img?: string | null) => {
-    if (!img) return "https://placehold.co/600x800?text=Jay+Subhdra";
+    if (!img) return "https://placehold.co/600x800?text=Jagannathapuri";
     if (img.startsWith('http') || img.startsWith('/')) return img;
     return `/uploads/${img}`;
   };
