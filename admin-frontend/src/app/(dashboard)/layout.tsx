@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserNav } from "@/components/user-nav";
 import { AuthProvider } from "@/contexts/auth-context";
+import { PushNotifications } from "@/components/push-notifications";
 
 export default function DashboardLayout({
   children,
@@ -60,65 +61,7 @@ export default function DashboardLayout({
                 <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">View Store</span>
               </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground outline-none" />}>
-                  <Bell className="size-5" />
-                  <span className="absolute top-[6px] right-[8px] flex h-[9px] w-[9px] rounded-full bg-destructive border-2 border-white dark:border-slate-950"></span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel className="flex items-center justify-between">
-                      Notifications
-                      <div role="button" className="flex items-center text-xs font-normal text-muted-foreground hover:text-primary cursor-pointer">
-                        <CheckCheck className="mr-1 size-3" /> Mark all read
-                      </div>
-                    </DropdownMenuLabel>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="group flex flex-col items-start gap-1 p-3 cursor-pointer relative">
-                    <div className="flex items-center justify-between w-full pr-4">
-                      <span className="font-medium text-sm">New Order #1024</span>
-                      <span className="text-xs text-muted-foreground">2m ago</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 pr-4">
-                      Rahul Sharma just placed an order for 2 items totaling ₹1,450.
-                    </p>
-                    <div className="absolute top-3 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                      <X className="size-3.5" />
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="group flex flex-col items-start gap-1 p-3 cursor-pointer relative">
-                    <div className="flex items-center justify-between w-full pr-4">
-                      <span className="font-medium text-sm">Low Stock Alert</span>
-                      <span className="text-xs text-muted-foreground">1h ago</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 pr-4">
-                      "Premium Incense Sticks" is running low on inventory (only 3 left).
-                    </p>
-                    <div className="absolute top-3 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                      <X className="size-3.5" />
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="group flex flex-col items-start gap-1 p-3 cursor-pointer relative">
-                    <div className="flex items-center justify-between w-full pr-4">
-                      <span className="font-medium text-sm">New Customer</span>
-                      <span className="text-xs text-muted-foreground">5h ago</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 pr-4">
-                      Priya Patel registered a new account.
-                    </p>
-                    <div className="absolute top-3 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                      <X className="size-3.5" />
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="p-2 text-center text-sm font-medium text-primary cursor-pointer justify-center">
-                    View all notifications
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
+              <PushNotifications />
               <Separator orientation="vertical" className="h-6 mx-1" />
 
               <UserNav />

@@ -1079,6 +1079,22 @@ exports.postCheckout = async (req, res) => {
                 }
             });
 
+            await tx.notification.create({
+                data: {
+                    type: 'ORDER',
+                    message: `New Order Received: ${orderNumber} for ₹${total}`,
+                    link: `/admin/ecommerce/orders/${order.id}`,
+                    isRead: false
+                }
+            });
+
+            const notificationController = require('./api/notificationController');
+            notificationController.broadcastPushNotification(
+                'New Order Received!',
+                `Order ${orderNumber} for ₹${total}`,
+                `/admin/ecommerce/orders/${order.id}`
+            ).catch(e => console.log('Push error', e));
+
             // 4. Create order items and reduce stock
             const orderItemsData = cart.map(item => ({
                 orderId: order.id,
@@ -1592,13 +1608,20 @@ exports.submitFeedback = async (req, res) => {
             }),
             prisma.notification.create({
                 data: {
-                    type: 'contact_message',
-                    message: `New message from ${name}`,
-                    link: '/admin/store/contact/messages',
+                    type: 'CONTACT',
+                    message: `New Contact Message from ${name}`,
+                    link: '/admin/store/contact',
                     isRead: false
                 }
             })
         ]);
+
+        const notificationController = require('./api/notificationController');
+        notificationController.broadcastPushNotification(
+            'New Contact Message!',
+            `Message from ${name}`,
+            `/admin/store/contact`
+        ).catch(e => console.log('Push error', e));
 
         res.json({ success: true, message: 'Thank you for your feedback!' });
     } catch (error) {

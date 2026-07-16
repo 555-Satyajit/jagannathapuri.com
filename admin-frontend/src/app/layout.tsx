@@ -50,6 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       return {
         title: `${seo.meta_title?.split('|')[0]?.trim() || "Jagannathapuri"} | Admin`,
         description: "Modern Admin Panel for Jagannathapuri",
+        manifest: "/manifest.json",
         icons: {
           icon: iconUrl,
         }
@@ -62,6 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Jagannathapuri | Admin",
     description: "Modern Admin Panel for Jagannathapuri",
+    manifest: "/manifest.json"
   };
 }
 

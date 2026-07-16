@@ -23,10 +23,17 @@ const dailyRitualsController = require('../controllers/api/dailyRitualsControlle
 const manageHomeController = require('../controllers/api/manageHomeController');
 const aiContentController = require('../controllers/admin/aiContentController');
 const libraryController = require('../controllers/admin/libraryController');
+const notificationController = require('../controllers/api/notificationController');
 
 // Authentication routes
 router.post('/auth/login', adminApiAuthController.apiPostLogin);
 router.post('/auth/logout', adminApiAuthController.apiLogout);
+
+// Notifications
+router.post('/notifications/subscribe', adminAuth, notificationController.subscribeToPush);
+router.get('/notifications/unread', adminAuth, notificationController.getUnreadNotifications);
+router.post('/notifications/mark-read', adminAuth, notificationController.markAsRead);
+
 
 // Current user profile
 router.get('/auth/me', adminAuth, adminApiAuthController.apiMe);
