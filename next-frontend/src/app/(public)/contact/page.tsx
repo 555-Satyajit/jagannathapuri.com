@@ -8,7 +8,29 @@ export const metadata: Metadata = {
   keywords: "contact Jagannathapuri, Puri temple support, Mahaprasad inquiries, spiritual items customer care, Odisha puja services",
 };
 
-export default function ContactPage() {
+async function getContactConfig() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/site-config`, {
+      next: { revalidate: 60 }
+    });
+    if (res.ok) {
+      const config = await res.json();
+      // Prefer store_contact, fallback to old contact
+      return config?.store_contact || config?.contact || {};
+    }
+  } catch (err) {
+    console.error("Failed to fetch contact config:", err);
+  }
+  return {};
+}
+
+export default async function ContactPage() {
+  const contactConfig = await getContactConfig();
+  
+  const address = contactConfig.address || "Near Jagannath Temple,\nGrand Road, Puri\nOdisha, India - 752001";
+  const phone = contactConfig.phone || "+91 88958 22941";
+  const email = contactConfig.email || "contact@jagannathapuri.com";
+
   return (
     <div className="min-h-screen bg-[#fcfaf8] pt-24 pb-20">
       <div className="container max-w-6xl mx-auto px-6">
@@ -36,10 +58,8 @@ export default function ContactPage() {
                 <MapPin className="w-6 h-6 shrink-0 mt-1" />
                 <div>
                   <h3 className="font-bold mb-1">Our Location</h3>
-                  <p className="text-orange-100 leading-relaxed">
-                    Near Jagannath Temple,<br />
-                    Grand Road, Puri<br />
-                    Odisha, India - 752001
+                  <p className="text-orange-100 leading-relaxed whitespace-pre-wrap">
+                    {address}
                   </p>
                 </div>
               </div>
@@ -49,7 +69,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold mb-1">Phone Number</h3>
                   <p className="text-orange-100">
-                    <a href="tel:+918895822941" className="hover:text-white transition-colors">+91 88958 22941</a>
+                    <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors">{phone}</a>
                   </p>
                 </div>
               </div>
@@ -59,7 +79,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold mb-1">Email Address</h3>
                   <p className="text-orange-100">
-                    <a href="mailto:contact@jagannathapuri.com" className="hover:text-white transition-colors">contact@jagannathapuri.com</a>
+                    <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
                   </p>
                 </div>
               </div>

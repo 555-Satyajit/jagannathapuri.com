@@ -35,6 +35,7 @@ const policyTypes = [
   { id: "privacy", label: "Privacy Policy" },
   { id: "terms", label: "Terms of Service" },
   { id: "refund", label: "Refund Policy" },
+  { id: "return", label: "Return Policy" },
   { id: "shipping", label: "Shipping Policy" },
 ]
 

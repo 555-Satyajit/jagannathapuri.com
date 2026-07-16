@@ -120,6 +120,10 @@ router.get('/transactions/data', adminAuth, transactionController.getTransaction
 // Settings
 router.get('/settings/general', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetGeneralSettings);
 router.post('/settings/general', adminAuth, checkPermission('manage_settings'), upload.fields([{ name: 'logo', maxCount: 1 }, { name: 'favicon', maxCount: 1 }]), adminApiSettingsController.apiSaveGeneralSettings);
+router.get('/settings/store-contact', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetStoreContact);
+router.post('/settings/store-contact', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiSaveStoreContact);
+router.get('/settings/store-messages', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetStoreMessages);
+router.delete('/settings/store-messages/:id', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiDeleteStoreMessage);
 router.get('/settings/audit-logs/data', adminAuth, checkPermission('manage_settings'), dashboardController.getAuditLogsData);
 router.get('/settings/policies/:type', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiGetPolicy);
 router.post('/settings/policies/:type/save', adminAuth, checkPermission('manage_settings'), adminApiSettingsController.apiSavePolicy);

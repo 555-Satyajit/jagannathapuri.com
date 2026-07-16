@@ -181,3 +181,79 @@ exports.apiSaveGeneralSettings = async (req, res) => {
     }
 };
 
+exports.apiGetStoreContact = async (req, res) => {
+    try {
+        const configKeys = ['store_contact', 'store_faqs'];
+        const configs = await prisma.siteConfig.findMany({
+            where: { key: { in: configKeys } }
+        });
+        
+        const data = { contact: {}, faqs: [] };
+        configs.forEach(c => {
+            if (c.key === 'store_contact') {
+                data.contact = c.value || {};
+            }
+            if (c.key === 'store_faqs') {
+                data.faqs = c.value || [];
+            }
+        });
+
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching store contact:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.apiSaveStoreContact = async (req, res) => {
+    try {
+        const { contact, faqs } = req.body;
+        
+        if (contact) {
+            await prisma.siteConfig.upsert({
+                where: { key: 'store_contact' },
+                update: { value: contact },
+                create: { key: 'store_contact', value: contact }
+            });
+        }
+        
+        if (faqs) {
+            await prisma.siteConfig.upsert({
+                where: { key: 'store_faqs' },
+                update: { value: faqs },
+                create: { key: 'store_faqs', value: faqs }
+            });
+        }
+        
+        configStore.clearCache();
+        res.json({ success: true, message: 'Store contact settings saved successfully.' });
+    } catch (error) {
+        console.error('Error saving store contact:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.apiGetStoreMessages = async (req, res) => {
+    try {
+        const messages = await prisma.feedback.findMany({
+            orderBy: { created_at: 'desc' }
+        });
+        res.json({ success: true, data: messages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.apiDeleteStoreMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.feedback.delete({
+            where: { id: parseInt(id) }
+        });
+        res.json({ success: true, message: 'Message deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
