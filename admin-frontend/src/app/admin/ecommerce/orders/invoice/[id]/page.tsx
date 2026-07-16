@@ -94,7 +94,7 @@ export default function AdminInvoicePage() {
           <div className="flex justify-between items-start border-b border-zinc-200 p-10 print:p-0 print:pb-8 print:pt-4">
             <div className="flex flex-col">
               {siteConfig?.header?.logo ? (
-                <img src={siteConfig.header.logo} alt="Logo" className="h-8 object-contain mb-2" />
+                <img src={siteConfig.header.logo} alt="Logo" className="h-16 w-auto max-w-[250px] object-contain mb-2" />
               ) : (
                 <h1 className="text-4xl font-bold text-zinc-900 mb-1" style={{ letterSpacing: '-0.02em' }}>Invoice</h1>
               )}
