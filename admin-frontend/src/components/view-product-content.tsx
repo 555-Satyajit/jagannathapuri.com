@@ -86,8 +86,8 @@ export function ViewProductContent({ productId }: ViewProductContentProps) {
   let colors: string[] = [];
   let sizes: string[] = [];
   if (product.specifications && Array.isArray(product.specifications)) {
-    const colorSpec = product.specifications.find((s: any) => s.name.toLowerCase() === 'color');
-    const sizeSpec = product.specifications.find((s: any) => s.name.toLowerCase() === 'size');
+    const colorSpec = product.specifications.find((s: any) => (s.name || s.key || '').toLowerCase() === 'color');
+    const sizeSpec = product.specifications.find((s: any) => (s.name || s.key || '').toLowerCase() === 'size');
     if (colorSpec) colors = colorSpec.value.split(',').map((v: string) => v.trim());
     if (sizeSpec) sizes = sizeSpec.value.split(',').map((v: string) => v.trim());
   }

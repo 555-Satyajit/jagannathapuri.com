@@ -4,7 +4,7 @@ import * as React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast, Toaster } from "sonner"
 import { 
@@ -59,6 +59,10 @@ const productSchema = z.object({
   inventoryStock: z.number().optional().or(z.string().transform(v => v ? Number(v) : undefined)),
   lowStockThreshold: z.number().default(10).or(z.string().transform(v => Number(v) || 10)),
   shippingType: z.enum(["seller", "company"]).default("company"),
+  specifications: z.array(z.object({
+    name: z.string().min(1, "Name is required"),
+    value: z.string().min(1, "Value is required")
+  })).optional()
 });
 
 type ProductFormValues = z.input<typeof productSchema>;
@@ -72,6 +76,7 @@ export function AddProductContent({ editId }: AddProductContentProps) {
   const [images, setImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
+  const [attributes, setAttributes] = useState<{id: number, name: string}[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [fetching, setFetching] = useState(!!editId);
 
@@ -97,8 +102,14 @@ export function AddProductContent({ editId }: AddProductContentProps) {
       isFeatured: false,
       showInExplore: false,
       shippingType: "company",
-      lowStockThreshold: 10
+      lowStockThreshold: 10,
+      specifications: []
     }
+  });
+
+  const { fields: specFields, append: appendSpec, remove: removeSpec } = useFieldArray({
+    control,
+    name: "specifications"
   });
 
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
@@ -143,7 +154,21 @@ export function AddProductContent({ editId }: AddProductContentProps) {
         console.error(err);
       }
     };
+    
+    const fetchAttributes = async () => {
+      try {
+        const res = await fetch("/api/admin/ecommerce/attributes/data");
+        const json = await res.json();
+        if (json.data) {
+          setAttributes(json.data.map((a: any) => ({ id: a.id, name: a.name })));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchCategories();
+    fetchAttributes();
 
     if (editId) {
       const fetchProduct = async () => {
@@ -176,6 +201,9 @@ export function AddProductContent({ editId }: AddProductContentProps) {
             setValue("lowStockThreshold", data.lowStockThreshold || 10);
             if (data.images && data.images.length > 0) {
               setExistingImages(data.images);
+            }
+            if (data.specifications && Array.isArray(data.specifications)) {
+              setValue("specifications", data.specifications);
             }
           }
         } catch (err) {
@@ -229,6 +257,7 @@ export function AddProductContent({ editId }: AddProductContentProps) {
       formData.append("image_alt", data.imageAlt || "");
       formData.append("quantity", String(data.inventoryStock || 0));
       formData.append("lowStockThreshold", String(data.lowStockThreshold || 10));
+      formData.append("specifications", JSON.stringify(data.specifications || []));
       
       existingImages.forEach((img) => formData.append("product_images", img));
       images.forEach((file) => formData.append("product_images", file));
@@ -382,6 +411,53 @@ export function AddProductContent({ editId }: AddProductContentProps) {
                   <p className="text-xs text-muted-foreground mt-1">Up to 10 images allowed. Max 5MB per image.</p>
                 </div>
               </label>
+            </CardContent>
+          </Card>
+
+          {/* Product Specifications / Attributes */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle>Attributes & Specifications</CardTitle>
+              <Button type="button" variant="outline" size="sm" onClick={() => appendSpec({ name: "", value: "" })}>
+                <Plus className="h-4 w-4 mr-2" /> Add Attribute
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {specFields.map((field, index) => (
+                <div key={field.id} className="flex items-start gap-4">
+                  <div className="flex-1 space-y-2">
+                    <Controller
+                      name={`specifications.${index}.name` as const}
+                      control={control}
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Attribute" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {attributes.map(attr => (
+                              <SelectItem key={attr.id} value={attr.name}>{attr.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.specifications?.[index]?.name && <p className="text-sm text-destructive">{errors.specifications[index].name?.message}</p>}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Input placeholder="Value (e.g. Red)" {...register(`specifications.${index}.value` as const)} />
+                    {errors.specifications?.[index]?.value && <p className="text-sm text-destructive">{errors.specifications[index].value?.message}</p>}
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" className="text-destructive" onClick={() => removeSpec(index)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {specFields.length === 0 && (
+                <div className="text-center py-6 text-muted-foreground text-sm border-2 border-dashed rounded-md">
+                  No attributes added yet. Click "Add Attribute" to define custom specifications.
+                </div>
+              )}
             </CardContent>
           </Card>
 
