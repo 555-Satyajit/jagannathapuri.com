@@ -17,4 +17,4 @@ jobs:
           ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
           
           # Deploy command with verbose output (-vvv) if it fails
-          ssh -vvv -i ~/.ssh/id_rsa -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd ~/jagannathapuri.com && bash deploy.sh"
+          ssh -vvv -i ~/.ssh/id_rsa -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash -lc 'cd ~/jagannathapuri.com && bash deploy.sh'"
