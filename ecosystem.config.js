@@ -40,6 +40,27 @@ module.exports = {
             error_file: "./server/logs/frontend-err.log",
             out_file: "./server/logs/frontend-out.log",
             merge_logs: true,
+        },
+        {
+            name: "jagannathapuri-admin",
+            script: "npm",
+            args: "start",
+            cwd: "./admin-frontend",
+            instances: 1,
+            exec_mode: "fork",
+            watch: false,
+            env: {
+                NODE_ENV: "development",
+                PORT: 3001
+            },
+            env_production: {
+                NODE_ENV: "production",
+                PORT: 3001
+            },
+            log_date_format: "YYYY-MM-DD HH:mm Z",
+            error_file: "./server/logs/admin-err.log",
+            out_file: "./server/logs/admin-out.log",
+            merge_logs: true,
         }
     ]
 };

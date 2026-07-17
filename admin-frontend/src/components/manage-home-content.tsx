@@ -638,7 +638,7 @@ export function ManageHomeContent() {
                           name="categoryId"
                           render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                              <SelectTrigger className="w-full"><SelectValue placeholder="Select Category" /></SelectTrigger>
                               <SelectContent>
                                 {categories.map(c => (
                                   <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
@@ -661,7 +661,7 @@ export function ManageHomeContent() {
                           name="status"
                           render={({ field }) => (
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="Active">Active</SelectItem>
                                 <SelectItem value="Inactive">Inactive</SelectItem>

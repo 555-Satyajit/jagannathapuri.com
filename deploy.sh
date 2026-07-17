@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+echo "Starting Deployment..."
+
+# 1. Pull latest code from GitHub
+echo "Pulling latest code..."
+git pull origin main
+
+# 2. Setup Server
+echo "Installing server dependencies..."
+cd server
+npm install
+# Apply any pending database migrations
+npx prisma migrate deploy
+cd ..
+
+# 3. Setup Next.js Frontend
+echo "Building next-frontend..."
+cd next-frontend
+npm install
+npm run build
+cd ..
+
+# 4. Setup Admin Frontend
+echo "Building admin-frontend..."
+cd admin-frontend
+npm install
+npm run build
+cd ..
+
+# 5. Restart PM2 processes
+echo "Restarting PM2 ecosystem..."
+pm2 restart ecosystem.config.js --env production
+
+echo "Deployment completed successfully!"
