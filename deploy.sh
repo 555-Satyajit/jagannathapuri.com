@@ -5,6 +5,10 @@ set -e
 
 echo "Starting Deployment..."
 
+# Load NVM so that npm and pm2 are available in this non-interactive SSH session
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 # 1. Pull latest code from GitHub
 echo "Pulling latest code..."
 git pull origin main
