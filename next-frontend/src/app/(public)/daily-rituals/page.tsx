@@ -21,8 +21,22 @@ const getIcon = (iconName: string) => {
 }
 
 export default async function DailyRitualsPage() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(today);
+  endOfDay.setHours(23, 59, 59, 999);
+
   const [rituals, darshans, facts] = await Promise.all([
-    prisma.dailyRitual.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'asc' } }),
+    prisma.dailyRitual.findMany({ 
+      where: { 
+        status: 'Active',
+        created_at: {
+          gte: today,
+          lte: endOfDay
+        }
+      }, 
+      orderBy: { created_at: 'asc' } 
+    }),
     prisma.darshanTiming.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'asc' } }),
     prisma.templeFact.findMany({ where: { status: 'Active' }, orderBy: { created_at: 'desc' } })
   ]);
