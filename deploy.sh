@@ -17,8 +17,8 @@ git pull origin main
 echo "Installing server dependencies..."
 cd server
 npm install
-# Apply any pending database migrations
-npx prisma migrate deploy
+# Generate Prisma client (does not connect to DB, so it won't freeze)
+npx prisma generate
 cd ..
 
 # 3. Setup Next.js Frontend
