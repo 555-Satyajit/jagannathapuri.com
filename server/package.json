@@ -28,7 +28,7 @@
     "jsdom": "^29.0.0",
     "moment": "^2.30.1",
     "multer": "^2.0.2",
-    "nodemailer": "^8.0.1",
+    "nodemailer": "^9.0.1",
     "pg": "^8.18.0",
     "puppeteer": "^24.37.3",
     "razorpay": "^2.9.6",
