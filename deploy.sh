@@ -9,6 +9,9 @@ echo "Starting Deployment..."
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+# Force Node.js and Prisma to use IPv4 (Hostinger often has broken IPv6 which causes Supabase connections to freeze)
+export NODE_OPTIONS="--dns-result-order=ipv4first"
+
 # 1. Pull latest code from GitHub
 echo "Pulling latest code..."
 git pull origin main
