@@ -25,7 +25,8 @@ import {
   UserCog, 
   Ticket, 
   Store, 
-  Settings 
+  Settings,
+  MessageSquare
 } from "lucide-react"
 
 const data = {
@@ -101,6 +102,7 @@ const data = {
   navSecondary: [
     { title: "Customers", url: "/admin/ecommerce/customers", icon: <Users />, requiredModule: "Customers" },
     { title: "Orders", url: "/admin/ecommerce/orders", icon: <ShoppingCart />, requiredModule: "Orders" },
+    { title: "Inquiries", url: "/admin/inquiries", icon: <MessageSquare />, requiredModule: "Orders" },
     { title: "Transactions", url: "/admin/ecommerce/transactions", icon: <CreditCard />, requiredModule: "Transactions" },
     { title: "Tickets", url: "/admin/tickets/list", icon: <Ticket />, requiredModule: "Tickets" },
   ],

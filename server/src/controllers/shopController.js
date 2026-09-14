@@ -1744,3 +1744,45 @@ exports.getWishlistApi = async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to fetch wishlist' });
     }
 };
+
+exports.submitInquiry = async (req, res) => {
+    try {
+        const { name, email, phone, message, productId } = req.body;
+
+        if (!name || !email || !phone) {
+            return res.status(400).json({ success: false, message: 'Name, email, and phone are required.' });
+        }
+
+        const inquiry = await prisma.inquiry.create({
+            data: {
+                name,
+                email,
+                phone,
+                message,
+                product_id: productId ? parseInt(productId) : null
+            }
+        });
+
+        // Add Notification
+        await prisma.notification.create({
+            data: {
+                type: 'INQUIRY',
+                message: `New Patachitra Inquiry from ${name}`,
+                link: `/admin/inquiries`, // Link to the future admin inquiries page
+                isRead: false
+            }
+        });
+
+        const notificationController = require('./api/notificationController');
+        notificationController.broadcastPushNotification(
+            'New Inquiry Received!',
+            `Inquiry from ${name} (${phone})`,
+            `/admin/inquiries`
+        ).catch(e => console.log('Push error', e));
+
+        res.status(201).json({ success: true, message: 'Inquiry submitted successfully.', data: inquiry });
+    } catch (error) {
+        console.error('Error submitting inquiry:', error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};

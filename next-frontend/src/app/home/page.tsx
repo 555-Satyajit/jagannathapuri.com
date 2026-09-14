@@ -1,6 +1,6 @@
 import Hero from "@/components/home/Hero";
 import Categories from "@/components/home/Categories";
-import CurrentRitual from "@/components/home/CurrentRitual";
+import PromotePatachitra from "@/components/home/PromotePatachitra";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import ExploreTreasures from "@/components/home/ExploreTreasures";
 import SpiritualResources from "@/components/home/SpiritualResources";
@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { 
   HeroSkeleton,
   CategoriesSkeleton, 
-  CurrentRitualSkeleton,
+  // CurrentRitualSkeleton,
   ExploreTreasuresSkeleton, 
   FeaturedProductsSkeleton, 
   SpiritualResourcesSkeleton, 
@@ -27,9 +27,10 @@ export default function HomePage() {
         <Categories />
       </Suspense>
 
-      <Suspense fallback={<CurrentRitualSkeleton />}>
+      {/* <Suspense fallback={<CurrentRitualSkeleton />}>
         <CurrentRitual />
-      </Suspense>
+      </Suspense> */}
+      <PromotePatachitra />
 
       <Suspense fallback={<FeaturedProductsSkeleton />}>
         <FeaturedProducts />

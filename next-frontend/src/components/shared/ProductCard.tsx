@@ -18,6 +18,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
   const isWishlisted = wishlistItems.includes(product.id);
   const imageArray = product.images as string[];
   const firstImage = imageArray && imageArray.length > 0 ? imageArray[0] : null;
+  const isPatachitra = product.category?.name?.toLowerCase().includes('patachitra') || product.category?.category_name?.toLowerCase().includes('patachitra');
 
   return (
     <div className={`group relative flex flex-col bg-transparent rounded-none overflow-visible transition-all duration-500 h-full ${className}`}>
@@ -66,23 +67,33 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
               <span className="text-2xl font-black text-zinc-900">₹{product.price_amount || product.regular_price}</span>
             )}
           </div>
-          <button 
-            onClick={(e) => {
-              e.preventDefault();
-              const price = product.on_sale ? product.sale_price : (product.price_amount || product.regular_price);
-              addItem({
-                id: product.id,
-                name: product.product_name,
-                price: price,
-                quantity: 1,
-                image: getImageUrl(firstImage)
-              });
-              setCartOpen(true);
-            }}
-            className="flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-orange-600/20 group/btn"
-          >
-            <ShoppingBag className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
+          
+          {isPatachitra ? (
+            <Link 
+              href={`/product-details/${product.slug}`}
+              className="flex items-center justify-center px-4 h-10 rounded-xl bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 font-medium text-sm shadow-sm"
+            >
+              Inquire
+            </Link>
+          ) : (
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                const price = product.on_sale ? product.sale_price : (product.price_amount || product.regular_price);
+                addItem({
+                  id: product.id,
+                  name: product.product_name,
+                  price: price,
+                  quantity: 1,
+                  image: getImageUrl(firstImage)
+                });
+                setCartOpen(true);
+              }}
+              className="flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-orange-600/20 group/btn"
+            >
+              <ShoppingBag className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+            </button>
+          )}
         </div>
       </div>
     </div>

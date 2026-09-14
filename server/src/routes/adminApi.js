@@ -24,6 +24,7 @@ const manageHomeController = require('../controllers/api/manageHomeController');
 const aiContentController = require('../controllers/admin/aiContentController');
 const libraryController = require('../controllers/admin/libraryController');
 const notificationController = require('../controllers/api/notificationController');
+const inquiryController = require('../controllers/admin/inquiryController');
 
 // Authentication routes
 router.post('/auth/login', adminApiAuthController.apiPostLogin);
@@ -155,6 +156,11 @@ router.post('/store/rituals/save', adminAuth, dailyRitualsController.saveRitual)
 router.post('/store/rituals/update/:id', adminAuth, dailyRitualsController.updateRitual);
 router.get('/store/rituals/delete/:id', adminAuth, dailyRitualsController.deleteRitual);
 router.post('/store/rituals/toggle-status/:id', adminAuth, dailyRitualsController.toggleRitualStatus);
+
+// Inquiries
+router.get('/inquiries', adminAuth, inquiryController.getInquiries);
+router.put('/inquiries/:id/status', adminAuth, inquiryController.updateInquiryStatus);
+router.delete('/inquiries/:id', adminAuth, inquiryController.deleteInquiry);
 
 router.get('/store/darshans/data', adminAuth, dailyRitualsController.getDarshans);
 router.post('/store/darshans/save', adminAuth, dailyRitualsController.saveDarshan);

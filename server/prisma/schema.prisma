@@ -62,6 +62,7 @@ model Product {
   category          Category       @relation(fields: [category_id], references: [id])
   reviews           Review[]
   wishlistedBy      WishlistItem[]
+  inquiries         Inquiry[]
 }
 
 model Notification {
@@ -258,6 +259,19 @@ model Feedback {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   customer   Customer? @relation(fields: [customerId], references: [id])
+}
+
+model Inquiry {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String
+  message     String?
+  product_id  Int?
+  status      String   @default("New")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  product     Product? @relation(fields: [product_id], references: [id])
 }
 
 model WishlistItem {

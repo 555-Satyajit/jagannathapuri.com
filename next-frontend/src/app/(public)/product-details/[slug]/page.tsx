@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight, Star } from "lucide-react";
 import ProductGallery from "@/components/product/ProductGallery";
 import AddToCartClient from "@/components/product/AddToCartClient";
+import InquireFormClient from "@/components/product/InquireFormClient";
 import ProductSpecs from "@/components/product/ProductSpecs";
 import ProductReviewsLazy from "@/components/product/ProductReviewsLazy";
 import YouMayAlsoLike from "@/components/product/YouMayAlsoLike";
@@ -44,6 +45,9 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
   const isSale = product.on_sale && product.sale_price !== null && product.sale_price > 0;
   const displayPrice = isSale ? product.sale_price! : product.price_amount;
   const originalPrice = product.regular_price || product.price_amount;
+
+  // Check if it's a Patachitra product
+  const isPatachitra = product.category?.slug.toLowerCase() === 'patachitra' || product.category?.name.toLowerCase() === 'patachitra';
 
   // Rating Display Logic
   // If the product has NO reviews in the DB, we show the mock demo average (4.5) just for the UI preview
@@ -140,19 +144,26 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               </div>
             )}
 
-            {/* Interactive Add To Cart */}
+            {/* Interactive Add To Cart / Inquire */}
             <div className="mb-12">
-              <AddToCartClient 
-                productId={product.id} 
-                productName={product.product_name} 
-                price={displayPrice}
-                maxQuantity={product.quantity || 10}
-                image={
-                  product.images && Array.isArray(product.images) && product.images.length > 0 
-                    ? getImageUrl(product.images[0] as string)
-                    : undefined
-                }
-              />
+              {isPatachitra ? (
+                <InquireFormClient 
+                  productId={product.id}
+                  productName={product.product_name}
+                />
+              ) : (
+                <AddToCartClient 
+                  productId={product.id} 
+                  productName={product.product_name} 
+                  price={displayPrice}
+                  maxQuantity={product.quantity || 10}
+                  image={
+                    product.images && Array.isArray(product.images) && product.images.length > 0 
+                      ? getImageUrl(product.images[0] as string)
+                      : undefined
+                  }
+                />
+              )}
             </div>
 
             {/* Bento Specs */}

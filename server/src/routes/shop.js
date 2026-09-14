@@ -15,5 +15,6 @@ router.post('/api/apply-coupon', shopController.applyCoupon);
 router.post('/api/remove-coupon', shopController.removeCoupon);
 router.post('/api/submit-feedback', shopController.submitFeedback);
 router.get('/api/user/addresses', isAuth, shopController.getUserAddresses);
+router.post('/api/inquire', shopController.submitInquiry);
 
 module.exports = router;
