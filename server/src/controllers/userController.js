@@ -281,7 +281,11 @@ exports.getOrderDetailsApi = async (req, res) => {
             where: { id: orderId },
             include: {
                 items: {
-                    include: { product: true }
+                    include: { 
+                        product: {
+                            include: { category: true }
+                        }
+                    }
                 },
                 customer: true
             }

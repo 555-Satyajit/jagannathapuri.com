@@ -119,9 +119,18 @@ export function OrderViewContent({ orderId }: { orderId: string }) {
     )
   }
 
-  const subtotal = data.items?.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) || 0;
-  const tax = subtotal * 0.05; 
-  const total = subtotal + tax + (data.shippingFee || 0);
+  let totalTax = 0;
+  const subtotal = data.items?.reduce((sum: number, item: any) => {
+    const itemTotal = item.price * item.quantity;
+    const categoryName = item.product?.category?.name || '';
+    const isZeroTax = categoryName.toLowerCase().includes('idol') || categoryName.toLowerCase().includes('wooden');
+    if (!isZeroTax) {
+      totalTax += itemTotal * (5 / 105);
+    }
+    return sum + itemTotal;
+  }, 0) || 0;
+  const tax = totalTax;
+  const total = data.totalAmount || (subtotal + (data.shippingFee || 0));
 
   return (
     <div className="flex flex-col gap-8 p-4 md:p-8 max-w-7xl mx-auto w-full">
@@ -262,7 +271,7 @@ export function OrderViewContent({ orderId }: { orderId: string }) {
                   <span className="font-medium">{formatCurrency(data.shippingFee || 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Estimated Tax (5%)</span>
+                  <span className="text-muted-foreground">Includes Tax</span>
                   <span className="font-medium">{formatCurrency(tax)}</span>
                 </div>
                 <div className="flex justify-between pt-4 mt-4 border-t">

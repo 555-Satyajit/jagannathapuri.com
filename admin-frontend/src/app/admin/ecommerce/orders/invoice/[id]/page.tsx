@@ -70,9 +70,21 @@ export default function AdminInvoicePage() {
   };
 
   const subtotal = parseFloat(order.subtotal || order.totalAmount || order.total || 0);
-  const tax = ((subtotal * 18) / 118).toFixed(2);
   const shipping = parseFloat(order.shippingCost || order.shippingFee || 0);
   const total = parseFloat(order.totalAmount || order.total || 0);
+
+  let totalTax = 0;
+  if (order.items && Array.isArray(order.items)) {
+    order.items.forEach((item: any) => {
+      const itemTotal = item.price * item.quantity;
+      const categoryName = item.product?.category?.name || '';
+      const isZeroTax = categoryName.toLowerCase().includes('idol') || categoryName.toLowerCase().includes('wooden');
+      if (!isZeroTax) {
+        totalTax += itemTotal * (5 / 105);
+      }
+    });
+  }
+  const tax = totalTax.toFixed(2);
 
   return (
     <div className="min-h-screen bg-zinc-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -183,7 +195,7 @@ export default function AdminInvoicePage() {
                 <span>₹{shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between mb-4 text-zinc-800">
-                <span>Includes 18% Tax</span>
+                <span>Includes Tax</span>
                 <span>₹{tax}</span>
               </div>
               <div className="flex justify-between pt-4 border-t border-zinc-200 font-bold text-zinc-900">

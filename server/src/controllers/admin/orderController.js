@@ -123,7 +123,7 @@ exports.getOrderDetails = async (req, res) => {
                 shippingAddress: true,
                 items: {
                     include: {
-                        product: true
+                        product: { include: { category: true } }
                     }
                 }
             }
@@ -193,7 +193,7 @@ exports.downloadInvoice = async (req, res) => {
             where: { id: orderId },
             include: {
                 items: {
-                    include: { product: true }
+                    include: { product: { include: { category: true } } }
                 },
                 customer: true,
                 shippingAddress: true
@@ -237,7 +237,7 @@ exports.getInvoice = async (req, res) => {
             where: { id: orderId },
             include: {
                 items: {
-                    include: { product: true }
+                    include: { product: { include: { category: true } } }
                 },
                 customer: {
                     include: { addresses: true }
@@ -291,7 +291,7 @@ exports.apiGetOrderDetails = async (req, res) => {
                 billingAddress: true,
                 items: {
                     include: {
-                        product: true
+                        product: { include: { category: true } }
                     }
                 },
                 transactions: true
