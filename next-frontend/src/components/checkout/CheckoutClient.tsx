@@ -15,6 +15,14 @@ import { getImageUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -99,6 +107,7 @@ export default function CheckoutClient() {
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
   const [isEditingContact, setIsEditingContact] = useState(false);
+  const [showPhoneDialog, setShowPhoneDialog] = useState(false);
 
   // Address State
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -446,7 +455,11 @@ export default function CheckoutClient() {
           if (errorFields.some(field => ['address', 'city', 'state', 'zipCode'].includes(field))) {
             setShowAddressForm(true);
           }
-          alert(`Form validation failed. Please check these fields: ${errorFields.join(', ')}`);
+          if (errors.phone) {
+            setShowPhoneDialog(true);
+          } else {
+            alert(`Form validation failed. Please check these fields: ${errorFields.join(', ')}`);
+          }
         })} className="space-y-10">
           
           {/* Contact Information */}
@@ -643,6 +656,17 @@ export default function CheckoutClient() {
                         {errors.state && <p className="text-red-500 text-xs mt-1 font-medium">{errors.state.message}</p>}
                       </Field>
                       <Field>
+                        <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Phone Number</FieldLabel>
+                        <Input 
+                          {...register("phone")}
+                          type="tel"
+                          aria-invalid={!!errors.phone}
+                          className="h-12 bg-zinc-50"
+                          placeholder="+91 98765 43210"
+                        />
+                        {errors.phone && <p className="text-red-500 text-xs mt-1 font-medium">{errors.phone.message}</p>}
+                      </Field>
+                      <Field>
                         <FieldLabel className="mb-1 text-sm font-medium text-zinc-700">Zip Code</FieldLabel>
                         <Input 
                           {...register("zipCode")}
@@ -792,11 +816,9 @@ export default function CheckoutClient() {
 
           <hr className="border-zinc-100 my-6" />
 
-          <div className="flex justify-between items-end mb-8">
-            <span className="text-zinc-900 font-bold">Total</span>
-            <span className="text-3xl font-extrabold text-zinc-900">
-              ₹{total.toLocaleString("en-IN")}
-            </span>
+          <div className="flex justify-between items-center text-xl font-bold text-zinc-900 pt-2 mb-8">
+            <span>Total</span>
+            <span>₹{total.toLocaleString("en-IN")}</span>
           </div>
 
           <Button 
@@ -806,21 +828,56 @@ export default function CheckoutClient() {
             className="w-full h-14 bg-orange-600 hover:bg-orange-700 text-white rounded-full font-bold text-lg shadow-lg shadow-orange-600/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
           >
             {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
                 Processing...
-              </>
+              </span>
             ) : (
-              paymentMethod === 'cod' ? "Place Order (COD)" : "Proceed to Payment"
+              `Pay ₹${total.toLocaleString("en-IN")}`
             )}
           </Button>
-          
-          <div className="mt-6 flex items-center justify-center gap-2 text-xs text-zinc-500 font-medium">
-            <ShieldCheck className="w-4 h-4 text-green-600" />
+
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-zinc-500 font-medium bg-zinc-50 py-3 rounded-xl border border-zinc-100">
+            <ShieldCheck className="w-5 h-5 text-green-600" />
             Secure Encrypted Checkout
           </div>
         </div>
       </div>
+
+      <Dialog open={showPhoneDialog} onOpenChange={setShowPhoneDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Phone Number Required</DialogTitle>
+            <DialogDescription>
+              Please provide a valid phone number to place your order.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Field>
+              <FieldLabel>Phone Number</FieldLabel>
+              <Input 
+                {...register("phone")}
+                type="tel"
+                placeholder="+91 98765 43210"
+              />
+              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+            </Field>
+          </div>
+          <DialogFooter>
+            <Button type="button" onClick={() => {
+              if (!errors.phone && watch("phone") && watch("phone").length >= 10) {
+                setShowPhoneDialog(false);
+                handleSubmit(onSubmit)();
+              } else {
+                // Manually trigger validation if it hasn't updated yet
+                handleSubmit(onSubmit)();
+              }
+            }}>
+              Save & Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
